@@ -18,6 +18,8 @@
 #include <OpenAttributeGraph/OAGSearchOptions.h>
 #include <OpenAttributeGraph/OAGSubgraph.h>
 #include <OpenAttributeGraph/OAGTrace.h>
+#include <OpenAttributeGraph/OAGTreeElement.h>
+#include <OpenAttributeGraph/OAGTreeValue.h>
 #include <OpenAttributeGraph/OAGTupleType.h>
 #include <OpenAttributeGraph/OAGTypeID.h>
 #include <OpenAttributeGraph/OAGUniqueID.h>

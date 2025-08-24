@@ -125,6 +125,13 @@ void OAGGraphInvalidate(OAGGraphRef graph) {
     graph->context.setInvalid(true);
 }
 
+uint32_t OAGGraphInternAttributeType(OAGUnownedGraphContextRef graph, OAGTypeID type,
+                                    const OAGAttributeType *(*make_attribute_type)(const void *context OAG_SWIFT_CONTEXT) OAG_SWIFT_CC(swift),
+                                    const void *context) {
+    // TODO
+    return 0;
+}
+
 void OAGGraphInvalidateAllValues(OAGGraphRef graph) {
     if (graph->context.isInvalid()) {
         OAG::precondition_failure("invalidated graph");

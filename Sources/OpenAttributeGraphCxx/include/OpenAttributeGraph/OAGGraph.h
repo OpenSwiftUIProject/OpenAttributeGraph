@@ -7,6 +7,7 @@
 
 #include <OpenAttributeGraph/OAGBase.h>
 #include <OpenAttributeGraph/Private/CFRuntime.h>
+#include <OpenAttributeGraph/OAGAttributeType.h>
 #include <OpenAttributeGraph/OAGGraphCounterQueryType.h>
 
 // Note: Place all structure declaration in a single place to avoid header cycle dependency
@@ -68,6 +69,12 @@ OAGUnownedGraphContextRef OAGGraphGetGraphContext(OAGGraphRef graph) OAG_SWIFT_N
 OAG_EXPORT
 OAG_REFINED_FOR_SWIFT
 void OAGGraphInvalidate(OAGGraphRef graph) OAG_SWIFT_NAME(OAGGraphRef.invalidate(self:));
+
+OAG_EXPORT
+OAG_REFINED_FOR_SWIFT
+uint32_t OAGGraphInternAttributeType(OAGUnownedGraphContextRef graph, OAGTypeID type,
+                                    const OAGAttributeType * _Nonnull (* _Nonnull make_attribute_type)(const void * _Nullable context OAG_SWIFT_CONTEXT) OAG_SWIFT_CC(swift),
+                                    const void * _Nullable context);
 
 OAG_EXPORT
 OAG_REFINED_FOR_SWIFT

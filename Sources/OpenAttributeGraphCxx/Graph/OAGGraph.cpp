@@ -209,3 +209,12 @@ bool OAGGraphAnyInputsChanged(const OAGAttribute *excluded_inputs, size_t count)
     // TODO
     return false;
 }
+
+bool OAGGraphBeginDeferringSubgraphInvalidation(OAGGraphRef graph) {
+    // TODO
+    return false;
+}
+
+void OAGGraphEndDeferringSubgraphInvalidation(OAGGraphRef graph, bool was_deferring) {
+    // TODO
+}

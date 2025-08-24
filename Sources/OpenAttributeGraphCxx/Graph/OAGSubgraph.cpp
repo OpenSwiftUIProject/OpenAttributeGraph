@@ -251,3 +251,8 @@ void OAGSubgraphEndTreeElement(OAGAttribute attribute) {
         subgraph->end_tree(attribute);
     }
 }
+
+OAGTreeElement OAGSubgraphGetTreeRoot(OAGSubgraphRef cf_subgraph) {
+    // TODO
+    return nullptr;
+}

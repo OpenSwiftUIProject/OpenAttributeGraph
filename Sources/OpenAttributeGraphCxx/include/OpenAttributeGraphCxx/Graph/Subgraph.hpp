@@ -12,6 +12,8 @@
 #include <OpenAttributeGraphCxx/Runtime/metadata.hpp>
 #include <pthread.h>
 
+OAG_ASSUME_NONNULL_BEGIN
+
 typedef struct OAG_BRIDGED_TYPE(id) OAGSubgraphStorage * OAGSubgraphRef;
 
 namespace OAG {
@@ -28,9 +30,9 @@ private:
 public:
     // MARK: - CF related
     
-    static Subgraph *from_cf(OAGSubgraphRef cf_subgraph) OAG_NOEXCEPT;
+    static Subgraph *_Nullable from_cf(OAGSubgraphRef cf_subgraph) OAG_NOEXCEPT;
     
-    OAGSubgraphRef to_cf() const OAG_NOEXCEPT {
+    _Nullable OAGSubgraphRef to_cf() const OAG_NOEXCEPT {
         return reinterpret_cast<OAGSubgraphRef>(_object);
     }
     
@@ -47,12 +49,12 @@ public:
     }
     
     OAG_INLINE OAG_CONSTEXPR
-    static Subgraph *get_current() OAG_NOEXCEPT {
+    static Subgraph *_Nullable get_current() OAG_NOEXCEPT {
         return (OAG::Subgraph*)pthread_getspecific(OAG::Subgraph::current_key());
     }
     
     OAG_INLINE OAG_CONSTEXPR
-    static int set_current(Subgraph *subgraph) OAG_NOEXCEPT {
+    static int set_current(Subgraph *_Nullable subgraph) OAG_NOEXCEPT {
         return pthread_setspecific(OAG::Subgraph::current_key(), subgraph);
     }
     
@@ -109,3 +111,5 @@ class SubgraphObject final {
 }
 
 #endif /* Subgraph_hpp */
+
+OAG_ASSUME_NONNULL_END

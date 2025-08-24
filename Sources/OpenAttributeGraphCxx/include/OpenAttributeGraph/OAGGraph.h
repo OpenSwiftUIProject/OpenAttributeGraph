@@ -13,11 +13,11 @@
 
 typedef struct OAG_BRIDGED_TYPE(id) OAGGraphStorage * OAGGraphRef OAG_SWIFT_NAME(Graph);
 typedef struct OAG_BRIDGED_TYPE(id) OAGSubgraphStorage * OAGSubgraphRef OAG_SWIFT_NAME(Subgraph);
-typedef struct OAG_BRIDGED_TYPE(id) OAGGraphContextStorage * OAGGraphContextRef OAG_SWIFT_NAME(GraphContext);
+typedef struct OAGGraphContextStorage * OAGUnownedGraphContextRef OAG_SWIFT_STRUCT OAG_SWIFT_NAME(UnownedGraphContext);
 
 struct OAGGraphStorage;
-struct OAGGraphContextStorage;
 struct OAGSubgraphStorage;
+struct OAGGraphContextStorage;
 
 typedef uint32_t OAGAttribute OAG_SWIFT_STRUCT OAG_SWIFT_NAME(AnyAttribute);
 
@@ -63,7 +63,7 @@ void OAGGraphSetContext(OAGGraphRef graph, const void * _Nullable context) OAG_S
 
 OAG_EXPORT
 OAG_REFINED_FOR_SWIFT
-OAGGraphContextRef OAGGraphGetGraphContext(OAGGraphRef graph) OAG_SWIFT_NAME(getter:OAGGraphRef.graphContext(self:));
+OAGUnownedGraphContextRef OAGGraphGetGraphContext(OAGGraphRef graph) OAG_SWIFT_NAME(getter:OAGGraphRef.graphContext(self:));
 
 OAG_EXPORT
 OAG_REFINED_FOR_SWIFT

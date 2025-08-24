@@ -9,7 +9,7 @@ public import OpenAttributeGraphCxx
 
 extension Graph {
     public static func typeIndex(
-        ctx: GraphContext,
+        ctx: UnownedGraphContext,
         body: _AttributeBody.Type,
         valueType: Metadata,
         flags: _AttributeType.Flags,

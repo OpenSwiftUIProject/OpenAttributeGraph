@@ -19,8 +19,9 @@ class SubgraphObject;
 
 class Subgraph final {
 private:
-    OAGSubgraphRef _cf_subgraph;
-    OAGGraphContextStorage& _context;
+    SubgraphObject *_Nullable _object;
+    Graph& _graph;
+    OAGUniqueID _graph_context_id;
     // TODO
     bool _isInvalid;
     static pthread_key_t _current_subgraph_key;
@@ -30,7 +31,7 @@ public:
     static Subgraph *from_cf(OAGSubgraphRef cf_subgraph) OAG_NOEXCEPT;
     
     OAGSubgraphRef to_cf() const OAG_NOEXCEPT {
-        return _cf_subgraph;
+        return reinterpret_cast<OAGSubgraphRef>(_object);
     }
     
     // MARK: - pthread related
@@ -75,13 +76,13 @@ public:
     // MARK: - Getter and setter
     
     OAG_INLINE OAG_CONSTEXPR
-    const OAGGraphContextRef get_context() const OAG_NOEXCEPT {
-        return &_context;
+    const OAG::Graph &get_graph() const OAG_NOEXCEPT {
+        return _graph;
     }
-    
+
     OAG_INLINE OAG_CONSTEXPR
-    OAGGraphContextRef get_context() OAG_NOEXCEPT {
-        return &_context;
+    OAG::Graph &get_graph() OAG_NOEXCEPT {
+        return _graph;
     }
     
     OAG_INLINE OAG_CONSTEXPR
@@ -98,7 +99,7 @@ public:
 
 struct OAGSubgraphStorage {
     CFRuntimeBase base;
-    OAG::Subgraph *subgraph;
+    OAG::Subgraph *_Nullable subgraph;
 };
 
 namespace OAG {

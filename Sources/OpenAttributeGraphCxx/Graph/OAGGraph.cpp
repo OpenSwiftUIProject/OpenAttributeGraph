@@ -110,11 +110,11 @@ void OAGGraphSetContext(OAGGraphRef graph, const void * _Nullable context) {
     graph->context.set_context(context);
 }
 
-OAGGraphContextRef OAGGraphGetGraphContext(OAGGraphRef graph) {
+OAGUnownedGraphContextRef OAGGraphGetGraphContext(OAGGraphRef graph) {
     if (graph->context.isInvalid()) {
         OAG::precondition_failure("invalidated graph");
     }
-    return reinterpret_cast<OAGGraphContextRef>(reinterpret_cast<uintptr_t>(graph) + sizeof(CFRuntimeBase));
+    return reinterpret_cast<OAGUnownedGraphContextRef>(&graph->context.get_graph());
 }
 
 void OAGGraphInvalidate(OAGGraphRef graph) {

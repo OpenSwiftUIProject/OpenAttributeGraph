@@ -6,7 +6,7 @@ This project uses third-party libraries and code. Their licenses and acknowledge
 
 ## Compute
 
-OpenGraphCxx's Data, Graph, Vector and more is modified based on [Compute](https://github.com/jcmosc/Compute)'s implementations.
+OpenAttributeGraphCxx's Data, Graph, Vector and more is modified based on [Compute](https://github.com/jcmosc/Compute)'s implementations.
 
 Compute is licensed as follows:
 

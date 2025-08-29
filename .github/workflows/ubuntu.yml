@@ -15,9 +15,9 @@ jobs:
         swift_version: ["6.1.2"]
     runs-on: ubuntu-22.04
     env:
-      OPENGRAPH_WERROR: 1
-      OPENGRAPH_ATTRIBUTEGRAPH: 0
-      OPENGRAPH_COMPATIBILITY_TEST: 0
+      OPENATTRIBUTEGRAPH_WERROR: 1
+      OPENATTRIBUTEGRAPH_ATTRIBUTEGRAPH: 0
+      OPENATTRIBUTEGRAPH_COMPATIBILITY_TEST: 0
     container: swift:${{ matrix.swift_version }}-jammy
     steps:
       - uses: actions/checkout@v4
@@ -32,7 +32,7 @@ jobs:
             --build-path .build-test-debug
           llvm-cov show \
             -instr-profile=.build-test-debug/debug/codecov/default.profdata \
-            .build-test-debug/debug/OpenGraphPackageTests.xctest \
+            .build-test-debug/debug/OpenAttributeGraphPackageTests.xctest \
             > coverage.txt
       - name: Building and running tests in release mode
         run: |

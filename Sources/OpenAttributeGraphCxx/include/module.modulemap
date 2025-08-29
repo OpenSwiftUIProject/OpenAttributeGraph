@@ -1,0 +1,8 @@
+module OpenAttributeGraphCxx {
+    export *
+}
+
+module OpenAttributeGraphCxx.C {
+    umbrella header "OpenAttributeGraph/OpenAttributeGraph-umbrella.h"
+    export *
+}

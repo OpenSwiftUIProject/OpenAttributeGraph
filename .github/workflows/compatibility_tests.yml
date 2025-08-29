@@ -17,11 +17,11 @@ jobs:
             xcode-version: "16.4"   # Swift 6.1.2
     runs-on: ${{ matrix.os }}
     env:
-      OPENGRAPH_WERROR: 1
-      OPENGRAPH_ATTRIBUTEGRAPH: 1
-      OPENGRAPH_COMPATIBILITY_TEST: 1
-      OPENGRAPH_USE_LOCAL_DEPS: 1
-      OPENGRAPH_TARGET_RELEASE: 2024
+      OPENATTRIBUTEGRAPH_WERROR: 1
+      OPENATTRIBUTEGRAPH_ATTRIBUTEGRAPH: 1
+      OPENATTRIBUTEGRAPH_COMPATIBILITY_TEST: 1
+      OPENATTRIBUTEGRAPH_USE_LOCAL_DEPS: 1
+      OPENATTRIBUTEGRAPH_TARGET_RELEASE: 2024
       DARWIN_PRIVATE_FRAMEWORKS_TARGET_RELEASE: 2024
       GH_TOKEN: ${{ github.token }}
     steps:
@@ -42,7 +42,7 @@ jobs:
       - name: Run tests against Apple's AttributeGraph on macOS via Xcode
         run: |
           xcodebuild test \
-            -scheme OpenGraph-Package \
+            -scheme OpenAttributeGraph-Package \
             -sdk macosx \
             -destination "platform=macOS" \
             -skipPackagePluginValidation \

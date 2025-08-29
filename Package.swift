@@ -33,7 +33,7 @@ let isSPIBuild = envEnable("SPI_BUILD")
 // MARK: - Env and Config
 
 let isXcodeEnv = Context.environment["__CFBundleIdentifier"] == "com.apple.dt.Xcode"
-let development = envEnable("OPENGRAPH_DEVELOPMENT", default: false)
+let development = envEnable("OPENATTRIBUTEGRAPH_DEVELOPMENT", default: false)
 
 let swiftBinPath = Context.environment["_"] ?? "/usr/bin/swift"
 let swiftBinURL = URL(fileURLWithPath: swiftBinPath)
@@ -51,22 +51,22 @@ var sharedSwiftSettings: [SwiftSetting] = [
     .swiftLanguageMode(.v5),
 ]
 
-// MARK: [env] OPENGRAPH_SWIFT_TOOLCHAIN_PATH
+// MARK: [env] OPENATTRIBUTEGRAPH_SWIFT_TOOLCHAIN_PATH
 
 // Modified from: https://github.com/swiftlang/swift/blob/main/SwiftCompilerSources/Package.swift
 //
 // Create a couple of symlinks to an existing Ninja build:
 //
 //     ```shell
-//     cd $OPENGRAPH_SWIFT_TOOLCHAIN_PATH
+//     cd $OPENATTRIBUTEGRAPH_SWIFT_TOOLCHAIN_PATH
 //     mkdir -p build/Default
 //     ln -s build/<Ninja-Build>/llvm-<os+arch> build/Default/llvm
 //     ln -s build/<Ninja-Build>/swift-<os+arch> build/Default/swift
 //     ```
 //
-// where <$OPENGRAPH_SWIFT_TOOLCHAIN_PATH> is the parent directory of the swift repository.
+// where <$OPENATTRIBUTEGRAPH_SWIFT_TOOLCHAIN_PATH> is the parent directory of the swift repository.
 
-let swiftToolchainPath = Context.environment["OPENGRAPH_SWIFT_TOOLCHAIN_PATH"] ?? (development ? "/Volumes/BuildMachine/swift-project" : "")
+let swiftToolchainPath = Context.environment["OPENATTRIBUTEGRAPH_SWIFT_TOOLCHAIN_PATH"] ?? (development ? "/Volumes/BuildMachine/swift-project" : "")
 if !swiftToolchainPath.isEmpty {
     sharedCSettings.append(
         .unsafeFlags(
@@ -88,64 +88,64 @@ if !swiftToolchainPath.isEmpty {
     )
 }
 
-// MARK: [env] OPENGRAPH_SWIFT_TOOLCHAIN_VERSION
+// MARK: [env] OPENATTRIBUTEGRAPH_SWIFT_TOOLCHAIN_VERSION
 
-let swiftToolchainVersion = Context.environment["OPENGRAPH_SWIFT_TOOLCHAIN_VERSION"] ?? (development ? "6.0.2" : "")
+let swiftToolchainVersion = Context.environment["OPENATTRIBUTEGRAPH_SWIFT_TOOLCHAIN_VERSION"] ?? (development ? "6.0.2" : "")
 if !swiftToolchainVersion.isEmpty {
     sharedCSettings.append(
-        .define("OPENGRAPH_SWIFT_TOOLCHAIN_VERSION", to: swiftToolchainVersion)
+        .define("OPENATTRIBUTEGRAPH_SWIFT_TOOLCHAIN_VERSION", to: swiftToolchainVersion)
     )
 }
 
-// MARK: - [env] OPENGRAPH_SWIFT_TOOLCHAIN_SUPPORTED
+// MARK: - [env] OPENATTRIBUTEGRAPH_SWIFT_TOOLCHAIN_SUPPORTED
 
-let swiftToolchainSupported = envEnable("OPENGRAPH_SWIFT_TOOLCHAIN_SUPPORTED", default: !swiftToolchainVersion.isEmpty)
+let swiftToolchainSupported = envEnable("OPENATTRIBUTEGRAPH_SWIFT_TOOLCHAIN_SUPPORTED", default: !swiftToolchainVersion.isEmpty)
 if swiftToolchainSupported {
-    sharedCSettings.append(.define("OPENGRAPH_SWIFT_TOOLCHAIN_SUPPORTED"))
-    sharedSwiftSettings.append(.define("OPENGRAPH_SWIFT_TOOLCHAIN_SUPPORTED"))
+    sharedCSettings.append(.define("OPENATTRIBUTEGRAPH_SWIFT_TOOLCHAIN_SUPPORTED"))
+    sharedSwiftSettings.append(.define("OPENATTRIBUTEGRAPH_SWIFT_TOOLCHAIN_SUPPORTED"))
 }
 
-// MARK: - [env] OPENGRAPH_TARGET_RELEASE
+// MARK: - [env] OPENATTRIBUTEGRAPH_TARGET_RELEASE
 
-let releaseVersion = Context.environment["OPENGRAPH_TARGET_RELEASE"].flatMap { Int($0) } ?? 2024
-//sharedCSettings.append(.define("OPENGRAPH_RELEASE", to: "\(releaseVersion)"))
-sharedSwiftSettings.append(.define("OPENGRAPH_RELEASE_\(releaseVersion)"))
+let releaseVersion = Context.environment["OPENATTRIBUTEGRAPH_TARGET_RELEASE"].flatMap { Int($0) } ?? 2024
+//sharedCSettings.append(.define("OPENATTRIBUTEGRAPH_RELEASE", to: "\(releaseVersion)"))
+sharedSwiftSettings.append(.define("OPENATTRIBUTEGRAPH_RELEASE_\(releaseVersion)"))
 if releaseVersion >= 2021 {
     for year in 2021 ... releaseVersion {
-        sharedSwiftSettings.append(.define("OPENGRAPH_SUPPORT_\(year)_API"))
+        sharedSwiftSettings.append(.define("OPENATTRIBUTEGRAPH_SUPPORT_\(year)_API"))
     }
 }
 
-// MARK: - [env] OPENGRAPH_WERROR
+// MARK: - [env] OPENATTRIBUTEGRAPH_WERROR
 
-let warningsAsErrorsCondition = envEnable("OPENGRAPH_WERROR", default: isXcodeEnv && development)
+let warningsAsErrorsCondition = envEnable("OPENATTRIBUTEGRAPH_WERROR", default: isXcodeEnv && development)
 if warningsAsErrorsCondition {
     sharedSwiftSettings.append(.unsafeFlags(["-warnings-as-errors"]))
 }
 
-// MARK: - [env] OPENGRAPH_LIBRARY_EVOLUTION
+// MARK: - [env] OPENATTRIBUTEGRAPH_LIBRARY_EVOLUTION
 
-let libraryEvolutionCondition = envEnable("OPENGRAPH_LIBRARY_EVOLUTION", default: buildForDarwinPlatform)
+let libraryEvolutionCondition = envEnable("OPENATTRIBUTEGRAPH_LIBRARY_EVOLUTION", default: buildForDarwinPlatform)
 
 if libraryEvolutionCondition {
     // NOTE: -enable-library-evolution will cause module verify failure for `swift build`.
-    // Either set OPENGRAPH_LIBRARY_EVOLUTION=0 or add `-Xswiftc -no-verify-emitted-module-interface` after `swift build`
+    // Either set OPENATTRIBUTEGRAPH_LIBRARY_EVOLUTION=0 or add `-Xswiftc -no-verify-emitted-module-interface` after `swift build`
     sharedSwiftSettings.append(.unsafeFlags(["-enable-library-evolution", "-no-verify-emitted-module-interface"]))
 }
 
 // MARK: - Targets
 
 let openGraphTarget = Target.target(
-    name: "OpenGraph",
-    dependencies: ["OpenGraphCxx"],
+    name: "OpenAttributeGraph",
+    dependencies: ["OpenAttributeGraphCxx"],
     cSettings: sharedCSettings,
     swiftSettings: sharedSwiftSettings
 )
 // FIXME: Merge into one target
-// OpenGraph is a C++ & Swift mix target.
+// OpenAttributeGraph is a C++ & Swift mix target.
 // The SwiftPM support for such usage is still in progress.
 let openGraphSPITarget = Target.target(
-    name: "OpenGraphCxx",
+    name: "OpenAttributeGraphCxx",
     cSettings: sharedCSettings + [
         .define("__COREFOUNDATION_FORSWIFTFOUNDATIONONLY__", to: "1", .when(platforms: .nonDarwinPlatforms)),
     ],
@@ -154,7 +154,7 @@ let openGraphSPITarget = Target.target(
     ]
 )
 let openGraphShimsTarget = Target.target(
-    name: "OpenGraphShims",
+    name: "OpenAttributeGraphShims",
     cSettings: sharedCSettings,
     swiftSettings: sharedSwiftSettings
 )
@@ -162,33 +162,33 @@ let openGraphShimsTarget = Target.target(
 // MARK: - Test Targets
 
 let openGraphTestsTarget = Target.testTarget(
-    name: "OpenGraphTests",
+    name: "OpenAttributeGraphTests",
     dependencies: [
-        "OpenGraph",
+        "OpenAttributeGraph",
     ],
     exclude: ["README.md"],
     cSettings: sharedCSettings,
     swiftSettings: sharedSwiftSettings
 )
 let openGraphCxxTestsTarget = Target.testTarget(
-    name: "OpenGraphCxxTests",
+    name: "OpenAttributeGraphCxxTests",
     dependencies: [
-        "OpenGraphCxx",
+        "OpenAttributeGraphCxx",
     ],
     exclude: ["README.md"],
     swiftSettings: sharedSwiftSettings + [.interoperabilityMode(.Cxx)]
 )
 let openGraphShimsTestsTarget = Target.testTarget(
-    name: "OpenGraphShimsTests",
+    name: "OpenAttributeGraphShimsTests",
     dependencies: [
-        "OpenGraphShims",
+        "OpenAttributeGraphShims",
     ],
     exclude: ["README.md"],
     cSettings: sharedCSettings,
     swiftSettings: sharedSwiftSettings
 )
 let openGraphCompatibilityTestsTarget = Target.testTarget(
-    name: "OpenGraphCompatibilityTests",
+    name: "OpenAttributeGraphCompatibilityTests",
     dependencies: [
         .product(name: "Numerics", package: "swift-numerics"),
     ],
@@ -200,10 +200,10 @@ let openGraphCompatibilityTestsTarget = Target.testTarget(
 // MARK: - Package
 
 let package = Package(
-    name: "OpenGraph",
+    name: "OpenAttributeGraph",
     products: [
-        .library(name: "OpenGraph", type: .dynamic, targets: ["OpenGraph", "OpenGraphCxx"]),
-        .library(name: "OpenGraphShims", type: .dynamic, targets: ["OpenGraph", "OpenGraphCxx", "OpenGraphShims"]),
+        .library(name: "OpenAttributeGraph", type: .dynamic, targets: ["OpenAttributeGraph", "OpenAttributeGraphCxx"]),
+        .library(name: "OpenAttributeGraphShims", type: .dynamic, targets: ["OpenAttributeGraph", "OpenAttributeGraphCxx", "OpenAttributeGraphShims"]),
     ],
     dependencies: [
         .package(url: "https://github.com/apple/swift-numerics", from: "1.0.2"),
@@ -227,7 +227,7 @@ extension Target {
             .product(name: "AttributeGraph", package: "DarwinPrivateFrameworks")
         )
         var swiftSettings = swiftSettings ?? []
-        swiftSettings.append(.define("OPENGRAPH_ATTRIBUTEGRAPH"))
+        swiftSettings.append(.define("OPENATTRIBUTEGRAPH_ATTRIBUTEGRAPH"))
         self.swiftSettings = swiftSettings
     }
     
@@ -236,14 +236,14 @@ extension Target {
             .product(name: "AttributeGraph", package: "DarwinPrivateFrameworks")
         )
         var swiftSettings = swiftSettings ?? []
-        swiftSettings.append(.define("OPENGRAPH_COMPATIBILITY_TEST"))
+        swiftSettings.append(.define("OPENATTRIBUTEGRAPH_COMPATIBILITY_TEST"))
         self.swiftSettings = swiftSettings
     }
 }
 
-let useLocalDeps = envEnable("OPENGRAPH_USE_LOCAL_DEPS")
+let useLocalDeps = envEnable("OPENATTRIBUTEGRAPH_USE_LOCAL_DEPS")
 
-let attributeGraphCondition = envEnable("OPENGRAPH_ATTRIBUTEGRAPH", default: buildForDarwinPlatform && !isSPIBuild)
+let attributeGraphCondition = envEnable("OPENATTRIBUTEGRAPH_ATTRIBUTEGRAPH", default: buildForDarwinPlatform && !isSPIBuild)
 
 if attributeGraphCondition {
     let privateFrameworkRepo: Package.Dependency
@@ -262,15 +262,15 @@ if attributeGraphCondition {
         default: nil
     }
 } else {
-    openGraphShimsTarget.dependencies.append("OpenGraph")
+    openGraphShimsTarget.dependencies.append("OpenAttributeGraph")
     package.platforms = [.iOS(.v13), .macOS(.v10_15), .macCatalyst(.v13), .tvOS(.v13), .watchOS(.v5)]
 }
 
-let compatibilityTestCondition = envEnable("OPENGRAPH_COMPATIBILITY_TEST")
+let compatibilityTestCondition = envEnable("OPENATTRIBUTEGRAPH_COMPATIBILITY_TEST")
 if compatibilityTestCondition && attributeGraphCondition {
     openGraphCompatibilityTestsTarget.addCompatibilitySettings()
 } else {
-    openGraphCompatibilityTestsTarget.dependencies.append("OpenGraph")
+    openGraphCompatibilityTestsTarget.dependencies.append("OpenAttributeGraph")
 }
 
 extension [Platform] {

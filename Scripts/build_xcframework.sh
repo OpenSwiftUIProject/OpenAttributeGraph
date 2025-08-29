@@ -14,8 +14,8 @@ XCODEBUILD_DERIVED_DATA_PATH="$XCODEBUILD_BUILD_DIR/DerivedData"
 # Copy and modify modulemap
 mkdir -p "$PROJECT_BUILD_DIR"
 cat > "$PROJECT_BUILD_DIR/module.modulemap" << 'EOF'
-framework module OpenGraph {
-  umbrella header "OpenGraph-umbrella.h"
+framework module OpenAttributeGraph {
+  umbrella header "OpenAttributeGraph-umbrella.h"
   export *
   module * { export * }
 }
@@ -75,10 +75,10 @@ build_framework() {
         cp -r \
         "$XCODEBUILD_DERIVED_DATA_PATH/Build/Intermediates.noindex/ArchiveIntermediates/$scheme/BuildProductsPath/Release/$scheme.swiftmodule" \
         "$FRAMEWORK_MODULES_PATH/$scheme.swiftmodule"
-        # Replace OpenGraphCxx with OpenGraph in swiftinterface files
-        find "$FRAMEWORK_MODULES_PATH/$scheme.swiftmodule" -name "*.swiftinterface" -exec sed -i '' 's/OpenGraphCxx/OpenGraph/g' {} \;
+        # Replace OpenAttributeGraphCxx with OpenAttributeGraph in swiftinterface files
+        find "$FRAMEWORK_MODULES_PATH/$scheme.swiftmodule" -name "*.swiftinterface" -exec sed -i '' 's/OpenAttributeGraphCxx/OpenAttributeGraph/g' {} \;
         cp -r \
-        "$PROJECT_ROOT/Sources/OpenGraphCxx/include/OpenGraph"/* \
+        "$PROJECT_ROOT/Sources/OpenAttributeGraphCxx/include/OpenAttributeGraph"/* \
         "$FRAMEWORK_HEADERS_PATH/" 2>/dev/null || true
         cp "$PROJECT_BUILD_DIR/module.modulemap" \
         "$FRAMEWORK_MODULES_PATH/module.modulemap" 2>/dev/null || true
@@ -94,10 +94,10 @@ build_framework() {
         cp -r \
         "$XCODEBUILD_DERIVED_DATA_PATH/Build/Intermediates.noindex/ArchiveIntermediates/$scheme/BuildProductsPath/Release-$sdk/$scheme.swiftmodule" \
         "$FRAMEWORK_MODULES_PATH/$scheme.swiftmodule"
-        # Replace OpenGraphCxx with OpenGraph in swiftinterface files
-        find "$FRAMEWORK_MODULES_PATH/$scheme.swiftmodule" -name "*.swiftinterface" -exec sed -i '' 's/OpenGraphCxx/OpenGraph/g' {} \;
+        # Replace OpenAttributeGraphCxx with OpenAttributeGraph in swiftinterface files
+        find "$FRAMEWORK_MODULES_PATH/$scheme.swiftmodule" -name "*.swiftinterface" -exec sed -i '' 's/OpenAttributeGraphCxx/OpenAttributeGraph/g' {} \;
         cp -r \
-        "$PROJECT_ROOT/Sources/OpenGraphCxx/include/OpenGraph"/* \
+        "$PROJECT_ROOT/Sources/OpenAttributeGraphCxx/include/OpenAttributeGraph"/* \
         "$FRAMEWORK_HEADERS_PATH/" 2>/dev/null || true
         cp "$PROJECT_BUILD_DIR/module.modulemap" \
         "$FRAMEWORK_MODULES_PATH/module.modulemap" 2>/dev/null || true

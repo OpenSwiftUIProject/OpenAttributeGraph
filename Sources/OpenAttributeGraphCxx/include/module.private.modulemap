@@ -1,0 +1,58 @@
+module OpenAttributeGraphCxx_Private {
+    export *
+}
+
+module OpenAttributeGraphCxx_Private.Attribute {
+    requires cplusplus
+    umbrella "OpenAttributeGraphCxx/Attribute"
+    export *
+}
+
+module OpenAttributeGraphCxx_Private.Comparison {
+    requires cplusplus
+    umbrella "OpenAttributeGraphCxx/Comparison"
+    export *
+}
+
+module OpenAttributeGraphCxx_Private.Data {
+    requires cplusplus
+    umbrella "OpenAttributeGraphCxx/Data"
+    export *
+}
+
+module OpenAttributeGraphCxx_Private.DebugServer {
+    requires cplusplus
+    umbrella "OpenAttributeGraphCxx/DebugServer"
+    export *
+}
+
+module OpenAttributeGraphCxx_Private.Graph {
+    requires cplusplus
+    umbrella "OpenAttributeGraphCxx/Graph"
+    export *
+}
+
+module OpenAttributeGraphCxx_Private.Misc {
+    requires cplusplus
+    umbrella "OpenAttributeGraphCxx/Misc"
+    export *
+}
+
+module OpenAttributeGraphCxx_Private.Runtime {
+    requires cplusplus
+    umbrella "OpenAttributeGraphCxx/Runtime"
+    export *
+}
+
+module OpenAttributeGraphCxx_Private.Util {
+    requires cplusplus
+    umbrella "OpenAttributeGraphCxx/Util"
+    export *
+    module * { export * }
+}
+
+module OpenAttributeGraphCxx_Private.Vector {
+    requires cplusplus
+    umbrella "OpenAttributeGraphCxx/Vector"
+    export *
+}

@@ -1,0 +1,25 @@
+//
+//  OAGVersion.h
+//  OpenAttributeGraphCxx
+
+#ifndef OAGVersion_h
+#define OAGVersion_h
+
+#include <OpenAttributeGraph/OAGBase.h>
+
+#define OPENATTRIBUTEGRAPH_RELEASE 2024
+
+#define OPENATTRIBUTEGRAPH_RELEASE_2021 2021
+#define OPENATTRIBUTEGRAPH_RELEASE_2024 2024
+
+#ifndef OPENATTRIBUTEGRAPH_RELEASE
+#define OPENATTRIBUTEGRAPH_RELEASE OPENATTRIBUTEGRAPH_RELEASE_2024
+#endif
+
+OAG_EXTERN_C_BEGIN
+
+OAG_EXPORT const uint64_t OAGVersion;
+
+OAG_EXTERN_C_END
+
+#endif /* OAGVersion_h */

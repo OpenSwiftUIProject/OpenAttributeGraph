@@ -16,11 +16,11 @@ jobs:
         xcode-version: ["16.4"]   # Swift 6.1.2
     runs-on: ${{ matrix.os }}
     env:
-      OPENGRAPH_WERROR: 1
-      OPENGRAPH_ATTRIBUTEGRAPH: 0
-      OPENGRAPH_COMPATIBILITY_TEST: 0
-      OPENGRAPH_USE_LOCAL_DEPS: 1
-      OPENGRAPH_TARGET_RELEASE: 2024
+      OPENATTRIBUTEGRAPH_WERROR: 1
+      OPENATTRIBUTEGRAPH_ATTRIBUTEGRAPH: 0
+      OPENATTRIBUTEGRAPH_COMPATIBILITY_TEST: 0
+      OPENATTRIBUTEGRAPH_USE_LOCAL_DEPS: 1
+      OPENATTRIBUTEGRAPH_TARGET_RELEASE: 2024
       DARWIN_PRIVATE_FRAMEWORKS_TARGET_RELEASE: 2024
       GH_TOKEN: ${{ github.token }}
     steps:
@@ -42,7 +42,7 @@ jobs:
             --build-path .build-test-debug
           xcrun llvm-cov show \
             -instr-profile=.build-test-debug/debug/codecov/default.profdata \
-            .build-test-debug/debug/OpenGraphPackageTests.xctest/Contents/MacOS/OpenGraphPackageTests \
+            .build-test-debug/debug/OpenAttributeGraphPackageTests.xctest/Contents/MacOS/OpenAttributeGraphPackageTests \
             > coverage.txt
       - name: Build and run tests in release mode
         run: |

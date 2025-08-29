@@ -1,12 +1,12 @@
-# OpenGraph Copilot Instructions
+# OpenAttributeGraph Copilot Instructions
 
-This file contains coding guidelines and conventions for AI assistants working on the OpenGraph project.
+This file contains coding guidelines and conventions for AI assistants working on the OpenAttributeGraph project.
 
 ## Quick Reference
 
 ### Key Principles
 - Use `swift-testing` framework with `#expect` macro (not XCTest)
-- Follow OpenGraph C++ and Swift interop patterns
+- Follow OpenAttributeGraph C++ and Swift interop patterns
 - Trim trailing whitespaces automatically
 - Use 4-space indentation consistently
 
@@ -23,7 +23,7 @@ This file contains coding guidelines and conventions for AI assistants working o
 ```swift
 import Testing
 
-struct OpenGraphTests {
+struct OpenAttributeGraphTests {
     @Test
     func functionality() {
         let value = SomeType()
@@ -100,19 +100,19 @@ struct OpenGraphTests {
 
 ## C++ Coding Style
 
-### OpenGraphCxx Guidelines
+### OpenAttributeGraphCxx Guidelines
 
-- Follow existing OpenGraph C++ patterns and conventions
-- Use `OG_INLINE` and `OG_CONSTEXPR` macros for inline and constexpr functions
-- Use `OG_NOEXCEPT` for exception specifications
-- Maintain compatibility with existing OpenGraph APIs
+- Follow existing OpenAttributeGraph C++ patterns and conventions
+- Use `OAG_INLINE` and `OAG_CONSTEXPR` macros for inline and constexpr functions
+- Use `OAG_NOEXCEPT` for exception specifications
+- Maintain compatibility with existing OpenAttributeGraph APIs
 - Use proper header guards with project-specific naming
 
 ### Memory Management
 
 - Use RAII principles for resource management
 - Prefer smart pointers and custom deleters for automatic cleanup
-- Use `ptr<T>` template for OpenGraph-specific pointer management
+- Use `ptr<T>` template for OpenAttributeGraph-specific pointer management
 - Implement proper validation and assertion mechanisms
 
 ### Template Usage
@@ -120,20 +120,20 @@ struct OpenGraphTests {
 ```cpp
 template <typename T>
 class ptr {
-    // Implementation following OpenGraph patterns
+    // Implementation following OpenAttributeGraph patterns
 };
 ```
 
 ## Architecture Patterns
 
-### OpenGraph Compatibility
-- Maintain API compatibility with existing OpenGraph functionality
+### OpenAttributeGraph Compatibility
+- Maintain API compatibility with existing OpenAttributeGraph functionality
 - Use similar naming conventions and parameter patterns
-- Implement protocols and extensions that mirror OpenGraph's design
+- Implement protocols and extensions that mirror OpenAttributeGraph's design
 
 ### Module Organization
 - Keep related functionality in appropriate modules
-- Use clear module boundaries between OpenGraphCxx and Swift layers
+- Use clear module boundaries between OpenAttributeGraphCxx and Swift layers
 - Avoid circular dependencies between modules
 
 ### C++/Swift Interop
@@ -163,7 +163,7 @@ func someFunction(value: String) throws -> Int {
 
 ## Performance Considerations
 
-- Optimize memory allocation patterns using OpenGraph's table/page system
+- Optimize memory allocation patterns using OpenAttributeGraph's table/page system
 - Use lazy initialization for expensive computations
 - Consider memory management and avoid retain cycles
 - Optimize for common use cases while maintaining flexibility
@@ -179,7 +179,7 @@ func someFunction(value: String) throws -> Int {
 
 ### C++ Files
 - Use proper header inclusion guards
-- Include OpenGraph base headers first
+- Include OpenAttributeGraph base headers first
 - Follow dependency order in include statements
 - Use forward declarations when possible
 
@@ -193,16 +193,16 @@ func someFunction(value: String) throws -> Int {
 
 ## Memory and Data Management
 
-### OpenGraph Patterns
+### OpenAttributeGraph Patterns
 - Use `data::table` for memory region management
 - Implement proper page allocation and deallocation
 - Use `ptr<T>` for type-safe offset-based pointers
-- Follow OpenGraph's zone-based memory organization
+- Follow OpenAttributeGraph's zone-based memory organization
 
 ### Validation and Assertions
 - Use `assert_valid` methods for pointer validation
 - Implement proper precondition checking
-- Use OpenGraph's assertion macros consistently
+- Use OpenAttributeGraph's assertion macros consistently
 - Handle edge cases gracefully
 
 ---

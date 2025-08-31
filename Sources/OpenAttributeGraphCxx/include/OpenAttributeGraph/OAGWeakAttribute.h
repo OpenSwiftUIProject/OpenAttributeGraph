@@ -11,12 +11,12 @@
 
 OAG_ASSUME_NONNULL_BEGIN
 
-typedef struct OAG_SWIFT_NAME(AnyWeakAttribute) OAGWeakAttribute {
+typedef OAG_SWIFT_STRUCT struct {
     struct {
         OAGAttribute identifier;
         uint32_t seed;
     } _details;
-} OAGWeakAttribute;
+} OAGWeakAttribute OAG_SWIFT_NAME(AnyWeakAttribute);
 
 OAG_EXTERN_C_BEGIN
 

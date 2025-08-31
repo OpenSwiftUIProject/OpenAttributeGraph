@@ -37,7 +37,7 @@ struct AnyWeakAttributeCompatibilityTests {
     @Test
     func dict() {
         let w1 = AnyWeakAttribute(nil)
-        let w2 = AnyWeakAttribute(WeakAttribute<Void>(nil))
+        let w2 = AnyWeakAttribute(Attribute(value: 0).identifier)
         let dict: [AnyWeakAttribute: Int] = [
             w1: 1,
             w2: 2,

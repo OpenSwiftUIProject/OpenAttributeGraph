@@ -7,8 +7,6 @@
 
 public import OpenAttributeGraphCxx
 
-public typealias AnyWeakAttribute = OAGWeakAttribute
-
 extension AnyWeakAttribute {
     @_alwaysEmitIntoClient
     public init(_ attribute: AnyAttribute?) {

@@ -98,6 +98,12 @@ struct AnyAttributeCompatibilityTests {
             }
         }
     }
+
+    @Test
+    func subgraph() {
+        let identifier = Attribute(value: 0).identifier
+        #expect(identifier.subgraph2 != nil)
+    }
     #endif
 }
 #endif

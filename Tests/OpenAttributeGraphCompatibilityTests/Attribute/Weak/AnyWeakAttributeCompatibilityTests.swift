@@ -33,5 +33,17 @@ struct AnyWeakAttributeCompatibilityTests {
         }
         #expect(AnyWeakAttribute(nil).description == "nil")
     }
+
+    @Test
+    func dict() {
+        let w1 = AnyWeakAttribute(nil)
+        let w2 = AnyWeakAttribute(WeakAttribute<Void>(nil))
+        let dict: [AnyWeakAttribute: Int] = [
+            w1: 1,
+            w2: 2,
+        ]
+        #expect(dict[w1] == 1)
+        #expect(dict[w2] == 2)
+    }
 }
 #endif

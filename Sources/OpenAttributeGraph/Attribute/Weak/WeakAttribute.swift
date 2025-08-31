@@ -2,7 +2,7 @@
 //  WeakAttribute.swift
 //  OpenAttributeGraph
 //
-//  Audited for RELEASE_2021
+//  Audited for 6.5.1
 //  Status: Complete
 
 public import OpenAttributeGraphCxx
@@ -11,16 +11,14 @@ public import OpenAttributeGraphCxx
 @propertyWrapper
 @dynamicMemberLookup
 public struct WeakAttribute<Value> {
-    @usableFromInline
     var base: AnyWeakAttribute
     
-    @_alwaysEmitIntoClient
     public init(base: AnyWeakAttribute) {
         self.base = base
     }
     
     public init() {
-        base = AnyWeakAttribute(_details: AnyWeakAttribute.__Unnamed_struct__details(identifier: AnyAttribute(rawValue: 0), seed: 0))
+        base = AnyWeakAttribute(_details: .init(identifier: .init(rawValue: 0), seed: 0))
     }
     
     public init(_ attribute: Attribute<Value>) {
@@ -31,7 +29,12 @@ public struct WeakAttribute<Value> {
         base = AnyWeakAttribute(attribute?.identifier)
     }
     
-    public var wrappedValue: Value? { value }
+    public var wrappedValue: Value? {
+        OAGGraphGetWeakValue(base, type: Value.self)
+            .value?
+            .assumingMemoryBound(to: Value.self)
+            .pointee
+    }
     
     public var projectedValue: Attribute<Value>?{
         get { attribute }
@@ -48,16 +51,17 @@ public struct WeakAttribute<Value> {
         set { base.attribute = newValue?.identifier }
     }
     
-    public var value: Value? {
-        OAGGraphGetWeakValue(base, type: Value.self)
-            .value
-            // TO BE CONFIRMED
-            .assumingMemoryBound(to: Value?.self)
-            .pointee
-    }
-    
-    public func changedValue(options: OAGValueOptions = []) -> (value: Value, changed: Bool)? {
-        attribute?.changedValue(options: options)
+    public var value: Value? { wrappedValue }
+
+    public func changedValue(options: OAGValueOptions) -> (value: Value, changed: Bool)? {
+        let value = OAGGraphGetWeakValue(base, options: options, type: Value.self)
+        guard let ptr = value.value else {
+            return nil
+        }
+        return (
+            ptr.assumingMemoryBound(to: Value.self).pointee,
+            value.flags.contains(.changed)
+        )
     }
 }
 
@@ -68,6 +72,4 @@ extension WeakAttribute: CustomStringConvertible {
 }
 
 @_silgen_name("OAGGraphGetWeakValue")
-@inline(__always)
-@inlinable
-func OAGGraphGetWeakValue<Value>(_ attribute: AnyWeakAttribute, options: OAGValueOptions = [], type: Value.Type = Value.self) -> OAGValue
+private func OAGGraphGetWeakValue<Value>(_ attribute: AnyWeakAttribute, options: OAGValueOptions = [], type: Value.Type = Value.self) -> OAGWeakValue

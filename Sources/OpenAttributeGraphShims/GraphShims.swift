@@ -8,7 +8,6 @@ public typealias OAGAttributeInfo = AGAttributeInfo
 public typealias OAGCachedValueOptions = AGCachedValueOptions
 public typealias OAGChangedValueFlags = AGChangedValueFlags
 public typealias OAGInputOptions = AGInputOptions
-public typealias OAGUniqueID = AGUniqueID
 public typealias OAGValue = AGValue
 public typealias OAGValueOptions = AGValueOptions
 public let attributeGraphEnabled = true

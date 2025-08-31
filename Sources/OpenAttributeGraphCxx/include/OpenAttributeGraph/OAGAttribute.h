@@ -141,6 +141,10 @@ OAGSubgraphRef OAGGraphGetAttributeSubgraph(OAGAttribute attribute) OAG_SWIFT_NA
 
 OAG_EXPORT
 OAG_REFINED_FOR_SWIFT
+_Nullable OAGSubgraphRef OAGGraphGetAttributeSubgraph2(OAGAttribute attribute) OAG_SWIFT_NAME(getter:OAGAttribute.subgraph2(self:));
+
+OAG_EXPORT
+OAG_REFINED_FOR_SWIFT
 const void * OAGGraphReadCachedAttribute(long hashValue, OAGTypeID bodyType, const void *bodyPointer, OAGTypeID valueType, OAGCachedValueOptions options, OAGAttribute attribute, bool unknown/*, ...*/);
 
 OAG_EXPORT

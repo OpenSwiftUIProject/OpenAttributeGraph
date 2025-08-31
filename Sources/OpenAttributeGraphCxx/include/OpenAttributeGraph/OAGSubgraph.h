@@ -87,11 +87,17 @@ OAG_EXPORT
 OAG_REFINED_FOR_SWIFT
 bool OAGSubgraphIsDirty(OAGSubgraphRef cf_subgraph, OAGAttributeFlags flags) OAG_SWIFT_NAME(OAGSubgraphRef.isDirty(self:flags:));
 
+typedef long OAGObserverID OAG_SWIFT_NAME(ObserverID);
+
 OAG_EXPORT
 OAG_REFINED_FOR_SWIFT
-OAGUniqueID OAGSubgraphAddObserver(OAGSubgraphRef cf_subgraph,
+OAGObserverID OAGSubgraphAddObserver(OAGSubgraphRef cf_subgraph,
                            const void (*function)(const void * _Nullable context OAG_SWIFT_CONTEXT) OAG_SWIFT_CC(swift),
                            const void * _Nullable context);
+
+OAG_EXPORT
+OAG_REFINED_FOR_SWIFT
+void OAGSubgraphRemoveObserver(OAGSubgraphRef cf_subgraph, OAGObserverID observerID) OAG_SWIFT_NAME(OAGSubgraphRef.removeObserver(self:_:));
 
 OAG_EXPORT
 OAG_REFINED_FOR_SWIFT

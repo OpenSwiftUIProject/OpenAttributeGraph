@@ -62,7 +62,8 @@ public:
     void apply(OAGAttributeFlags flags, OAG::ClosureFunction<void, OAGAttribute> body) const OAG_NOEXCEPT;
     
     OAGUniqueID add_observer(OAG::ClosureFunction<void> observer) const OAG_NOEXCEPT;
-    
+    void remove_observer(OAGUniqueID observerID) const OAG_NOEXCEPT;
+
     void begin_tree(OAG::AttributeID id, OAG::swift::metadata const *type, uint32_t flags) const OAG_NOEXCEPT;
     void add_tree_value(OAG::AttributeID id, OAG::swift::metadata const *type, const char* key, uint32_t flags) const OAG_NOEXCEPT;
     void end_tree(OAG::AttributeID id) const OAG_NOEXCEPT;

@@ -163,7 +163,7 @@ bool OAGSubgraphIsDirty(OAGSubgraphRef cf_subgraph, OAGAttributeFlags flags) {
     return false;
 }
 
-OAGUniqueID OAGSubgraphAddObserver(OAGSubgraphRef cf_subgraph,
+OAGObserverID OAGSubgraphAddObserver(OAGSubgraphRef cf_subgraph,
                                  const void (*function)(const void * _Nullable context OAG_SWIFT_CONTEXT) OAG_SWIFT_CC(swift),
                                  const void * _Nullable context) {
     OAG::Subgraph *subgraph = cf_subgraph->subgraph;
@@ -171,6 +171,14 @@ OAGUniqueID OAGSubgraphAddObserver(OAGSubgraphRef cf_subgraph,
         OAG::precondition_failure("accessing invalidated subgraph");
     }
     return subgraph->add_observer(OAG::ClosureFunction<void>(function, context));
+}
+
+void OAGSubgraphRemoveObserver(OAGSubgraphRef cf_subgraph, OAGObserverID observerID) {
+    OAG::Subgraph *subgraph = cf_subgraph->subgraph;
+    if (subgraph == nullptr) {
+        return;
+    }
+    subgraph->remove_observer(observerID);
 }
 
 #if !OAG_TARGET_OS_WASI

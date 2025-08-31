@@ -2,14 +2,13 @@
 //  OAGUniqueID.c
 //  OpenAttributeGraphCxx
 //
-//  Audited for iOS 18.0
+//  Audited for 6.5.1
 //  Status: Complete
 
 #include <OpenAttributeGraph/OAGUniqueID.h>
 #include <stdatomic.h>
 
 OAGUniqueID OAGMakeUniqueID(void) {
-    // Initial value is 1
-    static atomic_long counter = 1;
-    return counter++;
+    static atomic_ulong counter = 1;
+    return atomic_fetch_add_explicit(&counter, 1, memory_order_relaxed);
 }

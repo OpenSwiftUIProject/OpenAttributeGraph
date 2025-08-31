@@ -2,14 +2,14 @@
 //  OAGUniqueID.h
 //  OpenAttributeGraphCxx
 //
-//  Audited for iOS 18.0
+//  Audited for 6.5.1
 //  Status: Complete
 
 #ifndef OAGUniqueID_h
 #define OAGUniqueID_h
 
 #include <OpenAttributeGraph/OAGBase.h>
-typedef long OAGUniqueID;
+typedef u_long OAGUniqueID OAG_SWIFT_NAME(UniqueID);
 
 OAG_EXTERN_C_BEGIN
 OAG_EXPORT

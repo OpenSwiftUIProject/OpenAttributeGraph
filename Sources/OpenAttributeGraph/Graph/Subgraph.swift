@@ -15,7 +15,7 @@ extension Subgraph {
 }
 
 extension Subgraph {
-    public func addObserver(_ observer: () -> Void) -> Int {
+    public func addObserver(_ observer: @escaping () -> Void) -> Int {
         Subgraph.addObserver(self, observer: observer)
     }
     
@@ -65,5 +65,5 @@ extension Subgraph {
     private static func apply(_ graph: Subgraph, flags: Flags, callback: (AnyAttribute) -> Void)
     
     @_silgen_name("OAGSubgraphAddObserver")
-    private static func addObserver(_ graph: Subgraph, observer: () -> Void) -> Int
+    private static func addObserver(_ graph: Subgraph, observer: @escaping () -> Void) -> Int
 }

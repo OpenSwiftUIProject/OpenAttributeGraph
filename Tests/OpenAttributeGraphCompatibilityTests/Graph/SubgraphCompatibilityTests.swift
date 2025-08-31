@@ -28,4 +28,59 @@ struct SubgraphCompatibilityTests {
             Subgraph.endTreeElement(value: value)
         }
     }
+
+    @Suite
+    struct ObserverTests {
+        @Test
+        func observerNotifiedOnSubgraphDestroyed() {
+            var notifiedCount = 0
+            autoreleasepool {
+                let graph = Graph()
+
+                autoreleasepool {
+                    let subgraph = Subgraph(graph: graph)
+                    let _ = subgraph.addObserver {
+                        notifiedCount += 1
+                    }
+                }
+
+                #expect(notifiedCount == 1)
+            }
+
+            // Observers aren't notified more than once
+            #expect(notifiedCount == 1)
+        }
+
+        @Test
+        func observerNotifiedOnGraphDestroyed() {
+            var notifiedCount = 0
+            autoreleasepool {
+                let graph = Graph()
+                let subgraph = Subgraph(graph: graph)
+                let _ = subgraph.addObserver {
+                    notifiedCount += 1
+                }
+
+                #expect(notifiedCount == 0)
+            }
+
+            #expect(notifiedCount == 1)
+        }
+
+        @Test
+        func removedObserverNotNotified() {
+            var notifiedCount = 0
+            autoreleasepool {
+                let graph = Graph()
+                let subgraph = Subgraph(graph: graph)
+                let observerID = subgraph.addObserver {
+                    notifiedCount += 1
+                }
+                subgraph.removeObserver(observerID)
+            }
+
+            #expect(notifiedCount == 0)
+        }
+
+    }
 }

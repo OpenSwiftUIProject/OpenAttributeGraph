@@ -34,6 +34,10 @@ OAGUniqueID OAG::Subgraph::add_observer(OAG::ClosureFunction<void> observer) con
     return OAGMakeUniqueID();
 }
 
+void OAG::Subgraph::remove_observer(OAGUniqueID observerID) const OAG_NOEXCEPT {
+    // TODO
+}
+
 void OAG::Subgraph::begin_tree(OAG::AttributeID id, OAG::swift::metadata const* type, unsigned int flags) const OAG_NOEXCEPT {
     // TODO
 }

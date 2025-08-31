@@ -159,6 +159,21 @@ OAGGraphRef OAGGraphGetAttributeGraph(OAGAttribute attribute) {
 }
 
 OAGSubgraphRef OAGGraphGetAttributeSubgraph(OAGAttribute attribute) {
+    OAGSubgraphRef subgraph = OAGGraphGetAttributeSubgraph2(attribute);
+    if (subgraph == nullptr) {
+        OAG::precondition_failure("no subgraph");
+    }
+    return subgraph;
+}
+
+_Nullable OAGSubgraphRef OAGGraphGetAttributeSubgraph2(OAGAttribute attribute) {
+    auto attribute_id = OAG::AttributeID(attribute);
+//    attribute_id.validate_data_offset();
+//    auto subgraph = attribute_id.subgraph();
+//    if (subgraph == nullptr) {
+//        OAG::precondition_failure("internal error");
+//    }
+//    return subgraph->to_cf();
     // TODO
     return nullptr;
 }

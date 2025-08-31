@@ -11,7 +11,7 @@
 
 OAG_ASSUME_NONNULL_BEGIN
 
-typedef struct OAGWeakAttribute {
+typedef OAG_SWIFT_STRUCT struct {
     struct {
         OAGAttribute identifier;
         uint32_t seed;

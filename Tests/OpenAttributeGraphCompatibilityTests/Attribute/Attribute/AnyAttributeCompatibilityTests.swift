@@ -8,8 +8,8 @@ import Testing
 // swift-testing framework will crash here on Linux
 // Report to upstream for investigation when we bump to 5.10
 #if canImport(Darwin)
-//@Suite(.disabled(if: !compatibilityTestEnabled, "Attribute is not implemented"), .graphScope)
-@Suite(.disabled("Skip flaky CI tests after #154 temporary, See more info on #157"), .graphScope)
+@MainActor
+@Suite(.disabled(if: !compatibilityTestEnabled, "Attribute is not implemented"), .graphScope)
 struct AnyAttributeCompatibilityTests {
     @Test
     func constantValue() throws {
@@ -103,6 +103,14 @@ struct AnyAttributeCompatibilityTests {
     func subgraph() {
         let identifier = Attribute(value: 0).identifier
         #expect(identifier.subgraph2 != nil)
+    }
+
+    @Test
+    func wasModified() {
+        let value = Attribute(value: 0)
+        value.value = 3
+        #expect(AnyAttribute.currentWasModified == false)
+        // TODO: currentWasModified true logic test case
     }
     #endif
 }

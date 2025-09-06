@@ -2,7 +2,9 @@ public import OpenAttributeGraphCxx
 
 /// A reactive property wrapper that automatically tracks dependencies and manages value updates.
 ///
-/// `Attribute` is the core building block of the OpenAttributeGraph reactive system. When you wrap a property with `@Attribute`, it becomes reactive and can automatically track dependencies and propagate changes.
+/// `Attribute` is the core building block of the OpenAttributeGraph reactive system. When you wrap a
+/// property with `@Attribute`, it becomes reactive and can automatically track dependencies and
+/// propagate changes.
 ///
 ///     @Attribute var count: Int = 0
 ///     @Attribute var doubledCount: Int = count * 2

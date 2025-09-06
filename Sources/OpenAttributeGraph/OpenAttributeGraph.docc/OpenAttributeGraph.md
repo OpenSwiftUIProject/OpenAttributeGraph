@@ -14,10 +14,16 @@ The framework is designed for high performance and powers the reactive updates t
 
 - <doc:Architecture>
 
-### Core Components
+### Attributes
 
-- <doc:CoreComponents>
+- <doc:Reactive-Attributes>
+- <doc:Computed-Attributes>
+- <doc:Attribute-References>
 
-### Advanced Topics
+### Graph Management
 
-- <doc:AdvancedTopics>
+- <doc:Dependency-Graphs>
+
+### Runtime Support
+
+- <doc:Type-Introspection>

@@ -6,40 +6,9 @@
 
 [![codecov](https://codecov.io/gh/OpenSwiftUIProject/OpenAttributeGraph/graph/badge.svg?token=W1KDSUMWJW)](https://codecov.io/gh/OpenSwiftUIProject/OpenAttributeGraph)
 
-OpenAttributeGraph is an open source implementation of Apple's Private framework - AttributeGraph
+OpenAttributeGraph is an open source implementation of Apple's Private framework - AttributeGraph which is a high performance computing engine written in C++ and Swift.
 
-AttributeGraph is a high performance computing engine written in C++ and Swift.
-
-And it powers the underlying computing and diffing of SwiftUI.
-
-## Architecture
-
-OpenAttributeGraph consists of three main components:
-
-### Attribute Part
-The **Attribute** system provides a reactive property wrapper that automatically tracks dependencies and manages value updates. Key features include:
-- `Attribute<Value>` - A property wrapper for reactive values with automatic dependency tracking
-- `AnyAttribute` - Type-erased attribute for runtime flexibility  
-- **Rules** - Transform attributes through `Rule` and `StatefulRule` protocols
-- **Weak/Optional** - Support for optional and weak attribute references
-- **Body system** - Efficient value computation and caching mechanisms
-
-### Graph Part
-The **Graph** manages the dependency network and orchestrates updates across attributes. Core functionality includes:
-- `Graph` - Central coordinator for attribute relationships and update cycles
-- `Subgraph` - Scoped computation contexts for isolated attribute groups
-- **Invalidation tracking** - Efficient change propagation through the dependency graph
-- **Update scheduling** - Optimized batch processing of attribute changes
-- **Profiling support** - Performance monitoring and debugging capabilities
-
-### Runtime Part
-The **Runtime** provides low-level type introspection and memory management utilities. This includes:
-- `Metadata` - Swift runtime type information and reflection capabilities
-- **Type comparison** - Efficient value equality checking across different types  
-- **Memory layout** - Safe pointer manipulation and offset calculations
-- **Tuple handling** - Runtime support for tuple types and field access
-
-> **Note**: The Runtime part leverages techniques similar to those found in [wickwirew/Runtime](https://github.com/wickwirew/Runtime) for Swift runtime introspection.
+And it powers the underlying computing and diffing of [OpenSwiftUI](https://github.com/OpenSwiftUIProject/OpenSwiftUI).
 
 | **CI Status** |
 |---|
@@ -53,6 +22,8 @@ The project is for the following purposes:
 - Diagnose and debug AG issues on Apple platform
 
 Currently, this project is in early development.
+
+Please refer to the [documentation](https://swiftpackageindex.com/OpenSwiftUIProject/OpenAttributeGraph/main/documentation/openattributegraph) for more information on it.
 
 ## Usage
 

@@ -9,6 +9,7 @@ import Testing
 struct ForwardListTests {
 
     @Test("Initialize empty list")
+    @available(iOS 16.4, *)
     func initEmpty() {
         let list = util.UInt64ForwardList.create()
         defer {
@@ -19,6 +20,7 @@ struct ForwardListTests {
     }
 
     @Test("Push element")
+    @available(iOS 16.4, *)
     func pushElement() {
         let list = util.UInt64ForwardList.create()
         defer {
@@ -34,6 +36,7 @@ struct ForwardListTests {
     }
 
     @Test("Push multiple elements")
+    @available(iOS 16.4, *)
     func pushMultipleElements() {
         let list = util.UInt64ForwardList.create()
         defer {
@@ -49,6 +52,7 @@ struct ForwardListTests {
     }
 
     @Test("Remove element")
+    @available(iOS 16.4, *)
     func removeElement() {
         let list = util.UInt64ForwardList.create()
         defer {
@@ -65,6 +69,7 @@ struct ForwardListTests {
     }
     
     @Test("Sequential operations")
+    @available(iOS 16.4, *)
     func sequentialOperations() {
         let list = util.UInt64ForwardList.create()
         defer {

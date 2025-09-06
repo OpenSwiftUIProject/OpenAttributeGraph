@@ -11,6 +11,7 @@ struct HeapTests {
     let nodeSize = 16
 
     @Test("Initializing with default arguments")
+    @available(iOS 16.4, *)
     func initDefault() {
         let heap = util.Heap.create(nil, 0, 0)
         defer {
@@ -23,6 +24,7 @@ struct HeapTests {
     }
     
     @Test("Initializing with custom increment")
+    @available(iOS 16.4, *)
     func initWithCustomIncrement() {
         let customIncrement = 4096
         let heap = util.Heap.create(nil, 0, customIncrement)
@@ -36,6 +38,7 @@ struct HeapTests {
     }
 
     @Test("Creating heap with initial buffer")
+    @available(iOS 16.4, *)
     func createWithInitialBuffer() {
         var buffer = Array<UInt8>(repeating: 0, count: 1024)
         
@@ -53,6 +56,7 @@ struct HeapTests {
     }
 
     @Test("Reset heap functionality")
+    @available(iOS 16.4, *)
     func resetHeap() {
         let heap = util.Heap.create(nil, 0, 1024)
         defer {
@@ -69,6 +73,7 @@ struct HeapTests {
     }
 
     @Test("Print heap debug information")
+    @available(iOS 16.4, *)
     func printHeapInfo() {
         let heap = util.Heap.create(nil, 0, 1024)
         defer {

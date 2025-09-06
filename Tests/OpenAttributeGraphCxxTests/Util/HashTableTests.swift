@@ -9,6 +9,7 @@ import Testing
 struct HashTableTests {
 
     @Test("Initialize empty table")
+    @available(iOS 16.4, *)
     func initEmpty() {
         let table = util.UntypedTable.create()
         defer {
@@ -20,6 +21,7 @@ struct HashTableTests {
     }
 
     @Test("Insert entry")
+    @available(iOS 16.4, *)
     func insertEntry() {
         class Value {
             let prop: String
@@ -51,6 +53,7 @@ struct HashTableTests {
     }
     
     @Test("Insert multiple entries")
+    @available(iOS 16.4, *)
     func insertMultipleEntries() {
         class Value {
             let prop: String
@@ -104,6 +107,7 @@ struct HashTableTests {
     }
     
     @Test("Remove entry")
+    @available(iOS 16.4, *)
     func removeEntry() {
         class Value {
             let prop: String
@@ -140,6 +144,7 @@ struct HashTableTests {
     }
 
     @Test("Remove from empty table")
+    @available(iOS 16.4, *)
     func removeFromEmptyTable() {
         let table = util.UntypedTable.create()
         defer {

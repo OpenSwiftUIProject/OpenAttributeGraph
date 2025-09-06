@@ -6,11 +6,9 @@
 
 [![codecov](https://codecov.io/gh/OpenSwiftUIProject/OpenAttributeGraph/graph/badge.svg?token=W1KDSUMWJW)](https://codecov.io/gh/OpenSwiftUIProject/OpenAttributeGraph)
 
-OpenAttributeGraph is an open source implementation of Apple's Private framework - AttributeGraph
+OpenAttributeGraph is an open source implementation of Apple's Private framework - AttributeGraph which is a high performance computing engine written in C++ and Swift.
 
-AttributeGraph is a high performance computing engine written in C++ and Swift.
-
-And it powers the underlying computing and diffing of SwiftUI.
+And it powers the underlying computing and diffing of [OpenSwiftUI](https://github.com/OpenSwiftUIProject/OpenSwiftUI).
 
 | **CI Status** |
 |---|
@@ -24,6 +22,8 @@ The project is for the following purposes:
 - Diagnose and debug AG issues on Apple platform
 
 Currently, this project is in early development.
+
+Please refer to the [documentation](https://swiftpackageindex.com/OpenSwiftUIProject/OpenAttributeGraph/main/documentation/openattributegraph) for more information on it.
 
 ## Usage
 

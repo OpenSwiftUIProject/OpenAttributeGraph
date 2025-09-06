@@ -31,10 +31,14 @@ public func forEachField(
 }
 
 extension Metadata: Swift.Hashable, Swift.CustomStringConvertible {
+    /// Creates metadata from a Swift type.
+    ///
+    /// - Parameter type: The Swift type to create metadata for
     public init(_ type: any Any.Type) {
         self.init(rawValue: unsafeBitCast(type, to: UnsafePointer<_Metadata>.self))
     }
 
+    /// The Swift type represented by this metadata.
     public var type: any Any.Type {
         unsafeBitCast(rawValue, to: Any.Type.self)
     }

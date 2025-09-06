@@ -5,6 +5,7 @@
 //  Audited for RELEASE_2021
 //  Status: Complete
 
+/// An optional attribute wrapper that may or may not contain a value.
 @frozen
 @propertyWrapper
 @dynamicMemberLookup

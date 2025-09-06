@@ -1,16 +1,16 @@
 # Architecture
 
-Understanding OpenAttributeGraph's three-layer architecture: Attributes, Graph, and Runtime.
+Understanding OpenAttributeGraph's architecture: Attributes, Graph, and Runtime.
 
 ## Overview
 
-OpenAttributeGraph is built around a three-layer architecture that provides a complete reactive programming system. Each layer serves a specific purpose in the overall framework, working together to deliver high-performance reactive updates.
+OpenAttributeGraph is built around an architecture that provides a complete reactive programming system. Each layer serves a specific purpose in the overall framework, working together to deliver high-performance reactive updates.
 
-## The Three Layers
+## Core Architecture
 
 ### Attribute Layer
 
-The **Attribute layer** forms the foundation of the reactive system, providing the building blocks for trackable, reactive values.
+The Attribute layer forms the foundation of the reactive system, providing the building blocks for trackable, reactive values.
 
 #### Core Concepts
 
@@ -154,5 +154,3 @@ Each layer provides debugging capabilities:
 - Attribute layer: Inspect individual attribute values and states
 - Graph layer: Visualize dependency relationships and update cycles  
 - Runtime layer: Examine type metadata and memory layout
-
-The ``DebugServer`` provides a unified interface for debugging across all layers.

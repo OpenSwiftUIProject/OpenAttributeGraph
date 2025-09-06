@@ -10,7 +10,7 @@ The framework is designed for high performance and powers the reactive updates t
 
 ## Topics
 
-### Architecture
+### Essentials
 
 - <doc:Architecture-article>
 

@@ -12,23 +12,21 @@ public import OpenAttributeGraphCxx
 /// Rules provide a way to create derived attributes that compute their values based on other attributes.
 /// When any dependency changes, the rule will automatically recompute its value.
 ///
-/// ```swift
-/// struct DoubledRule: Rule {
-///     typealias Value = Int
-///     let source: Attribute<Int>
-///     
-///     var value: Int {
-///         source.wrappedValue * 2
+///     struct DoubledRule: Rule {
+///         typealias Value = Int
+///         let source: Attribute<Int>
+///         
+///         var value: Int {
+///             source.wrappedValue * 2
+///         }
 ///     }
-/// }
 ///
-/// @Attribute var count: Int = 5
-/// let doubled = Attribute(DoubledRule(source: $count))
-/// // doubled.wrappedValue == 10
+///     @Attribute var count: Int = 5
+///     let doubled = Attribute(DoubledRule(source: $count))
+///     // doubled.wrappedValue == 10
 ///
-/// count = 10
-/// // doubled.wrappedValue automatically becomes 20
-/// ```
+///     count = 10
+///     // doubled.wrappedValue automatically becomes 20
 ///
 /// ## Key Features
 ///
@@ -65,12 +63,10 @@ public protocol Rule: _AttributeBody {
     /// the result. The attribute graph will automatically track these dependencies and
     /// invalidate this rule when any dependency changes.
     ///
-    /// ```swift
-    /// var value: Int {
-    ///     // Dependencies are automatically tracked
-    ///     return source1.wrappedValue + source2.wrappedValue
-    /// }
-    /// ```
+    ///     var value: Int {
+    ///         // Dependencies are automatically tracked
+    ///         return source1.wrappedValue + source2.wrappedValue
+    ///     }
     var value: Value { get }
 }
 

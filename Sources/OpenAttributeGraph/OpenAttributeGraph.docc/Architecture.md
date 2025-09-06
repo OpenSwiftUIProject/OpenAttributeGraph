@@ -16,24 +16,20 @@ The **Attribute layer** forms the foundation of the reactive system, providing t
 
 **Property Wrapper Design**: At its heart, ``Attribute`` is a property wrapper that makes any Swift value reactive. When you wrap a value with `@Attribute`, it automatically gains dependency tracking capabilities:
 
-```swift
-@Attribute var count: Int = 0
-```
+    @Attribute var count: Int = 0
 
 **Type Erasure**: ``AnyAttribute`` provides type-erased access to attributes, enabling runtime flexibility while maintaining type safety where possible.
 
 **Rule-Based Transformations**: The ``Rule`` and ``StatefulRule`` protocols allow you to create computed attributes that automatically update when their dependencies change:
 
-```swift
-struct DoubledRule: Rule {
-    typealias Value = Int
-    let source: Attribute<Int>
-    
-    func value() -> Int {
-        source.wrappedValue * 2
+    struct DoubledRule: Rule {
+        typealias Value = Int
+        let source: Attribute<Int>
+        
+        func value() -> Int {
+            source.wrappedValue * 2
+        }
     }
-}
-```
 
 **Reference Semantics**: ``WeakAttribute`` and ``OptionalAttribute`` provide safe ways to handle optional and weak references within the attribute system.
 
@@ -84,10 +80,8 @@ The **Runtime layer** provides the low-level type introspection and memory manag
 
 This runtime introspection enables features like automatic KeyPath-based attribute access:
 
-```swift
-@Attribute var person: Person = Person(name: "Alice", age: 30)
-let nameAttribute = person.name  // Automatic attribute creation via KeyPath
-```
+    @Attribute var person: Person = Person(name: "Alice", age: 30)
+    let nameAttribute = person.name  // Automatic attribute creation via KeyPath
 
 #### Memory Management
 

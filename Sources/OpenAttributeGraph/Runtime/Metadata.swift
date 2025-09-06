@@ -36,10 +36,8 @@ extension Metadata: Swift.Hashable, Swift.CustomStringConvertible {
     /// This initializer allows you to create runtime metadata for any Swift type,
     /// which can then be used for type introspection and comparison.
     ///
-    /// ```swift
-    /// let intMetadata = Metadata(Int.self)
-    /// let stringMetadata = Metadata(String.self)
-    /// ```
+    ///     let intMetadata = Metadata(Int.self)
+    ///     let stringMetadata = Metadata(String.self)
     ///
     /// - Parameter type: The Swift type to create metadata for
     public init(_ type: any Any.Type) {
@@ -51,10 +49,8 @@ extension Metadata: Swift.Hashable, Swift.CustomStringConvertible {
     /// This property allows you to convert from runtime metadata back to a Swift type,
     /// enabling dynamic type operations.
     ///
-    /// ```swift
-    /// let metadata = Metadata(String.self)
-    /// let type = metadata.type // Returns String.Type
-    /// ```
+    ///     let metadata = Metadata(String.self)
+    ///     let type = metadata.type // Returns String.Type
     public var type: any Any.Type {
         unsafeBitCast(rawValue, to: Any.Type.self)
     }

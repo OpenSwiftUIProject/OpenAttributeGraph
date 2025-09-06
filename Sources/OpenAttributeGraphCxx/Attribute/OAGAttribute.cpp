@@ -9,9 +9,14 @@
 
 const OAGAttribute OAGAttributeNil = OAGAttribute(OAG::AttributeID::Kind::Null);
 
-OAGAttribute OAGGraphGetCurrentAttribute() {
+OAGAttribute OAGGraphGetCurrentAttribute(void) {
     // TODO
     return OAGAttributeNil;
+}
+
+bool OAGGraphCurrentAttributeWasModified(void) {
+    // TODO
+    return false;
 }
 
 namespace {

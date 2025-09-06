@@ -31,6 +31,10 @@ OAGAttribute OAGGraphGetCurrentAttribute(void);
 
 OAG_EXPORT
 OAG_REFINED_FOR_SWIFT
+bool OAGGraphCurrentAttributeWasModified(void);
+
+OAG_EXPORT
+OAG_REFINED_FOR_SWIFT
 OAGAttribute OAGGraphCreateOffsetAttribute(OAGAttribute attribute, long offset) OAG_SWIFT_NAME(OAGAttribute.create(self:offset:));
 
 OAG_EXPORT

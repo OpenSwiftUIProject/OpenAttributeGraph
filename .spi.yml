@@ -1,4 +1,8 @@
 version: 1
 builder:
   configs:
-    - documentation_targets: [OpenAttributeGraph]
+    - documentation_targets:
+        - OpenAttributeGraph
+        - OpenAttributeGraphCxx
+      custom_documentation_parameters:
+        - --enable-experimental-combined-documentation

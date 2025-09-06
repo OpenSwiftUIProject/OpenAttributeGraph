@@ -135,7 +135,7 @@ if libraryEvolutionCondition {
 
 // MARK: - Targets
 
-let openGraphTarget = Target.target(
+let openAttributeGraphTarget = Target.target(
     name: "OpenAttributeGraph",
     dependencies: ["OpenAttributeGraphCxx"],
     cSettings: sharedCSettings,
@@ -144,7 +144,7 @@ let openGraphTarget = Target.target(
 // FIXME: Merge into one target
 // OpenAttributeGraph is a C++ & Swift mix target.
 // The SwiftPM support for such usage is still in progress.
-let openGraphSPITarget = Target.target(
+let openAttributeGraphSPITarget = Target.target(
     name: "OpenAttributeGraphCxx",
     cSettings: sharedCSettings + [
         .define("__COREFOUNDATION_FORSWIFTFOUNDATIONONLY__", to: "1", .when(platforms: .nonDarwinPlatforms)),
@@ -153,7 +153,7 @@ let openGraphSPITarget = Target.target(
         .linkedLibrary("z"),
     ]
 )
-let openGraphShimsTarget = Target.target(
+let openAttributeGraphShimsTarget = Target.target(
     name: "OpenAttributeGraphShims",
     cSettings: sharedCSettings,
     swiftSettings: sharedSwiftSettings
@@ -161,7 +161,7 @@ let openGraphShimsTarget = Target.target(
 
 // MARK: - Test Targets
 
-let openGraphTestsTarget = Target.testTarget(
+let openAttributeGraphTestsTarget = Target.testTarget(
     name: "OpenAttributeGraphTests",
     dependencies: [
         "OpenAttributeGraph",
@@ -170,7 +170,7 @@ let openGraphTestsTarget = Target.testTarget(
     cSettings: sharedCSettings,
     swiftSettings: sharedSwiftSettings
 )
-let openGraphCxxTestsTarget = Target.testTarget(
+let openAttributeGraphCxxTestsTarget = Target.testTarget(
     name: "OpenAttributeGraphCxxTests",
     dependencies: [
         "OpenAttributeGraphCxx",
@@ -178,7 +178,7 @@ let openGraphCxxTestsTarget = Target.testTarget(
     exclude: ["README.md"],
     swiftSettings: sharedSwiftSettings + [.interoperabilityMode(.Cxx)]
 )
-let openGraphShimsTestsTarget = Target.testTarget(
+let openAttributeGraphShimsTestsTarget = Target.testTarget(
     name: "OpenAttributeGraphShimsTests",
     dependencies: [
         "OpenAttributeGraphShims",
@@ -187,7 +187,7 @@ let openGraphShimsTestsTarget = Target.testTarget(
     cSettings: sharedCSettings,
     swiftSettings: sharedSwiftSettings
 )
-let openGraphCompatibilityTestsTarget = Target.testTarget(
+let openAttributeGraphCompatibilityTestsTarget = Target.testTarget(
     name: "OpenAttributeGraphCompatibilityTests",
     dependencies: [
         .product(name: "Numerics", package: "swift-numerics"),
@@ -209,14 +209,14 @@ let package = Package(
         .package(url: "https://github.com/apple/swift-numerics", from: "1.0.2"),
     ],
     targets: [
-        openGraphTarget,
-        openGraphSPITarget,
-        openGraphShimsTarget,
+        openAttributeGraphTarget,
+        openAttributeGraphSPITarget,
+        openAttributeGraphShimsTarget,
 
-        openGraphTestsTarget,
-        openGraphCxxTestsTarget,
-        openGraphShimsTestsTarget,
-        openGraphCompatibilityTestsTarget,
+        openAttributeGraphTestsTarget,
+        openAttributeGraphCxxTestsTarget,
+        openAttributeGraphShimsTestsTarget,
+        openAttributeGraphCompatibilityTestsTarget,
     ],
     cxxLanguageStandard: .cxx20
 )
@@ -253,7 +253,7 @@ if attributeGraphCondition {
         privateFrameworkRepo = Package.Dependency.package(url: "https://github.com/OpenSwiftUIProject/DarwinPrivateFrameworks.git", branch: "main")
     }
     package.dependencies.append(privateFrameworkRepo)
-    openGraphShimsTarget.addAGSettings()
+    openAttributeGraphShimsTarget.addAGSettings()
     
     let agVersion = Context.environment["DARWIN_PRIVATE_FRAMEWORKS_TARGET_RELEASE"].flatMap { Int($0) } ?? 2024
     package.platforms = switch agVersion {
@@ -262,15 +262,15 @@ if attributeGraphCondition {
         default: nil
     }
 } else {
-    openGraphShimsTarget.dependencies.append("OpenAttributeGraph")
+    openAttributeGraphShimsTarget.dependencies.append("OpenAttributeGraph")
     package.platforms = [.iOS(.v13), .macOS(.v10_15), .macCatalyst(.v13), .tvOS(.v13), .watchOS(.v5)]
 }
 
 let compatibilityTestCondition = envEnable("OPENATTRIBUTEGRAPH_COMPATIBILITY_TEST")
 if compatibilityTestCondition && attributeGraphCondition {
-    openGraphCompatibilityTestsTarget.addCompatibilitySettings()
+    openAttributeGraphCompatibilityTestsTarget.addCompatibilitySettings()
 } else {
-    openGraphCompatibilityTestsTarget.dependencies.append("OpenAttributeGraph")
+    openAttributeGraphCompatibilityTestsTarget.dependencies.append("OpenAttributeGraph")
 }
 
 extension [Platform] {

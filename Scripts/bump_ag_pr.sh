@@ -64,7 +64,7 @@ while [[ $# -gt 0 ]]; do
 done
 
 SCRIPT_ROOT="$(dirname $(dirname $(filepath $0)))"
-OAG_REPO_DIR="$SCRIPT_ROOT/.og_repo"
+OAG_REPO_DIR="$SCRIPT_ROOT/.oag_repo"
 OPENATTRIBUTEGRAPH_ROOT="$OAG_REPO_DIR"
 AG_REPO_DIR="$SCRIPT_ROOT/.ag_repo"
 

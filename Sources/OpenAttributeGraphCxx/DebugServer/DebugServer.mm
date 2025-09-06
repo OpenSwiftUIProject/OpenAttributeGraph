@@ -30,7 +30,7 @@
 
 OAG_EXTERN_C_BEGIN
 // DYLD_INTERPOSE does not work. Directly use the hook one here to match the semantics.
-bool og_variant_has_internal_diagnostics(const char *subsystem);
+bool oag_variant_has_internal_diagnostics(const char *subsystem);
 OAG_EXTERN_C_END
 
 // MARK: DebugServer public API Implementation
@@ -265,7 +265,7 @@ OAG::DebugServer* _Nullable OAG::DebugServer::start(OAGDebugServerMode mode) {
     if (
         (mode & OAGDebugServerModeValid)
         && !OAG::DebugServer::has_shared_server()
-        && og_variant_has_internal_diagnostics("org.OpenSwiftUIProject.OpenAttributeGraph")
+        && oag_variant_has_internal_diagnostics("org.OpenSwiftUIProject.OpenAttributeGraph")
     ) {
         _shared_server = new DebugServer(mode);
     }

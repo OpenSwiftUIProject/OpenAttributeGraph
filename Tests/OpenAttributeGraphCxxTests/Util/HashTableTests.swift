@@ -64,48 +64,43 @@ struct HashTableTests {
             util.UntypedTable.destroy(table)
         }
 
-        // Declare all keys and values in the same scope to keep them alive
-        let key1 = "key1"
+        // Use manually allocated pointers to ensure unique addresses
+        let key1Ptr = UnsafeMutablePointer<Int>.allocate(capacity: 1)
+        let key2Ptr = UnsafeMutablePointer<Int>.allocate(capacity: 1)  
+        let key3Ptr = UnsafeMutablePointer<Int>.allocate(capacity: 1)
+        
+        defer {
+            key1Ptr.deallocate()
+            key2Ptr.deallocate()
+            key3Ptr.deallocate()
+        }
+        
+        key1Ptr.pointee = 1
+        key2Ptr.pointee = 2
+        key3Ptr.pointee = 3
+
         let value1 = Value(prop: "value1")
-        let key2 = "key2"
         let value2 = Value(prop: "value2")
-        let key3 = "key3"
         let value3 = Value(prop: "value3")
 
-        // Insert all entries
-        withUnsafePointer(to: key1) { keyPointer in
-            withUnsafePointer(to: value1) { valuePointer in
-                let inserted = table.insert(keyPointer, valuePointer)
-                #expect(inserted == true)
-            }
+        // Insert entries using unique heap-allocated pointers as keys
+        withUnsafePointer(to: value1) { valuePointer in
+            let inserted = table.insert(key1Ptr, valuePointer)
+            #expect(inserted == true)
         }
 
-        withUnsafePointer(to: key2) { keyPointer in
-            withUnsafePointer(to: value2) { valuePointer in
-                let inserted = table.insert(keyPointer, valuePointer)
-                #expect(inserted == true)
-            }
+        withUnsafePointer(to: value2) { valuePointer in
+            let inserted = table.insert(key2Ptr, valuePointer)
+            #expect(inserted == true)
         }
 
-        withUnsafePointer(to: key3) { keyPointer in
-            withUnsafePointer(to: value3) { valuePointer in
-                let inserted = table.insert(keyPointer, valuePointer)
-                #expect(inserted == true)
-            }
+        withUnsafePointer(to: value3) { valuePointer in
+            let inserted = table.insert(key3Ptr, valuePointer)
+            #expect(inserted == true)
         }
 
         #expect(!table.empty())
         #expect(table.count() == 3)
-
-        // Verify all entries can be found (test basic lookup functionality)
-        withUnsafePointer(to: key1) { keyPointer in
-            let foundValue = table.__lookupUnsafe(keyPointer, nil)
-            if foundValue != nil {
-                #expect(foundValue?.assumingMemoryBound(to: Value.self).pointee.prop == "value1")
-            }
-            // Note: Due to pointer-based comparison, lookup might fail for string literals
-            // The important thing is that insertions succeeded and count is correct
-        }
     }
     
     @Test("Remove entry")

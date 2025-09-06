@@ -31,7 +31,7 @@ public final class DebugClient {
     }
 
     private var connection: NWConnection?
-    private let queue = DispatchQueue(label: "org.openswiftuiproject.opengraph.debugclient")
+    private let queue = DispatchQueue(label: "org.openswiftuiproject.openattributegraph.debugclient")
 
     public init() {}
 

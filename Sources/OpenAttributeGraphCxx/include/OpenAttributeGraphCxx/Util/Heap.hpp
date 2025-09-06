@@ -9,7 +9,7 @@
 #define OPENATTRIBUTEGRAPH_CXX_UTIL_HEAP_HPP
 
 #include <OpenAttributeGraph/OAGBase.h>
-#include <swift/bridging>
+#include <OpenAttributeGraphCxx/SwiftBridging.h>
 
 OAG_ASSUME_NONNULL_BEGIN
 

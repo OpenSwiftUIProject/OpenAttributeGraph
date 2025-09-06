@@ -7,9 +7,70 @@
 
 public import OpenAttributeGraphCxx
 
+/// A protocol for defining computed attributes that automatically update when dependencies change.
+///
+/// Rules provide a way to create derived attributes that compute their values based on other attributes.
+/// When any dependency changes, the rule will automatically recompute its value.
+///
+/// ```swift
+/// struct DoubledRule: Rule {
+///     typealias Value = Int
+///     let source: Attribute<Int>
+///     
+///     var value: Int {
+///         source.wrappedValue * 2
+///     }
+/// }
+///
+/// @Attribute var count: Int = 5
+/// let doubled = Attribute(DoubledRule(source: $count))
+/// // doubled.wrappedValue == 10
+///
+/// count = 10
+/// // doubled.wrappedValue automatically becomes 20
+/// ```
+///
+/// ## Key Features
+///
+/// - **Automatic dependency tracking**: Dependencies are discovered automatically when accessed
+/// - **Lazy evaluation**: Values are only computed when needed
+/// - **Caching**: Results are cached until dependencies change
+/// - **Efficient updates**: Only recomputes when dependencies actually change
+///
+/// ## Implementation Requirements
+///
+/// Types conforming to `Rule` must provide:
+/// - `Value`: The type of value produced by the rule
+/// - `value`: A computed property that returns the current value
+/// - `initialValue`: An optional initial value (defaults to `nil`)
+///
+/// ## Advanced Usage
+///
+/// For rules that need to maintain state between evaluations, see ``StatefulRule``.
+/// For rules that can be cached based on their content, make your rule type conform to `Hashable`.
 public protocol Rule: _AttributeBody {
+    /// The type of value produced by this rule.
     associatedtype Value
+    
+    /// An optional initial value to use before the rule is first evaluated.
+    ///
+    /// If `nil`, the rule will be evaluated immediately when the attribute is created.
+    /// If non-`nil`, this value will be used initially, and the rule will be evaluated
+    /// on the next update cycle.
     static var initialValue: Value? { get }
+    
+    /// Computes and returns the current value of the rule.
+    ///
+    /// This property should access any attributes or other dependencies needed to compute
+    /// the result. The attribute graph will automatically track these dependencies and
+    /// invalidate this rule when any dependency changes.
+    ///
+    /// ```swift
+    /// var value: Int {
+    ///     // Dependencies are automatically tracked
+    ///     return source1.wrappedValue + source2.wrappedValue
+    /// }
+    /// ```
     var value: Value { get }
 }
 

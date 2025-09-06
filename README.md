@@ -12,6 +12,35 @@ AttributeGraph is a high performance computing engine written in C++ and Swift.
 
 And it powers the underlying computing and diffing of SwiftUI.
 
+## Architecture
+
+OpenAttributeGraph consists of three main components:
+
+### Attribute Part
+The **Attribute** system provides a reactive property wrapper that automatically tracks dependencies and manages value updates. Key features include:
+- `Attribute<Value>` - A property wrapper for reactive values with automatic dependency tracking
+- `AnyAttribute` - Type-erased attribute for runtime flexibility  
+- **Rules** - Transform attributes through `Rule` and `StatefulRule` protocols
+- **Weak/Optional** - Support for optional and weak attribute references
+- **Body system** - Efficient value computation and caching mechanisms
+
+### Graph Part
+The **Graph** manages the dependency network and orchestrates updates across attributes. Core functionality includes:
+- `Graph` - Central coordinator for attribute relationships and update cycles
+- `Subgraph` - Scoped computation contexts for isolated attribute groups
+- **Invalidation tracking** - Efficient change propagation through the dependency graph
+- **Update scheduling** - Optimized batch processing of attribute changes
+- **Profiling support** - Performance monitoring and debugging capabilities
+
+### Runtime Part
+The **Runtime** provides low-level type introspection and memory management utilities. This includes:
+- `Metadata` - Swift runtime type information and reflection capabilities
+- **Type comparison** - Efficient value equality checking across different types  
+- **Memory layout** - Safe pointer manipulation and offset calculations
+- **Tuple handling** - Runtime support for tuple types and field access
+
+> **Note**: The Runtime part leverages techniques similar to those found in [wickwirew/Runtime](https://github.com/wickwirew/Runtime) for Swift runtime introspection.
+
 | **CI Status** |
 |---|
 |[![Compatibility tests](https://github.com/OpenSwiftUIProject/OpenAttributeGraph/actions/workflows/compatibility_tests.yml/badge.svg)](https://github.com/OpenSwiftUIProject/OpenAttributeGraph/actions/workflows/compatibility_tests.yml)|

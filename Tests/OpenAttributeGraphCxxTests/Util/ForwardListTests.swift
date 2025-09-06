@@ -5,44 +5,71 @@
 import OpenAttributeGraphCxx_Private.Util
 import Testing
 
+@Suite("List tests")
 struct ForwardListTests {
-    @Test
-    func forwardListBasicOperations() {
+
+    @Test("Initialize empty list")
+    func initEmpty() {
         let list = util.UInt64ForwardList.create()
-        defer { util.UInt64ForwardList.destroy(list) }
-        
-        // Test empty list
-        #expect(list.empty())
-        
-        // Test push_front and empty state
-        list.push_front(42)
-        #expect(!list.empty())
-        
-        // Test front access
-        #expect(list.front() == 42)
-        
-        // Test multiple push_front operations
-        list.push_front(100)
-        #expect(list.front() == 100)
-        
-        list.push_front(200)
-        #expect(list.front() == 200)
-        
-        // Test pop_front
-        list.pop_front()
-        #expect(list.front() == 100)
-        
-        list.pop_front()
-        #expect(list.front() == 42)
-        
-        list.pop_front()
+        defer {
+            util.UInt64ForwardList.destroy(list)
+        }
+
         #expect(list.empty())
     }
-    
-    @Test
-    func forwardListSequentialOperations() {
+
+    @Test("Push element")
+    func pushElement() {
         let list = util.UInt64ForwardList.create()
-        defer { util.UInt64ForwardList.destroy(list) }
+        defer {
+            util.UInt64ForwardList.destroy(list)
+        }
+
+        list.push_front(1)
+
+        #expect(list.empty() == false)
+
+        let front = list.front()
+        #expect(front == 1)
+    }
+
+    @Test("Push multiple elements")
+    func pushMultipleElements() {
+        let list = util.UInt64ForwardList.create()
+        defer {
+            util.UInt64ForwardList.destroy(list)
+        }
+
+        list.push_front(1)
+        list.push_front(2)
+        list.push_front(3)
+
+        let front = list.front()
+        #expect(front == 3)
+    }
+
+    @Test("Remove element")
+    func removeElement() {
+        let list = util.UInt64ForwardList.create()
+        defer {
+            util.UInt64ForwardList.destroy(list)
+        }
+
+        list.push_front(1)
+        list.push_front(2)
+        list.push_front(3)
+        list.pop_front()
+
+        let front = list.front()
+        #expect(front == 2)
+    }
+    
+    @Test("Sequential operations")
+    func sequentialOperations() {
+        let list = util.UInt64ForwardList.create()
+        defer {
+            util.UInt64ForwardList.destroy(list)
+        }
         
         // Add multiple elements
         for i in 0..<5 {

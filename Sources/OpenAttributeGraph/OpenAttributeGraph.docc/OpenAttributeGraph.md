@@ -12,7 +12,7 @@ The framework is designed for high performance and powers the reactive updates t
 
 ### Architecture
 
-- <doc:Architecture>
+- <doc:Architecture-article>
 
 ### Core Components
 
@@ -37,7 +37,7 @@ The framework is designed for high performance and powers the reactive updates t
 
 #### Runtime Support
 - ``Metadata``
-- ``CompareValues``
+- ``compareValues(_:_:mode:)``
 - ``TupleType``
 
 #### Debugging and Development
@@ -46,7 +46,7 @@ The framework is designed for high performance and powers the reactive updates t
 ### Advanced Topics
 
 #### Attribute Bodies
-- ``AttributeBody``
+- ``_AttributeBody``
 - ``AttributeBodyVisitor``
 - ``ObservedAttribute``
 

@@ -7,8 +7,61 @@ filepath() {
   [[ $1 = /* ]] && echo "$1" || echo "$PWD/${1#./}"
 }
 
-# Accept optional branch argument, default to "main"
-TARGET_BRANCH="${1:-main}"
+# Capture script name for usage display
+SCRIPT_NAME="$(basename "$0")"
+
+# Usage function
+show_usage() {
+  cat << EOF
+Usage: $SCRIPT_NAME [branch] [--force] [--help]
+
+Automated script to update DarwinPrivateFrameworks with AttributeGraph changes.
+
+Arguments:
+  branch          Target branch to generate from (default: main)
+
+Options:
+  --force         Force push the branch when creating PR
+  --help          Show this help message
+
+Examples:
+  $SCRIPT_NAME                    # Update from main branch
+  $SCRIPT_NAME develop            # Update from develop branch
+  $SCRIPT_NAME main --force       # Update from main with force push
+  $SCRIPT_NAME --help             # Show this help
+
+Description:
+  This script automates the process of updating DarwinPrivateFrameworks
+  with the latest AttributeGraph changes by:
+  1. Setting up a git worktree for the target branch
+  2. Cloning DarwinPrivateFrameworks repository
+  3. Generating AG template from OpenAttributeGraph
+  4. Updating headers and Swift interface templates
+  5. Creating and pushing a PR with the changes
+EOF
+}
+
+# Parse command line arguments
+TARGET_BRANCH="main"
+FORCE_PUSH=""
+
+# Parse arguments
+while [[ $# -gt 0 ]]; do
+  case $1 in
+    --help)
+      show_usage
+      exit 0
+      ;;
+    --force)
+      FORCE_PUSH="--force"
+      shift
+      ;;
+    *)
+      TARGET_BRANCH="$1"
+      shift
+      ;;
+  esac
+done
 
 SCRIPT_ROOT="$(dirname $(dirname $(filepath $0)))"
 OAG_REPO_DIR="$SCRIPT_ROOT/.og_repo"
@@ -17,6 +70,9 @@ AG_REPO_DIR="$SCRIPT_ROOT/.ag_repo"
 
 echo "Starting DarwinPrivateFrameworks bump PR workflow..."
 echo "Target branch: $TARGET_BRANCH"
+if [[ -n "$FORCE_PUSH" ]]; then
+  echo "Force push: enabled"
+fi
 
 # Cleanup function
 cleanup() {
@@ -107,7 +163,7 @@ fi
 
 # Step 8: Push branch and create PR
 echo "Pushing branch and creating PR..."
-git push origin "update-ag-$TARGET_BRANCH"
+git push origin "update-ag-$TARGET_BRANCH" $FORCE_PUSH
 
 # Create PR
 PR_TITLE="Update AttributeGraph from OpenAttributeGraph $TARGET_BRANCH"
@@ -129,5 +185,3 @@ gh pr create \
 
 echo "✅ PR created successfully!"
 echo "Branch: update-ag-$TARGET_BRANCH"
-echo "✅ PR created successfully!"
-echo "Branch: update-ag-$CURRENT_BRANCH"

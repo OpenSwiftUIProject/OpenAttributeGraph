@@ -1,7 +1,5 @@
 # ``Focus``
 
-A rule that focuses on a specific property of another attribute using KeyPath.
-
 ## Overview
 
 `Focus` provides a way to create attributes that automatically track a specific property of another attribute. It uses Swift's KeyPath system to create a focused view of part of a larger data structure.

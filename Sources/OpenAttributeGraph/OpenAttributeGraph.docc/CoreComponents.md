@@ -1,4 +1,4 @@
-# Core Components
+# CoreComponents
 
 The fundamental building blocks of OpenAttributeGraph's reactive programming system.
 

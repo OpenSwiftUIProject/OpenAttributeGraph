@@ -12,12 +12,12 @@ The framework is designed for high performance and powers the reactive updates t
 
 ### Essentials
 
-- <doc:Architecture-article>
+- <doc:Architecture>
 
 ### Core Components
 
-- <doc:Core-Components>
+- <doc:CoreComponents>
 
 ### Advanced Topics
 
-- <doc:Advanced-Topics>
+- <doc:AdvancedTopics>

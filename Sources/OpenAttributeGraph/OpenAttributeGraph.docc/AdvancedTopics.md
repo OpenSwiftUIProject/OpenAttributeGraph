@@ -1,4 +1,4 @@
-# Advanced Topics
+# AdvancedTopics
 
 Advanced features and implementation details for sophisticated use cases.
 

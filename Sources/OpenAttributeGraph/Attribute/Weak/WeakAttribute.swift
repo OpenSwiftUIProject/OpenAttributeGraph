@@ -7,6 +7,7 @@
 
 public import OpenAttributeGraphCxx
 
+/// A weak reference property wrapper for attributes that prevents retain cycles.
 @frozen
 @propertyWrapper
 @dynamicMemberLookup

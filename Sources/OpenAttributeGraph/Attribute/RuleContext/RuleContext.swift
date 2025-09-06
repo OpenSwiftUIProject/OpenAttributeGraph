@@ -7,6 +7,7 @@
 
 public import OpenAttributeGraphCxx
 
+/// Context object providing access to rule evaluation state and input values.
 @frozen
 public struct RuleContext<Value>: Equatable {
     public var attribute: Attribute<Value>

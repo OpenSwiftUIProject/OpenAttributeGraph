@@ -7,6 +7,7 @@
 
 public import OpenAttributeGraphCxx
 
+/// A protocol for defining computed attributes that maintain state between evaluations.
 public protocol StatefulRule: _AttributeBody {
     associatedtype Value
     static var initialValue: Value? { get }

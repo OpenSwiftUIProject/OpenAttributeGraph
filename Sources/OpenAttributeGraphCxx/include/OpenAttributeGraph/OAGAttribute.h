@@ -31,7 +31,7 @@ OAGAttribute OAGGraphGetCurrentAttribute(void);
 
 OAG_EXPORT
 OAG_REFINED_FOR_SWIFT
-bool OAGGraphCurrentAttributeWasModified(void);
+bool OAGGraphCurrentAttributeWasModified(void) OAG_SWIFT_NAME(getter:OAGAttribute.currentWasModified());
 
 OAG_EXPORT
 OAG_REFINED_FOR_SWIFT

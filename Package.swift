@@ -176,6 +176,7 @@ let openAttributeGraphCxxTestsTarget = Target.testTarget(
         "OpenAttributeGraphCxx",
     ],
     exclude: ["README.md"],
+    cSettings: sharedCSettings + [.define("SWIFT_TESTING")],
     swiftSettings: sharedSwiftSettings + [.interoperabilityMode(.Cxx)]
 )
 let openAttributeGraphShimsTestsTarget = Target.testTarget(

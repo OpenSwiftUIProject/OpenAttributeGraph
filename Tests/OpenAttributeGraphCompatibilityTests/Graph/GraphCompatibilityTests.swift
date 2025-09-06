@@ -85,4 +85,18 @@ struct GraphCompatibilityTests {
         #expect(graph.mainUpdates == 0)
     }
     #endif
+    
+    @Test(.disabled(if: !compatibilityTestEnabled, "Not implemented on OAG"))
+    func beginDeferringSubgraphInvalidation() {
+        let graph = Graph()
+        
+        let wasDeferring1 = graph.beginDeferringSubgraphInvalidation()
+        #expect(wasDeferring1 == false)
+        
+        let wasDeferring2 = graph.beginDeferringSubgraphInvalidation()
+        #expect(wasDeferring2 == true)
+        
+        graph.endDeferringSubgraphInvalidation(wasDeferring: wasDeferring2)
+        graph.endDeferringSubgraphInvalidation(wasDeferring: wasDeferring1)
+    }
 }

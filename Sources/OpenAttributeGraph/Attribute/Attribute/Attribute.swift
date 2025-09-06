@@ -1,59 +1,6 @@
 public import OpenAttributeGraphCxx
 
 /// A reactive property wrapper that automatically tracks dependencies and manages value updates.
-///
-/// `Attribute` is the core building block of the OpenAttributeGraph reactive system. When you wrap a property 
-/// with `@Attribute`, it becomes reactive and can automatically track dependencies and propagate changes.
-///
-///     @Attribute var count: Int = 0
-///     @Attribute var doubledCount: Int = count * 2
-///     
-///     count = 5 // doubledCount automatically becomes 10
-///
-/// ## Key Features
-///
-/// - **Automatic dependency tracking**: Attributes automatically discover their dependencies
-/// - **Efficient updates**: Only affected attributes are recomputed when changes occur
-/// - **Type safety**: Full Swift type safety with compile-time checking
-/// - **Dynamic member lookup**: Access nested properties as reactive attributes
-/// - **Property wrapper syntax**: Clean, declarative syntax using `@Attribute`
-///
-/// ## Property Wrapper Usage
-///
-/// Use `@Attribute` to make any Swift value reactive:
-///
-///     struct CounterView {
-///         @Attribute var count: Int = 0
-///         
-///         var body: some View {
-///             Button("Count: \(count)") {
-///                 count += 1
-///             }
-///         }
-///     }
-///
-/// ## Dynamic Member Lookup
-///
-/// Access nested properties as separate attributes:
-///
-///     @Attribute var person: Person = Person(name: "Alice", age: 30)
-///     let nameAttribute: Attribute<String> = person.name
-///     let ageAttribute: Attribute<Int> = person.age
-///
-/// ## Integration with Rules
-///
-/// Create computed attributes using ``Rule`` or ``StatefulRule``:
-///
-///     struct DoubledRule: Rule {
-///         typealias Value = Int
-///         let source: Attribute<Int>
-///         
-///         func value() -> Int {
-///             source.wrappedValue * 2
-///         }
-///     }
-///
-///     let doubled = Attribute(DoubledRule(source: count))
 @frozen
 @propertyWrapper
 @dynamicMemberLookup
@@ -77,11 +24,6 @@ public struct Attribute<Value> {
     }
         
     /// Creates an attribute with an initial value.
-    ///
-    /// This initializer creates an external attribute that holds the provided value.
-    /// External attributes are typically used for storing user input or initial state.
-    ///
-    ///     let count = Attribute(value: 42)
     ///
     /// - Parameter value: The initial value for the attribute
     public init(value: Value) {
@@ -130,15 +72,6 @@ public struct Attribute<Value> {
     // MARK: - propertyWrapper
         
     /// The current value of the attribute.
-    ///
-    /// When used as a property wrapper with `@Attribute`, this provides the underlying value.
-    /// Getting this value may trigger dependency tracking in the current evaluation context.
-    /// Setting this value will update the attribute and invalidate any dependents.
-    ///
-    ///     @Attribute var count: Int = 0
-    ///     
-    ///     print(count) // Gets wrappedValue, returns 0
-    ///     count = 5    // Sets wrappedValue, triggers updates
     public var wrappedValue: Value {
         unsafeAddress {
             OAGGraphGetValue(identifier, type: Value.self)
@@ -149,15 +82,6 @@ public struct Attribute<Value> {
     }
     
     /// The attribute itself when accessed with the `$` prefix.
-    ///
-    /// This provides access to the attribute object itself rather than its value,
-    /// allowing you to pass the reactive attribute to other functions or create
-    /// derived attributes.
-    ///
-    ///     @Attribute var count: Int = 0
-    ///     
-    ///     let countAttribute = $count  // Gets the Attribute<Int> object
-    ///     let doubled = countAttribute.map { $0 * 2 }
     public var projectedValue: Attribute<Value> {
         get { self }
         set { self = newValue }

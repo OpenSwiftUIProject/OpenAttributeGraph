@@ -90,11 +90,11 @@ struct SubgraphCompatibilityTests {
             #expect(subgraph.childCount == 1)
             #expect(subgraph.isAncestor(of: child) == true)
             
-            #expect(subgraph.child(at: 0, tag: nil) == child)
-            
+            #expect(subgraph.child(at: 0, tag: nil) === child)
+
             #expect(child.parentCount == 1)
-            #expect(child.parent(at: 0) == subgraph)
-            
+            #expect(child.parent(at: 0) === subgraph)
+
             #expect(1 == 2)
         }
         
@@ -109,11 +109,11 @@ struct SubgraphCompatibilityTests {
             #expect(subgraph.isAncestor(of: child) == true)
             
             var tag = 0
-            #expect(subgraph.child(at: 0, tag: &tag) == child)
+            #expect(subgraph.child(at: 0, tag: &tag) === child)
             #expect(tag == 1)
             
             #expect(child.parentCount == 1)
-            #expect(child.parent(at: 0) == subgraph)
+            #expect(child.parent(at: 0) === subgraph)
         }
         
         @Test

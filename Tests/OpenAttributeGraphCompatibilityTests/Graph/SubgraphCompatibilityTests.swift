@@ -128,4 +128,11 @@ struct SubgraphCompatibilityTests {
             #expect(child.parentCount == 0)
         }
     }
+    
+    @Test
+    func treeRoot() {
+        let graph = Graph()
+        let subgraph = Subgraph(graph: graph)
+        let _ = subgraph.treeRoot
+    }
 }

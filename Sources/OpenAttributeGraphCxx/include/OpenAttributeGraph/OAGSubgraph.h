@@ -22,7 +22,7 @@ OAG_EXTERN_C_BEGIN
 
 OAG_EXPORT
 OAG_REFINED_FOR_SWIFT
-CFTypeID OAGSubgraphGetTypeID();
+CFTypeID OAGSubgraphGetTypeID(void) OAG_SWIFT_NAME(getter:OAGSubgraphRef.typeID());
 
 OAG_EXPORT
 OAG_REFINED_FOR_SWIFT
@@ -67,6 +67,26 @@ void OAGSubgraphAddChild2(OAGSubgraphRef parent, OAGSubgraphRef child, uint8_t t
 OAG_EXPORT
 OAG_REFINED_FOR_SWIFT
 void OAGSubgraphRemoveChild(OAGSubgraphRef parent, OAGSubgraphRef child) OAG_SWIFT_NAME(OAGSubgraphRef.removeChild(self:_:));
+
+OAG_EXPORT
+OAG_REFINED_FOR_SWIFT
+OAGSubgraphRef OAGSubgraphGetChild(OAGSubgraphRef cf_subgraph, uint32_t index, uint8_t *_Nullable tag_out) OAG_SWIFT_NAME(OAGSubgraphRef.child(self:at:tag:));
+
+OAG_EXPORT
+OAG_REFINED_FOR_SWIFT
+uint32_t OAGSubgraphGetChildCount(OAGSubgraphRef cf_subgraph) OAG_SWIFT_NAME(getter:OAGSubgraphRef.childCount(self:));
+
+OAG_EXPORT
+OAG_REFINED_FOR_SWIFT
+OAGSubgraphRef OAGSubgraphGetParent(OAGSubgraphRef cf_subgraph, int64_t index) OAG_SWIFT_NAME(OAGSubgraphRef.parent(self:at:));
+
+OAG_EXPORT
+OAG_REFINED_FOR_SWIFT
+uint64_t OAGSubgraphGetParentCount(OAGSubgraphRef cf_subgraph) OAG_SWIFT_NAME(getter:OAGSubgraphRef.parentCount(self:));
+
+OAG_EXPORT
+OAG_REFINED_FOR_SWIFT
+bool OAGSubgraphIsAncestor(OAGSubgraphRef cf_subgraph, OAGSubgraphRef other) OAG_SWIFT_NAME(OAGSubgraphRef.isAncestor(self:of:));
 
 OAG_EXPORT
 OAG_REFINED_FOR_SWIFT

@@ -136,6 +136,31 @@ void OAGSubgraphRemoveChild(OAGSubgraphRef parent, OAGSubgraphRef child) {
     // TODO
 }
 
+OAGSubgraphRef OAGSubgraphGetChild(OAGSubgraphRef cf_subgraph, uint32_t index, uint8_t *_Nullable tag_out) {
+    // TODO
+    return nullptr;
+}
+
+uint32_t OAGSubgraphGetChildCount(OAGSubgraphRef cf_subgraph) {
+    // TODO
+    return 0;
+}
+
+OAGSubgraphRef OAGSubgraphGetParent(OAGSubgraphRef cf_subgraph, int64_t index) {
+    // TODO
+    return nullptr;
+}
+
+uint64_t OAGSubgraphGetParentCount(OAGSubgraphRef cf_subgraph) {
+    // TODO
+    return 0;
+}
+
+bool OAGSubgraphIsAncestor(OAGSubgraphRef cf_subgraph, OAGSubgraphRef other) {
+    // TODO
+    return false;
+}
+
 void OAGSubgraphApply(OAGSubgraphRef cf_subgraph,
                      OAGAttributeFlags flags,
                      const void (*function)(const void * _Nullable context OAG_SWIFT_CONTEXT, OAGAttribute attribute) OAG_SWIFT_CC(swift),

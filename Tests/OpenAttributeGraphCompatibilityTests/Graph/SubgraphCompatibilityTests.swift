@@ -76,4 +76,56 @@ struct SubgraphCompatibilityTests {
             #expect(notifiedCount == 0)
         }
     }
+
+    @MainActor
+    @Suite // Both ConditionTrait and GraphEnvironmentTrait's isRecursive are true
+    struct ChildrenTests {
+        @Test
+        func addChild() {
+            let graph = Graph()
+            let subgraph = Subgraph(graph: graph)
+            let child = Subgraph(graph: graph)
+
+            subgraph.addChild(child)
+            #expect(subgraph.childCount == 1)
+            #expect(subgraph.isAncestor(of: child) == true)
+
+            #expect(subgraph.child(at: 0, tag: nil) === child)
+
+            #expect(child.parentCount == 1)
+            #expect(child.parent(at: 0) === subgraph)
+        }
+
+        @Test
+        func addChildWithTag() {
+            let graph = Graph()
+            let subgraph = Subgraph(graph: graph)
+            let child = Subgraph(graph: graph)
+
+            subgraph.addChild(child, tag: 1)
+            #expect(subgraph.childCount == 1)
+            #expect(subgraph.isAncestor(of: child) == true)
+
+            var tag = 0
+            #expect(subgraph.child(at: 0, tag: &tag) === child)
+            #expect(tag == 1)
+
+            #expect(child.parentCount == 1)
+            #expect(child.parent(at: 0) === subgraph)
+        }
+
+        @Test
+        func removeChild() {
+            let graph = Graph()
+            let subgraph = Subgraph(graph: graph)
+            let child = Subgraph(graph: graph)
+
+            subgraph.addChild(child)
+            subgraph.removeChild(child)
+            #expect(subgraph.childCount == 0)
+            #expect(subgraph.isAncestor(of: child) == false)
+
+            #expect(child.parentCount == 0)
+        }
+    }
 }

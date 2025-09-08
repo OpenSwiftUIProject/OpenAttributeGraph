@@ -1,6 +1,6 @@
 # ``OpenAttributeGraph``
 
-A high-performance reactive programming framework that powers OpebSwiftUI's underlying dependency tracking and update system.
+A high-performance reactive programming framework that powers OpenSwiftUI's underlying dependency tracking and update system.
 
 ## Overview
 

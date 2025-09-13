@@ -91,6 +91,10 @@ void OAGGraphSetIndirectAttribute(OAGAttribute attribute1, OAGAttribute attribut
 
 OAG_EXPORT
 OAG_REFINED_FOR_SWIFT
+void OAGGraphResetIndirectAttribute(OAGAttribute attribute, bool non_nil);
+
+OAG_EXPORT
+OAG_REFINED_FOR_SWIFT
 OAGAttribute OAGGraphCreateAttribute(long index, const void *body, const void * _Nullable value);
 
 OAG_EXPORT

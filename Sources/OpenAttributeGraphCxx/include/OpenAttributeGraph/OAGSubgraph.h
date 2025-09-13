@@ -9,6 +9,7 @@
 #include <OpenAttributeGraph/OAGAttributeFlags.h>
 #include <OpenAttributeGraph/OAGBase.h>
 #include <OpenAttributeGraph/OAGGraph.h>
+#include <OpenAttributeGraph/OAGTreeElement.h>
 #include <OpenAttributeGraph/OAGUniqueID.h>
 #include <OpenAttributeGraph/Private/CFRuntime.h>
 
@@ -138,6 +139,10 @@ void OAGSubgraphAddTreeValue(OAGAttribute attribute, OAGTypeID type, const char 
 OAG_EXPORT
 OAG_REFINED_FOR_SWIFT
 void OAGSubgraphEndTreeElement(OAGAttribute attribute);
+
+OAG_EXPORT
+OAG_REFINED_FOR_SWIFT
+_Nullable OAGTreeElement OAGSubgraphGetTreeRoot(OAGSubgraphRef cf_subgraph) OAG_SWIFT_NAME(getter:OAGSubgraphRef.treeRoot(self:));
 
 OAG_EXTERN_C_END
 

@@ -18,14 +18,14 @@ Usage: $SCRIPT_NAME [branch] [--force] [--help]
 Automated script to update DarwinPrivateFrameworks with AttributeGraph changes.
 
 Arguments:
-  branch          Target branch to generate from (default: main)
+  branch          Target branch to generate from (default: current branch)
 
 Options:
   --force         Force push the branch when creating PR
   --help          Show this help message
 
 Examples:
-  $SCRIPT_NAME                    # Update from main branch
+  $SCRIPT_NAME                    # Update from current branch
   $SCRIPT_NAME develop            # Update from develop branch
   $SCRIPT_NAME main --force       # Update from main with force push
   $SCRIPT_NAME --help             # Show this help
@@ -33,7 +33,7 @@ Examples:
 Description:
   This script automates the process of updating DarwinPrivateFrameworks
   with the latest AttributeGraph changes by:
-  1. Setting up a git worktree for the target branch
+  1. Setting up a git worktree for the target branch (if not current branch)
   2. Cloning DarwinPrivateFrameworks repository
   3. Generating AG template from OpenAttributeGraph
   4. Updating headers and Swift interface templates
@@ -42,7 +42,7 @@ EOF
 }
 
 # Parse command line arguments
-TARGET_BRANCH="main"
+TARGET_BRANCH=""
 FORCE_PUSH=""
 
 # Parse arguments
@@ -64,9 +64,29 @@ while [[ $# -gt 0 ]]; do
 done
 
 SCRIPT_ROOT="$(dirname $(dirname $(filepath $0)))"
+
+# Get current branch if no target branch specified
+if [[ -z "$TARGET_BRANCH" ]]; then
+  cd "$SCRIPT_ROOT"
+  TARGET_BRANCH="$(git branch --show-current)"
+  if [[ -z "$TARGET_BRANCH" ]]; then
+    echo "Error: Could not determine current branch and no branch specified"
+    exit 1
+  fi
+fi
+
 OAG_REPO_DIR="$SCRIPT_ROOT/.oag_repo"
 OPENATTRIBUTEGRAPH_ROOT="$OAG_REPO_DIR"
 AG_REPO_DIR="$SCRIPT_ROOT/.ag_repo"
+
+# Check if we're already on the target branch
+cd "$SCRIPT_ROOT"
+CURRENT_BRANCH="$(git branch --show-current)"
+USE_WORKTREE=true
+if [[ "$CURRENT_BRANCH" == "$TARGET_BRANCH" ]]; then
+  USE_WORKTREE=false
+  OPENATTRIBUTEGRAPH_ROOT="$SCRIPT_ROOT"
+fi
 
 echo "Starting DarwinPrivateFrameworks bump PR workflow..."
 echo "Target branch: $TARGET_BRANCH"
@@ -80,7 +100,7 @@ cleanup() {
     echo "Cleaning up temporary repository..."
     rm -rf "$AG_REPO_DIR"
   fi
-  if [[ -d "$OAG_REPO_DIR" ]]; then
+  if [[ "$USE_WORKTREE" == true ]] && [[ -d "$OAG_REPO_DIR" ]]; then
     echo "Cleaning up git worktree..."
     cd "$SCRIPT_ROOT"
     git worktree remove --force "$OAG_REPO_DIR" 2>/dev/null || true
@@ -92,13 +112,17 @@ trap cleanup EXIT
 
 cd "$SCRIPT_ROOT"
 
-# Step 1: Setup git worktree for target branch
-echo "Setting up git worktree for branch: $TARGET_BRANCH"
-if [[ -d "$OAG_REPO_DIR" ]]; then
-  git worktree remove --force "$OAG_REPO_DIR" 2>/dev/null || true
-fi
+# Step 1: Setup git worktree for target branch (if needed)
+if [[ "$USE_WORKTREE" == true ]]; then
+  echo "Setting up git worktree for branch: $TARGET_BRANCH"
+  if [[ -d "$OAG_REPO_DIR" ]]; then
+    git worktree remove --force "$OAG_REPO_DIR" 2>/dev/null || true
+  fi
 
-git worktree add "$OAG_REPO_DIR" "$TARGET_BRANCH"
+  git worktree add "$OAG_REPO_DIR" "$TARGET_BRANCH"
+else
+  echo "Using current directory (already on target branch)"
+fi
 
 # Step 2: Clone DarwinPrivateFrameworks repository
 echo "Cloning DarwinPrivateFrameworks repository..."

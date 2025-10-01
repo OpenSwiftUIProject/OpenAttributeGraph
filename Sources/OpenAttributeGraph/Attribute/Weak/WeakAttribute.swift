@@ -80,7 +80,7 @@ public struct WeakAttribute<Value> {
 
     public var value: Value? { wrappedValue }
 
-    public func changedValue(options: OAGValueOptions) -> (value: Value, changed: Bool)? {
+    public func changedValue(options: OAGValueOptions = []) -> (value: Value, changed: Bool)? {
         let value = OAGGraphGetWeakValue(base, options: options, type: Value.self)
         guard let ptr = value.value else {
             return nil

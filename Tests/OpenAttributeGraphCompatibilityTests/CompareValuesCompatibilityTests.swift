@@ -106,24 +106,54 @@ struct CompareValuesCompatibilityTests {
     struct NonPODEquatable: Equatable {
         init(id: Int, v1: Int) {
             self.id = id
-            self.m = M(v: v1)
+            self.wrapper = Wrapper(v: v1)
         }
 
         var id: Int
-        var v1: Int { m.v }
+        var v1: Int { wrapper.v }
 
-        class M: Equatable {
+        class Wrapper: Equatable {
             var v: Int
             init(v: Int) { self.v = v }
 
-            static func == (lhs: M, rhs: M) -> Bool {
+            static func == (lhs: Wrapper, rhs: Wrapper) -> Bool {
                 lhs.v == rhs.v
             }
         }
-        var m: M
+        private var wrapper: Wrapper
 
         static func == (lhs: NonPODEquatable, rhs: NonPODEquatable) -> Bool {
             lhs.id == rhs.id && (lhs.v1 - rhs.v1) % 2 == 0
+        }
+    }
+
+    struct NonPODEquatableTrue: Equatable {
+        init() {
+            self.wrapper = Wrapper()
+        }
+
+        private var wrapper: Wrapper
+
+        class Wrapper {}
+
+        static func == (lhs: NonPODEquatableTrue, rhs: NonPODEquatableTrue) -> Bool {
+            true
+        }
+    }
+
+    struct NonPODEquatableFalse: Equatable {
+        init() {
+            self.wrapper = Wrapper.shared
+        }
+
+        private var wrapper: Wrapper
+
+        class Wrapper {
+            static let shared = Wrapper()
+        }
+
+        static func == (lhs: NonPODEquatableFalse, rhs: NonPODEquatableFalse) -> Bool {
+            false
         }
     }
 
@@ -160,8 +190,10 @@ struct CompareValuesCompatibilityTests {
         #expect(compareValues(NonPODEquatable(id: 1, v1: 2), NonPODEquatable(id: 1, v1: 2), mode: mode) == false)
         #expect(compareValues(NonPODEquatable(id: 1, v1: 2), NonPODEquatable(id: 1, v1: 3), mode: mode) == false)
         #expect(compareValues(NonPODEquatable(id: 1, v1: 2), NonPODEquatable(id: 1, v1: 4), mode: mode) == false)
+        #expect(compareValues(NonPODEquatableTrue(), NonPODEquatableTrue(), mode: mode) == false)
+        #expect(compareValues(NonPODEquatableFalse(), NonPODEquatableFalse(), mode: mode) == true)
 
-        try await Task.sleep(for: .seconds(1))
+        try await Task.sleep(nanoseconds: 1_000_000_000)
 
         // layout is ready, use Equatable copmare only for non POD type when avaiable
         #expect(compareValues(POD(id: 1), POD(id: 1), mode: mode) == true)
@@ -180,6 +212,9 @@ struct CompareValuesCompatibilityTests {
         #expect(compareValues(NonPODEquatable(id: 1, v1: 2), NonPODEquatable(id: 1, v1: 2), mode: mode) == true, "Non POD type, use Equatable compare")
         #expect(compareValues(NonPODEquatable(id: 1, v1: 2), NonPODEquatable(id: 1, v1: 3), mode: mode) == false)
         #expect(compareValues(NonPODEquatable(id: 1, v1: 2), NonPODEquatable(id: 1, v1: 4), mode: mode) == true, "Non POD type, use Equatable compare")
+
+        #expect(compareValues(NonPODEquatableTrue(), NonPODEquatableTrue(), mode: mode) == true)
+        #expect(compareValues(NonPODEquatableFalse(), NonPODEquatableFalse(), mode: mode) == false)
     }
 
     @Test
@@ -200,7 +235,7 @@ struct CompareValuesCompatibilityTests {
         #expect(compareValues(NonPODEquatable(id: 1, v1: 2), NonPODEquatable(id: 1, v1: 3), mode: mode) == false)
         #expect(compareValues(NonPODEquatable(id: 1, v1: 2), NonPODEquatable(id: 1, v1: 4), mode: mode) == false)
 
-        try await Task.sleep(for: .seconds(1))
+        try await Task.sleep(nanoseconds: 1_000_000_000)
 
         // layout is ready, Equatable is used when avaiable
         #expect(compareValues(POD(id: 1), POD(id: 1), mode: mode) == true)

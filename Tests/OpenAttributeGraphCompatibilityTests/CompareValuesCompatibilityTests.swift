@@ -33,7 +33,7 @@ struct CompareValuesCompatibilityTests {
     }
 
     @Test
-    func testStructCompare() throws {
+    func structCompare() throws {
         struct A1 {
             var a: Int
             var b: Bool
@@ -58,5 +58,201 @@ struct CompareValuesCompatibilityTests {
                 #expect(compareValues(pointer.pointee, c) == false)
             }
         }
+    }
+
+
+    //  Below is the graph to show the expected behavior of compareValues with different modes and types
+    //  ┌──────────────────┬────────────────────┬──────────────────┬──────────────────┐
+    //  │                  │ mode               │ Layout not ready │ Layout ready     │
+    //  ├──────────────────┼────────────────────┼──────────────────┼──────────────────┤
+    //  │                  │ bitwise            │ bitwise          │ bitwise          │
+    //  │ PODEquatable     │ equatableUnlessPOD │ bitwise          │ bitwise          │
+    //  │                  │ equatableAlways    │ bitwise          │ equatable        │
+    //  ├──────────────────┼────────────────────┼──────────────────┼──────────────────┤
+    //  │                  │ bitwise            │ bitwise          │ bitwise          │
+    //  │ NonPODEquatable  │ equatableUnlessPOD │ bitwise          │ equatable        │
+    //  │                  │ equatableAlways    │ bitwise          │ equatable        │
+    //  └──────────────────┴────────────────────┴──────────────────┴──────────────────┘
+
+    struct POD {
+        var id: Int
+    }
+
+    struct PODEquatable: Equatable {
+        var id: Int
+        var v1: Int
+
+        static func == (lhs: Self, rhs: Self) -> Bool {
+            lhs.id == rhs.id && (lhs.v1 - rhs.v1) % 2 == 0
+        }
+    }
+
+    struct PODEquatableTrue: Equatable {
+        var id: Int
+
+        static func == (lhs: Self, rhs: Self) -> Bool {
+            true
+        }
+    }
+
+    struct PODEquatableFalse: Equatable {
+        var id: Int
+
+        static func == (lhs: Self, rhs: Self) -> Bool {
+            false
+        }
+    }
+
+    struct NonPODEquatable: Equatable {
+        init(id: Int, v1: Int) {
+            self.id = id
+            self.wrapper = Wrapper(v: v1)
+        }
+
+        var id: Int
+        var v1: Int { wrapper.v }
+
+        class Wrapper: Equatable {
+            var v: Int
+            init(v: Int) { self.v = v }
+
+            static func == (lhs: Wrapper, rhs: Wrapper) -> Bool {
+                lhs.v == rhs.v
+            }
+        }
+        private var wrapper: Wrapper
+
+        static func == (lhs: NonPODEquatable, rhs: NonPODEquatable) -> Bool {
+            lhs.id == rhs.id && (lhs.v1 - rhs.v1) % 2 == 0
+        }
+    }
+
+    struct NonPODEquatableTrue: Equatable {
+        init() {
+            self.wrapper = Wrapper()
+        }
+
+        private var wrapper: Wrapper
+
+        class Wrapper {}
+
+        static func == (lhs: NonPODEquatableTrue, rhs: NonPODEquatableTrue) -> Bool {
+            true
+        }
+    }
+
+    struct NonPODEquatableFalse: Equatable {
+        init() {
+            self.wrapper = Wrapper.shared
+        }
+
+        private var wrapper: Wrapper
+
+        class Wrapper {
+            static let shared = Wrapper()
+        }
+
+        static func == (lhs: NonPODEquatableFalse, rhs: NonPODEquatableFalse) -> Bool {
+            false
+        }
+    }
+
+    @Test
+    func bitwizeMode() async throws {
+        let mode = ComparisonMode.bitwise
+        #expect(compareValues(POD(id: 1), POD(id: 1), mode: mode) == true)
+        #expect(compareValues(POD(id: 1), POD(id: 2), mode: mode) == false)
+        #expect(compareValues(POD(id: 1), POD(id: 3), mode: mode) == false)
+        #expect(compareValues(PODEquatable(id: 1, v1: 2), PODEquatable(id: 1, v1: 2), mode: mode) == true)
+        #expect(compareValues(PODEquatable(id: 1, v1: 2), PODEquatable(id: 1, v1: 3), mode: mode) == false)
+        #expect(compareValues(PODEquatable(id: 1, v1: 2), PODEquatable(id: 1, v1: 4), mode: mode) == false)
+        #expect(compareValues(PODEquatableTrue(id: 1), PODEquatableTrue(id: 1), mode: mode) == true)
+        #expect(compareValues(PODEquatableTrue(id: 1), PODEquatableTrue(id: 2), mode: mode) == false)
+        #expect(compareValues(PODEquatableFalse(id: 1), PODEquatableFalse(id: 1), mode: mode) == true)
+        #expect(compareValues(PODEquatableFalse(id: 1), PODEquatableFalse(id: 2), mode: mode) == false)
+        #expect(compareValues(NonPODEquatable(id: 1, v1: 2), NonPODEquatable(id: 1, v1: 2), mode: mode) == false, "bitwize compare will fail since M is a class")
+    }
+
+    @Test
+    func equatableUnlessPODMode() async throws {
+        let mode = ComparisonMode.equatableUnlessPOD
+        // layout is not ready, use bitwise copmare
+        #expect(compareValues(POD(id: 1), POD(id: 1), mode: mode) == true)
+        #expect(compareValues(POD(id: 1), POD(id: 2), mode: mode) == false)
+        #expect(compareValues(POD(id: 1), POD(id: 3), mode: mode) == false)
+        #expect(compareValues(PODEquatable(id: 1, v1: 2), PODEquatable(id: 1, v1: 2), mode: mode) == true)
+        #expect(compareValues(PODEquatable(id: 1, v1: 2), PODEquatable(id: 1, v1: 3), mode: mode) == false)
+        #expect(compareValues(PODEquatable(id: 1, v1: 2), PODEquatable(id: 1, v1: 4), mode: mode) == false)
+        #expect(compareValues(PODEquatableTrue(id: 1), PODEquatableTrue(id: 1), mode: mode) == true)
+        #expect(compareValues(PODEquatableTrue(id: 1), PODEquatableTrue(id: 2), mode: mode) == false)
+        #expect(compareValues(PODEquatableFalse(id: 1), PODEquatableFalse(id: 1), mode: mode) == true)
+        #expect(compareValues(PODEquatableFalse(id: 1), PODEquatableFalse(id: 2), mode: mode) == false)
+        #expect(compareValues(NonPODEquatable(id: 1, v1: 2), NonPODEquatable(id: 1, v1: 2), mode: mode) == false)
+        #expect(compareValues(NonPODEquatable(id: 1, v1: 2), NonPODEquatable(id: 1, v1: 3), mode: mode) == false)
+        #expect(compareValues(NonPODEquatable(id: 1, v1: 2), NonPODEquatable(id: 1, v1: 4), mode: mode) == false)
+        #expect(compareValues(NonPODEquatableTrue(), NonPODEquatableTrue(), mode: mode) == false)
+        #expect(compareValues(NonPODEquatableFalse(), NonPODEquatableFalse(), mode: mode) == true)
+
+        try await Task.sleep(nanoseconds: 1_000_000_000)
+
+        // layout is ready, use Equatable copmare only for non POD type when avaiable
+        #expect(compareValues(POD(id: 1), POD(id: 1), mode: mode) == true)
+        #expect(compareValues(POD(id: 1), POD(id: 2), mode: mode) == false)
+        #expect(compareValues(POD(id: 1), POD(id: 3), mode: mode) == false)
+
+        #expect(compareValues(PODEquatable(id: 1, v1: 2), PODEquatable(id: 1, v1: 2), mode: mode) == true)
+        #expect(compareValues(PODEquatable(id: 1, v1: 2), PODEquatable(id: 1, v1: 3), mode: mode) == false)
+        #expect(compareValues(PODEquatable(id: 1, v1: 2), PODEquatable(id: 1, v1: 4), mode: mode) == false, "POD type, use bitwise compare")
+
+        #expect(compareValues(PODEquatableTrue(id: 1), PODEquatableTrue(id: 1), mode: mode) == true)
+        #expect(compareValues(PODEquatableTrue(id: 1), PODEquatableTrue(id: 2), mode: mode) == false, "POD type, use bitwise compare")
+        #expect(compareValues(PODEquatableFalse(id: 1), PODEquatableFalse(id: 1), mode: mode) == true, "POD type, use bitwise compare")
+        #expect(compareValues(PODEquatableFalse(id: 1), PODEquatableFalse(id: 2), mode: mode) == false)
+
+        #expect(compareValues(NonPODEquatable(id: 1, v1: 2), NonPODEquatable(id: 1, v1: 2), mode: mode) == true, "Non POD type, use Equatable compare")
+        #expect(compareValues(NonPODEquatable(id: 1, v1: 2), NonPODEquatable(id: 1, v1: 3), mode: mode) == false)
+        #expect(compareValues(NonPODEquatable(id: 1, v1: 2), NonPODEquatable(id: 1, v1: 4), mode: mode) == true, "Non POD type, use Equatable compare")
+
+        #expect(compareValues(NonPODEquatableTrue(), NonPODEquatableTrue(), mode: mode) == true)
+        #expect(compareValues(NonPODEquatableFalse(), NonPODEquatableFalse(), mode: mode) == false)
+    }
+
+    @Test
+    func equatableAlwaysMode() async throws {
+        let mode = ComparisonMode.equatableAlways
+        // When layout is not ready, the same as bitwize
+        #expect(compareValues(POD(id: 1), POD(id: 1), mode: mode) == true)
+        #expect(compareValues(POD(id: 1), POD(id: 2), mode: mode) == false)
+        #expect(compareValues(POD(id: 1), POD(id: 3), mode: mode) == false)
+        #expect(compareValues(PODEquatable(id: 1, v1: 2), PODEquatable(id: 1, v1: 2), mode: mode) == true)
+        #expect(compareValues(PODEquatable(id: 1, v1: 2), PODEquatable(id: 1, v1: 3), mode: mode) == false)
+        #expect(compareValues(PODEquatable(id: 1, v1: 2), PODEquatable(id: 1, v1: 4), mode: mode) == false)
+        #expect(compareValues(PODEquatableTrue(id: 1), PODEquatableTrue(id: 1), mode: mode) == true)
+        #expect(compareValues(PODEquatableTrue(id: 1), PODEquatableTrue(id: 2), mode: mode) == false)
+        #expect(compareValues(PODEquatableFalse(id: 1), PODEquatableFalse(id: 1), mode: mode) == true)
+        #expect(compareValues(PODEquatableFalse(id: 1), PODEquatableFalse(id: 2), mode: mode) == false)
+        #expect(compareValues(NonPODEquatable(id: 1, v1: 2), NonPODEquatable(id: 1, v1: 2), mode: mode) == false)
+        #expect(compareValues(NonPODEquatable(id: 1, v1: 2), NonPODEquatable(id: 1, v1: 3), mode: mode) == false)
+        #expect(compareValues(NonPODEquatable(id: 1, v1: 2), NonPODEquatable(id: 1, v1: 4), mode: mode) == false)
+
+        try await Task.sleep(nanoseconds: 1_000_000_000)
+
+        // layout is ready, Equatable is used when avaiable
+        #expect(compareValues(POD(id: 1), POD(id: 1), mode: mode) == true)
+        #expect(compareValues(POD(id: 1), POD(id: 2), mode: mode) == false)
+        #expect(compareValues(POD(id: 1), POD(id: 3), mode: mode) == false)
+
+        #expect(compareValues(PODEquatable(id: 1, v1: 2), PODEquatable(id: 1, v1: 2), mode: mode) == true)
+        #expect(compareValues(PODEquatable(id: 1, v1: 2), PODEquatable(id: 1, v1: 3), mode: mode) == false)
+        #expect(compareValues(PODEquatable(id: 1, v1: 2), PODEquatable(id: 1, v1: 4), mode: mode) == true, "use Equatable compare")
+
+        #expect(compareValues(PODEquatableTrue(id: 1), PODEquatableTrue(id: 1), mode: mode) == true)
+        #expect(compareValues(PODEquatableTrue(id: 1), PODEquatableTrue(id: 2), mode: mode) == true, "use Equatable compare")
+        #expect(compareValues(PODEquatableFalse(id: 1), PODEquatableFalse(id: 1), mode: mode) == false, "use Equatable compare")
+        #expect(compareValues(PODEquatableFalse(id: 1), PODEquatableFalse(id: 2), mode: mode) == false)
+
+        #expect(compareValues(NonPODEquatable(id: 1, v1: 2), NonPODEquatable(id: 1, v1: 2), mode: mode) == true, "use Equatable compare")
+        #expect(compareValues(NonPODEquatable(id: 1, v1: 2), NonPODEquatable(id: 1, v1: 3), mode: mode) == false)
+        #expect(compareValues(NonPODEquatable(id: 1, v1: 2), NonPODEquatable(id: 1, v1: 4), mode: mode) == true, "use Equatable compare")
     }
 }

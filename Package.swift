@@ -133,6 +133,14 @@ if libraryEvolutionCondition {
     sharedSwiftSettings.append(.unsafeFlags(["-enable-library-evolution", "-no-verify-emitted-module-interface"]))
 }
 
+// MARK: - [env] OPENATTRIBUTEGRAPH_COMPATIBILITY_TEST
+
+let compatibilityTestCondition = envEnable("OPENATTRIBUTEGRAPH_COMPATIBILITY_TEST", default: false)
+sharedCSettings.append(.define("OPENATTRIBUTEGRAPH", to: compatibilityTestCondition ? "1" : "0"))
+if !compatibilityTestCondition {
+    sharedSwiftSettings.append(.define("OPENATTRIBUTEGRAPH"))
+}
+
 // MARK: - Targets
 
 let openAttributeGraphTarget = Target.target(
@@ -192,7 +200,7 @@ let openAttributeGraphCompatibilityTestsTarget = Target.testTarget(
     name: "OpenAttributeGraphCompatibilityTests",
     dependencies: [
         .product(name: "Numerics", package: "swift-numerics"),
-    ],
+    ] + (compatibilityTestCondition ? [] : ["OpenAttributeGraph"]),
     exclude: ["README.md"],
     cSettings: sharedCSettings,
     swiftSettings: sharedSwiftSettings
@@ -213,11 +221,6 @@ let package = Package(
         openAttributeGraphTarget,
         openAttributeGraphSPITarget,
         openAttributeGraphShimsTarget,
-
-        openAttributeGraphTestsTarget,
-        openAttributeGraphCxxTestsTarget,
-        openAttributeGraphShimsTestsTarget,
-        openAttributeGraphCompatibilityTestsTarget,
     ],
     cxxLanguageStandard: .cxx20
 )
@@ -231,15 +234,20 @@ extension Target {
         swiftSettings.append(.define("OPENATTRIBUTEGRAPH_ATTRIBUTEGRAPH"))
         self.swiftSettings = swiftSettings
     }
-    
-    func addCompatibilitySettings() {
-        dependencies.append(
-            .product(name: "AttributeGraph", package: "DarwinPrivateFrameworks")
-        )
-        var swiftSettings = swiftSettings ?? []
-        swiftSettings.append(.define("OPENATTRIBUTEGRAPH_COMPATIBILITY_TEST"))
-        self.swiftSettings = swiftSettings
-    }
+}
+
+if !compatibilityTestCondition {
+    package.targets += [
+        openAttributeGraphTestsTarget,
+        openAttributeGraphCxxTestsTarget,
+        openAttributeGraphShimsTestsTarget,
+    ]
+} else {
+    openAttributeGraphCompatibilityTestsTarget.addAGSettings()
+}
+
+if buildForDarwinPlatform {
+    package.targets.append(openAttributeGraphCompatibilityTestsTarget)
 }
 
 let useLocalDeps = envEnable("OPENATTRIBUTEGRAPH_USE_LOCAL_DEPS")
@@ -267,12 +275,6 @@ if attributeGraphCondition {
     package.platforms = [.iOS(.v13), .macOS(.v10_15), .macCatalyst(.v13), .tvOS(.v13), .watchOS(.v5)]
 }
 
-let compatibilityTestCondition = envEnable("OPENATTRIBUTEGRAPH_COMPATIBILITY_TEST")
-if compatibilityTestCondition && attributeGraphCondition {
-    openAttributeGraphCompatibilityTestsTarget.addCompatibilitySettings()
-} else {
-    openAttributeGraphCompatibilityTestsTarget.dependencies.append("OpenAttributeGraph")
-}
 
 extension [Platform] {
     static var nonDarwinPlatforms: [Platform] {

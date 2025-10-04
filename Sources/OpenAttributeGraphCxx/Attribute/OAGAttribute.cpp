@@ -103,6 +103,10 @@ void OAGGraphSetIndirectAttribute(OAGAttribute attribute1, OAGAttribute attribut
     // TODO
 }
 
+void OAGGraphResetIndirectAttribute(OAGAttribute attribute, bool non_nil) {
+    // TODO
+}
+
 OAGAttribute OAGGraphCreateAttribute(long index, const void *body, const void * value) {
     // TODO
     return OAGAttributeNil;

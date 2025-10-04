@@ -95,12 +95,13 @@ void OAGSubgraphSetCurrent(_Nullable OAGSubgraphRef cf_subgraph) {
     }
 }
 
-OAGGraphContextRef OAGSubgraphGetCurrentGraphContext() {
+OAGUnownedGraphContextRef OAGSubgraphGetCurrentGraphContext() {
     OAG::Subgraph *subgraph = OAG::Subgraph::get_current();
     if (subgraph == nullptr) {
         return nullptr;
     }
-    return subgraph->get_context();
+    OAG::Graph &graph = subgraph->get_graph();
+    return reinterpret_cast<OAGUnownedGraphContextRef>(&graph);
 }
 
 void OAGSubgraphInvalidate(OAGSubgraphRef cf_subgraph) {
@@ -121,7 +122,8 @@ OAGGraphRef OAGSubgraphGetGraph(OAGSubgraphRef cf_subgraph) {
     if (cf_subgraph->subgraph == nullptr) {
         OAG::precondition_failure("accessing invalidated subgraph");
     }
-    return OAGGraphContextGetGraph(cf_subgraph->subgraph->get_context());
+    // TODO
+    return nullptr;
 }
 
 void OAGSubgraphAddChild(OAGSubgraphRef parent, OAGSubgraphRef child) {

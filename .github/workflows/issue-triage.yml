@@ -1,0 +1,10 @@
+name: Issue Triage
+
+on:
+  issues:
+    types: [opened]
+
+jobs:
+  triage-issue:
+    uses: OpenSwiftUIProject/github-workflows/.github/workflows/issue-triage.yml@main
+    secrets: inherit

@@ -17,6 +17,16 @@ func envEnable(_ key: String, default defaultValue: Bool = false) -> Bool {
     }
 }
 
+func detectIncludePath() -> String {
+    if let path = Context.environment["SWIFT_TOOLCHAIN_PATH"] {
+        return path + "/usr/lib/swift"
+    }
+    let swiftBinPath = Context.environment["_"] ?? "/usr/bin/swift"
+    let swiftBinURL = URL(fileURLWithPath: swiftBinPath)
+    let SDKPath = swiftBinURL.deletingLastPathComponent().deletingLastPathComponent().deletingLastPathComponent().path
+    return SDKPath.appending("/usr/lib/swift")
+}
+
 #if os(macOS)
 // NOTE: #if os(macOS) check is not accurate if we are cross compiling for Linux platform. So we add an env key to specify it.
 let buildForDarwinPlatform = envEnable("OPENSWIFTUI_BUILD_FOR_DARWIN_PLATFORM", default: true)
@@ -34,11 +44,7 @@ let isSPIBuild = envEnable("SPI_BUILD")
 
 let isXcodeEnv = Context.environment["__CFBundleIdentifier"] == "com.apple.dt.Xcode"
 let development = envEnable("OPENATTRIBUTEGRAPH_DEVELOPMENT", default: false)
-
-let swiftBinPath = Context.environment["_"] ?? "/usr/bin/swift"
-let swiftBinURL = URL(fileURLWithPath: swiftBinPath)
-let SDKPath = swiftBinURL.deletingLastPathComponent().deletingLastPathComponent().deletingLastPathComponent().path
-let includePath = SDKPath.appending("/usr/lib/swift")
+let includePath = detectIncludePath()
 
 var sharedCSettings: [CSetting] = [
     .unsafeFlags(["-I", includePath], .when(platforms: .nonDarwinPlatforms)),

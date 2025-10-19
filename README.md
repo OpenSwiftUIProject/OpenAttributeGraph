@@ -38,6 +38,7 @@ dependencies: [
 ```
 
 > [!NOTE]
+>
 > - You may need to configure the Swift toolchain header for proper integration of OpenAttributeGraph
 > - By default, OpenAttributeGraphShims will use the private AttributeGraph as its implementation on Apple platforms
 
@@ -48,6 +49,20 @@ For a simpler setup, you can use the prebuilt XCFramework available on the [rele
 ## Build
 
 The current suggested toolchain to build the project is Swift 6.1.2 / Xcode 16.4.
+
+### Usage with ```swiftly````
+
+If you have installed [Swiftly](https://github.com/swiftlang/swiftly) for managing your installed swift toolchains (Linux) set the following variable to your shell:
+
+```bash
+export SWIFT_TOOLCHAIN_PATH="$(swiftly use --print-location)"
+```
+
+```fish
+set -gx SWIFT_TOOLCHAIN_PATH (swiftly use --print-location)
+```
+
+Then run `swift build`
 
 ## License
 

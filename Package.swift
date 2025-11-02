@@ -362,7 +362,7 @@ if attributeGraphCondition {
     package.dependencies.append(privateFrameworkRepo)
     openAttributeGraphShimsTarget.addAGSettings()
 
-    let agVersion = EnvManager.shared.withDomain("DARWIN_PRIVATE_FRAMEWORKS") {
+    let agVersion = EnvManager.shared.withDomain("DarwinPrivateFrameworks") {
         envIntValue("TARGET_RELEASE", default: 2024)
     }
     package.platforms = switch agVersion {

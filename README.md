@@ -50,19 +50,25 @@ For a simpler setup, you can use the prebuilt XCFramework available on the [rele
 
 The current suggested toolchain to build the project is Swift 6.1.2 / Xcode 16.4.
 
-### Usage with ```swiftly````
+### Set up LIB_SWIFT_PATH on non-Darwin platform
 
-If you have installed [Swiftly](https://github.com/swiftlang/swiftly) for managing your installed swift toolchains (Linux) set the following variable to your shell:
+If your swift binary path is located in your `<toolchain>/usr/bin/swift` (eg. installed by [swiftbox](https://github.com/stevapple/swiftbox)), no setup is required.
 
-```bash
-export SWIFT_TOOLCHAIN_PATH="$(swiftly use --print-location)"
+Otherwise set up it manully by exporting `LIB_SWIFT_PATH` environment variable.
+
+> The following command assume you already have [swiftly](https://github.com/swiftlang/swiftly) installed.
+
+```shell
+export OPENATTRIBUTEGRAPH_LIB_SWIFT_PATH="$(swiftly use --print-location)/usr/lib/swift"
+# Or use the swift_static path
+export OPENATTRIBUTEGRAPH_LIB_SWIFT_PATH="$(swiftly use --print-location)/usr/lib/swift_static"
 ```
 
-```fish
-set -gx SWIFT_TOOLCHAIN_PATH (swiftly use --print-location)
-```
+Alternatively, you can set the path using the Swift SDK location. For example:
 
-Then run `swift build`
+```shell
+export OPENATTRIBUTEGRAPH_LIB_SWIFT_PATH=~/.swiftpm/swift-sdks/swift-6.1.3-RELEASE_static-linux-0.0.1.artifactbundle/swift-6.1.3-RELEASE_static-linux-0.0.1/swift-linux-musl/musl-1.2.5.sdk/aarch64/usr/lib/swift_static
+```
 
 ## License
 

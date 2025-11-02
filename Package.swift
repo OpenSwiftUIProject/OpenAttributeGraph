@@ -15,12 +15,18 @@ final class EnvManager {
         domains.append(domain)
     }
 
+    func withDomain<T>(_ domain: String, perform: () throws -> T) rethrows -> T {
+        domains.append(domain)
+        defer { domains.removeAll { $0 == domain } }
+        return try perform()
+    }
+
     private func envValue<T>(
         rawKey: String,
-        default defaultValue: T,
+        default defaultValue: T?,
         searchInDomain: Bool,
         parser: (String) -> T?
-    ) -> T {
+    ) -> T? {
         func parseEnvValue(_ key: String) -> (String, T)? {
             guard let value = Context.environment[key] else {
                 return nil
@@ -40,11 +46,13 @@ final class EnvManager {
             }
         }
         let primaryKey = keys.first ?? rawKey
-        print("[Env] \(primaryKey) not set -> \(defaultValue)(default)")
+        if let defaultValue {
+            print("[Env] \(primaryKey) not set -> \(defaultValue)(default)")
+        }
         return defaultValue
     }
 
-    func envBoolValue(rawKey: String, default defaultValue: Bool, searchInDomain: Bool) -> Bool {
+    func envBoolValue(rawKey: String, default defaultValue: Bool? = nil, searchInDomain: Bool) -> Bool? {
         envValue(rawKey: rawKey, default: defaultValue, searchInDomain: searchInDomain) { value in
             switch value {
             case "1": true
@@ -54,11 +62,11 @@ final class EnvManager {
         }
     }
 
-    func envIntValue(rawKey: String, default defaultValue: Int, searchInDomain: Bool) -> Int {
+    func envIntValue(rawKey: String, default defaultValue: Int? = nil, searchInDomain: Bool) -> Int? {
         envValue(rawKey: rawKey, default: defaultValue, searchInDomain: searchInDomain) { Int($0) }
     }
 
-    func envStringValue(rawKey: String, default defaultValue: String, searchInDomain: Bool) -> String {
+    func envStringValue(rawKey: String, default defaultValue: String? = nil, searchInDomain: Bool) -> String? {
         envValue(rawKey: rawKey, default: defaultValue, searchInDomain: searchInDomain) { $0 }
     }
 }
@@ -67,19 +75,23 @@ EnvManager.shared.register(domain: "OpenSwiftUI")
 
 @MainActor
 func envBoolValue(_ key: String, default defaultValue: Bool = false, searchInDomain: Bool = true) -> Bool {
-    EnvManager.shared.envBoolValue(rawKey: key, default: defaultValue, searchInDomain: searchInDomain)
+    EnvManager.shared.envBoolValue(rawKey: key, default: defaultValue, searchInDomain: searchInDomain)!
 }
 
 @MainActor
-func envIntValue(_ key: String, default defaultValue: Int, searchInDomain: Bool = true) -> Int {
-    EnvManager.shared.envIntValue(rawKey: key, default: defaultValue, searchInDomain: searchInDomain)
+func envIntValue(_ key: String, default defaultValue: Int = 0, searchInDomain: Bool = true) -> Int {
+    EnvManager.shared.envIntValue(rawKey: key, default: defaultValue, searchInDomain: searchInDomain)!
 }
 
 @MainActor
 func envStringValue(_ key: String, default defaultValue: String, searchInDomain: Bool = true) -> String {
-    EnvManager.shared.envStringValue(rawKey: key, default: defaultValue, searchInDomain: searchInDomain)
+    EnvManager.shared.envStringValue(rawKey: key, default: defaultValue, searchInDomain: searchInDomain)!
 }
 
+@MainActor
+func envStringValue(_ key: String, searchInDomain: Bool = true) -> String? {
+    EnvManager.shared.envStringValue(rawKey: key, searchInDomain: searchInDomain)
+}
 
 // MARK: - Env and config
 
@@ -89,19 +101,21 @@ let buildForDarwinPlatform = envBoolValue("BUILD_FOR_DARWIN_PLATFORM", default: 
 #else
 let buildForDarwinPlatform = envBoolValue("BUILD_FOR_DARWIN_PLATFORM")
 #endif
+
 // https://github.com/SwiftPackageIndex/SwiftPackageIndex-Server/issues/3061#issuecomment-2118821061
 // By-pass https://github.com/swiftlang/swift-package-manager/issues/7580
 let isSPIDocGenerationBuild = envBoolValue("SPI_GENERATE_DOCS", searchInDomain: false)
 let isSPIBuild = envBoolValue("SPI_BUILD", searchInDomain: false)
 
-let isXcodeEnv = Context.environment["__CFBundleIdentifier"] == "com.apple.dt.Xcode"
+let isXcodeEnv = envStringValue("__CFBundleIdentifier", searchInDomain: false) == "com.apple.dt.Xcode"
 let development = envBoolValue("DEVELOPMENT", default: false)
+let warningsAsErrorsCondition = envBoolValue("WERROR", default: isXcodeEnv && development)
 
 let libSwiftPath = {
     // From Swift toolchain being installed or from Swift SDK.
-    guard let libSwiftPath = Context.environment["OPENATTRIBUTEGRAPH_LIB_SWIFT_PATH"] else {
+    guard let libSwiftPath = envStringValue("LIB_SWIFT_PATH") else {
         // Fallback when LIB_SWIFT_PATH is not set
-        let swiftBinPath = Context.environment["OPENATTRIBUTEGRAPH_BIN_SWIFT_PATH"] ?? Context.environment["_"] ?? "/usr/bin/swift"
+        let swiftBinPath = envStringValue("BIN_SWIFT_PATH") ?? envStringValue("_", searchInDomain: false) ?? "/usr/bin/swift"
         let swiftBinURL = URL(fileURLWithPath: swiftBinPath)
         let SDKPath = swiftBinURL.deletingLastPathComponent().deletingLastPathComponent().deletingLastPathComponent().path
         return SDKPath.appending("/usr/lib/swift")
@@ -109,11 +123,19 @@ let libSwiftPath = {
     return libSwiftPath
 }()
 
-let swiftToolchainPath = Context.environment["OPENATTRIBUTEGRAPH_SWIFT_TOOLCHAIN_PATH"] ?? (development ? "/Volumes/BuildMachine/swift-project" : "")
-let swiftToolchainVersion = Context.environment["OPENATTRIBUTEGRAPH_SWIFT_TOOLCHAIN_VERSION"] ?? (development ? "6.0.2" : "")
+let swiftToolchainPath = envStringValue("SWIFT_TOOLCHAIN_PATH") ?? (development ? "/Volumes/BuildMachine/swift-project" : "")
+let swiftToolchainVersion = envStringValue("SWIFT_TOOLCHAIN_VERSION") ?? (development ? "6.0.2" : "")
 let swiftToolchainSupported = envBoolValue("SWIFT_TOOLCHAIN_SUPPORTED", default: !swiftToolchainVersion.isEmpty)
 
+let releaseVersion = envIntValue("TARGET_RELEASE", default: 2024)
 
+let libraryEvolutionCondition = envBoolValue("LIBRARY_EVOLUTION", default: buildForDarwinPlatform)
+let compatibilityTestCondition = envBoolValue("COMPATIBILITY_TEST", default: false)
+
+let useLocalDeps = envBoolValue("USE_LOCAL_DEPS")
+let attributeGraphCondition = envBoolValue("ATTRIBUTEGRAPH", default: buildForDarwinPlatform && !isSPIBuild)
+
+// MARK: - Shared Settings
 
 var sharedCSettings: [CSetting] = [
     .unsafeFlags(["-I", libSwiftPath], .when(platforms: .nonDarwinPlatforms)),
@@ -124,9 +146,9 @@ var sharedSwiftSettings: [SwiftSetting] = [
     .enableUpcomingFeature("InternalImportsByDefault"),
     .enableExperimentalFeature("Extern"),
     .swiftLanguageMode(.v5),
-]
 
-// MARK: [env] OPENATTRIBUTEGRAPH_SWIFT_TOOLCHAIN_PATH
+    .define("OPENATTRIBUTEGRAPH_RELEASE_\(releaseVersion)"),
+]
 
 // Modified from: https://github.com/swiftlang/swift/blob/main/SwiftCompilerSources/Package.swift
 //
@@ -161,56 +183,50 @@ if !swiftToolchainPath.isEmpty {
         )
     )
 }
-
-// MARK: [env] OPENATTRIBUTEGRAPH_SWIFT_TOOLCHAIN_VERSION
-
 if !swiftToolchainVersion.isEmpty {
     sharedCSettings.append(
         .define("OPENATTRIBUTEGRAPH_SWIFT_TOOLCHAIN_VERSION", to: swiftToolchainVersion)
     )
 }
-
-// MARK: - [env] OPENATTRIBUTEGRAPH_SWIFT_TOOLCHAIN_SUPPORTED
-
 if swiftToolchainSupported {
     sharedCSettings.append(.define("OPENATTRIBUTEGRAPH_SWIFT_TOOLCHAIN_SUPPORTED"))
     sharedSwiftSettings.append(.define("OPENATTRIBUTEGRAPH_SWIFT_TOOLCHAIN_SUPPORTED"))
 }
-
-// MARK: - [env] OPENATTRIBUTEGRAPH_TARGET_RELEASE
-
-let releaseVersion = Context.environment["OPENATTRIBUTEGRAPH_TARGET_RELEASE"].flatMap { Int($0) } ?? 2024
-//sharedCSettings.append(.define("OPENATTRIBUTEGRAPH_RELEASE", to: "\(releaseVersion)"))
-sharedSwiftSettings.append(.define("OPENATTRIBUTEGRAPH_RELEASE_\(releaseVersion)"))
 if releaseVersion >= 2021 {
     for year in 2021 ... releaseVersion {
         sharedSwiftSettings.append(.define("OPENATTRIBUTEGRAPH_SUPPORT_\(year)_API"))
     }
 }
-
-// MARK: - [env] OPENATTRIBUTEGRAPH_WERROR
-
-let warningsAsErrorsCondition = envBoolValue("WERROR", default: isXcodeEnv && development)
 if warningsAsErrorsCondition {
     sharedSwiftSettings.append(.unsafeFlags(["-warnings-as-errors"]))
 }
-
-// MARK: - [env] OPENATTRIBUTEGRAPH_LIBRARY_EVOLUTION
-
-let libraryEvolutionCondition = envBoolValue("LIBRARY_EVOLUTION", default: buildForDarwinPlatform)
-
 if libraryEvolutionCondition {
     // NOTE: -enable-library-evolution will cause module verify failure for `swift build`.
     // Either set OPENATTRIBUTEGRAPH_LIBRARY_EVOLUTION=0 or add `-Xswiftc -no-verify-emitted-module-interface` after `swift build`
     sharedSwiftSettings.append(.unsafeFlags(["-enable-library-evolution", "-no-verify-emitted-module-interface"]))
 }
-
-// MARK: - [env] OPENATTRIBUTEGRAPH_COMPATIBILITY_TEST
-
-let compatibilityTestCondition = envBoolValue("COMPATIBILITY_TEST", default: false)
-sharedCSettings.append(.define("OPENATTRIBUTEGRAPH", to: compatibilityTestCondition ? "1" : "0"))
 if !compatibilityTestCondition {
+    sharedCSettings.append(.define("OPENATTRIBUTEGRAPH"))
     sharedSwiftSettings.append(.define("OPENATTRIBUTEGRAPH"))
+}
+
+// MARK: - Extension
+
+extension Target {
+    func addAGSettings() {
+        dependencies.append(
+            .product(name: "AttributeGraph", package: "DarwinPrivateFrameworks")
+        )
+        var swiftSettings = swiftSettings ?? []
+        swiftSettings.append(.define("OPENATTRIBUTEGRAPH_ATTRIBUTEGRAPH"))
+        self.swiftSettings = swiftSettings
+    }
+}
+
+extension [Platform] {
+    static var nonDarwinPlatforms: [Platform] {
+        [.linux, .android, .wasi, .openbsd, .windows]
+    }
 }
 
 // MARK: - Targets
@@ -297,34 +313,19 @@ let package = Package(
     cxxLanguageStandard: .cxx20
 )
 
-extension Target {
-    func addAGSettings() {
-        dependencies.append(
-            .product(name: "AttributeGraph", package: "DarwinPrivateFrameworks")
-        )
-        var swiftSettings = swiftSettings ?? []
-        swiftSettings.append(.define("OPENATTRIBUTEGRAPH_ATTRIBUTEGRAPH"))
-        self.swiftSettings = swiftSettings
-    }
-}
-
-if !compatibilityTestCondition {
+if compatibilityTestCondition {
+    openAttributeGraphCompatibilityTestsTarget.addAGSettings()
+} else {
     package.targets += [
         openAttributeGraphTestsTarget,
         openAttributeGraphCxxTestsTarget,
         openAttributeGraphShimsTestsTarget,
     ]
-} else {
-    openAttributeGraphCompatibilityTestsTarget.addAGSettings()
 }
 
 if buildForDarwinPlatform {
     package.targets.append(openAttributeGraphCompatibilityTestsTarget)
 }
-
-let useLocalDeps = envBoolValue("USE_LOCAL_DEPS")
-
-let attributeGraphCondition = envBoolValue("ATTRIBUTEGRAPH", default: buildForDarwinPlatform && !isSPIBuild)
 
 if attributeGraphCondition {
     let privateFrameworkRepo: Package.Dependency
@@ -335,8 +336,10 @@ if attributeGraphCondition {
     }
     package.dependencies.append(privateFrameworkRepo)
     openAttributeGraphShimsTarget.addAGSettings()
-    
-    let agVersion = Context.environment["DARWIN_PRIVATE_FRAMEWORKS_TARGET_RELEASE"].flatMap { Int($0) } ?? 2024
+
+    let agVersion = EnvManager.shared.withDomain("DARWIN_PRIVATE_FRAMEWORKS") {
+        envIntValue("TARGET_RELEASE", default: 2024)
+    }
     package.platforms = switch agVersion {
         case 2024: [.iOS(.v18), .macOS(.v15), .macCatalyst(.v18), .tvOS(.v18), .watchOS(.v10), .visionOS(.v2)]
         case 2021: [.iOS(.v15), .macOS(.v12), .macCatalyst(.v15), .tvOS(.v15), .watchOS(.v7)]
@@ -345,11 +348,4 @@ if attributeGraphCondition {
 } else {
     openAttributeGraphShimsTarget.dependencies.append("OpenAttributeGraph")
     package.platforms = [.iOS(.v13), .macOS(.v10_15), .macCatalyst(.v13), .tvOS(.v13), .watchOS(.v5)]
-}
-
-
-extension [Platform] {
-    static var nonDarwinPlatforms: [Platform] {
-        [.linux, .android, .wasi, .openbsd, .windows]
-    }
 }

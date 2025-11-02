@@ -4,24 +4,106 @@
 import Foundation
 import PackageDescription
 
-func envEnable(_ key: String, default defaultValue: Bool = false) -> Bool {
-    guard let value = Context.environment[key] else {
-        return defaultValue
+// MARK: - Env Manager
+
+@MainActor
+final class EnvManager {
+    static let shared = EnvManager()
+
+    private var domains: [String] = []
+
+    func register(domain: String) {
+        domains.append(domain)
     }
-    if value == "1" {
-        return true
-    } else if value == "0" {
-        return false
-    } else {
-        return defaultValue
+
+    func envEnable(rawKey: String, default defaultValue: Bool, searchInDomain: Bool) -> Bool {
+        if searchInDomain {
+            for domain in domains {
+                let key = "\(domain.uppercased())_\(rawKey)"
+                guard let (value, result) = _envEnable(key) else {
+                    continue
+                }
+                print("[Env] \(key)=\(value) -> \(result)")
+                return result
+            }
+            print("[Env] \(rawKey) not set -> \(defaultValue)(default)")
+            return defaultValue
+        } else {
+            guard let (value, result) = _envEnable(rawKey) else {
+                print("[Env] \(rawKey) not set -> \(defaultValue)(default)")
+                return defaultValue
+            }
+            print("[Env] \(rawKey)=\(value) -> \(result)")
+            return result
+        }
     }
+
+    func envValue(rawKey: String, default defaultValue: Int, searchInDomain: Bool) -> Int {
+        if searchInDomain {
+            for domain in domains {
+                let key = "\(domain.uppercased())_\(rawKey)"
+                guard let (value, result) = _envValue(key) else {
+                    continue
+                }
+                print("[Env] \(key)=\(value) -> \(result)")
+                return result
+            }
+            print("[Env] \(rawKey) not set -> \(defaultValue)(default)")
+            return defaultValue
+        } else {
+            guard let (value, result) = _envValue(rawKey) else {
+                print("[Env] \(rawKey) not set -> \(defaultValue)(default)")
+                return defaultValue
+            }
+            print("[Env] \(rawKey)=\(value) -> \(result)")
+            return result
+        }
+    }
+
+    private func _envEnable(_ key: String) -> (String, Bool)? {
+        guard let value = Context.environment[key] else {
+            return nil
+        }
+        let result: Bool
+        if value == "1" {
+            result = true
+        } else if value == "0" {
+            result = false
+        } else {
+            return nil
+        }
+        return (value, result)
+    }
+
+    private func _envValue(_ key: String) -> (String, Int)? {
+        guard let value = Context.environment[key] else {
+            return nil
+        }
+        let result: Int
+        guard let result = Int(value) else {
+            return nil
+        }
+        return (value, result)
+    }
+}
+EnvManager.shared.register(domain: "OpenAttributeGraph")
+EnvManager.shared.register(domain: "OpenSwiftUI")
+
+@MainActor
+func envEnable(_ key: String, default defaultValue: Bool = false, searchInDomain: Bool = true) -> Bool {
+    EnvManager.shared.envEnable(rawKey: key, default: defaultValue, searchInDomain: searchInDomain)
+}
+
+@MainActor
+func envValue(_ key: String, default defaultValue: Int, searchInDomain: Bool = true) -> Int {
+    EnvManager.shared.envValue(rawKey: key, default: defaultValue, searchInDomain: searchInDomain)
 }
 
 #if os(macOS)
 // NOTE: #if os(macOS) check is not accurate if we are cross compiling for Linux platform. So we add an env key to specify it.
-let buildForDarwinPlatform = envEnable("OPENSWIFTUI_BUILD_FOR_DARWIN_PLATFORM", default: true)
+let buildForDarwinPlatform = envEnable("BUILD_FOR_DARWIN_PLATFORM", default: true)
 #else
-let buildForDarwinPlatform = envEnable("OPENSWIFTUI_BUILD_FOR_DARWIN_PLATFORM")
+let buildForDarwinPlatform = envEnable("BUILD_FOR_DARWIN_PLATFORM")
 #endif
 
 
@@ -33,7 +115,7 @@ let isSPIBuild = envEnable("SPI_BUILD")
 // MARK: - Env and Config
 
 let isXcodeEnv = Context.environment["__CFBundleIdentifier"] == "com.apple.dt.Xcode"
-let development = envEnable("OPENATTRIBUTEGRAPH_DEVELOPMENT", default: false)
+let development = envEnable("DEVELOPMENT", default: false)
 
 // From Swift toolchain being installed or from Swift SDK.
 func detectLibSwiftPath() -> String {
@@ -107,7 +189,7 @@ if !swiftToolchainVersion.isEmpty {
 
 // MARK: - [env] OPENATTRIBUTEGRAPH_SWIFT_TOOLCHAIN_SUPPORTED
 
-let swiftToolchainSupported = envEnable("OPENATTRIBUTEGRAPH_SWIFT_TOOLCHAIN_SUPPORTED", default: !swiftToolchainVersion.isEmpty)
+let swiftToolchainSupported = envEnable("SWIFT_TOOLCHAIN_SUPPORTED", default: !swiftToolchainVersion.isEmpty)
 if swiftToolchainSupported {
     sharedCSettings.append(.define("OPENATTRIBUTEGRAPH_SWIFT_TOOLCHAIN_SUPPORTED"))
     sharedSwiftSettings.append(.define("OPENATTRIBUTEGRAPH_SWIFT_TOOLCHAIN_SUPPORTED"))
@@ -126,14 +208,14 @@ if releaseVersion >= 2021 {
 
 // MARK: - [env] OPENATTRIBUTEGRAPH_WERROR
 
-let warningsAsErrorsCondition = envEnable("OPENATTRIBUTEGRAPH_WERROR", default: isXcodeEnv && development)
+let warningsAsErrorsCondition = envEnable("WERROR", default: isXcodeEnv && development)
 if warningsAsErrorsCondition {
     sharedSwiftSettings.append(.unsafeFlags(["-warnings-as-errors"]))
 }
 
 // MARK: - [env] OPENATTRIBUTEGRAPH_LIBRARY_EVOLUTION
 
-let libraryEvolutionCondition = envEnable("OPENATTRIBUTEGRAPH_LIBRARY_EVOLUTION", default: buildForDarwinPlatform)
+let libraryEvolutionCondition = envEnable("LIBRARY_EVOLUTION", default: buildForDarwinPlatform)
 
 if libraryEvolutionCondition {
     // NOTE: -enable-library-evolution will cause module verify failure for `swift build`.
@@ -143,7 +225,7 @@ if libraryEvolutionCondition {
 
 // MARK: - [env] OPENATTRIBUTEGRAPH_COMPATIBILITY_TEST
 
-let compatibilityTestCondition = envEnable("OPENATTRIBUTEGRAPH_COMPATIBILITY_TEST", default: false)
+let compatibilityTestCondition = envEnable("COMPATIBILITY_TEST", default: false)
 sharedCSettings.append(.define("OPENATTRIBUTEGRAPH", to: compatibilityTestCondition ? "1" : "0"))
 if !compatibilityTestCondition {
     sharedSwiftSettings.append(.define("OPENATTRIBUTEGRAPH"))
@@ -258,9 +340,9 @@ if buildForDarwinPlatform {
     package.targets.append(openAttributeGraphCompatibilityTestsTarget)
 }
 
-let useLocalDeps = envEnable("OPENATTRIBUTEGRAPH_USE_LOCAL_DEPS")
+let useLocalDeps = envEnable("USE_LOCAL_DEPS")
 
-let attributeGraphCondition = envEnable("OPENATTRIBUTEGRAPH_ATTRIBUTEGRAPH", default: buildForDarwinPlatform && !isSPIBuild)
+let attributeGraphCondition = envEnable("ATTRIBUTEGRAPH", default: buildForDarwinPlatform && !isSPIBuild)
 
 if attributeGraphCondition {
     let privateFrameworkRepo: Package.Dependency

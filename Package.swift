@@ -1,5 +1,4 @@
 // swift-tools-version: 6.1
-// The swift-tools-version declares the minimum version of Swift required to build this package.
 
 import Foundation
 import PackageDescription
@@ -16,11 +15,25 @@ final class EnvManager {
         domains.append(domain)
     }
 
-    func envEnable(rawKey: String, default defaultValue: Bool, searchInDomain: Bool) -> Bool {
+    func envBoolValue(rawKey: String, default defaultValue: Bool, searchInDomain: Bool) -> Bool {
+        func _envBoolValue(_ key: String) -> (String, Bool)? {
+            guard let value = Context.environment[key] else {
+                return nil
+            }
+            let result: Bool
+            if value == "1" {
+                result = true
+            } else if value == "0" {
+                result = false
+            } else {
+                return nil
+            }
+            return (value, result)
+        }
         if searchInDomain {
             for domain in domains {
                 let key = "\(domain.uppercased())_\(rawKey)"
-                guard let (value, result) = _envEnable(key) else {
+                guard let (value, result) = _envBoolValue(key) else {
                     continue
                 }
                 print("[Env] \(key)=\(value) -> \(result)")
@@ -29,7 +42,7 @@ final class EnvManager {
             print("[Env] \(rawKey) not set -> \(defaultValue)(default)")
             return defaultValue
         } else {
-            guard let (value, result) = _envEnable(rawKey) else {
+            guard let (value, result) = _envBoolValue(rawKey) else {
                 print("[Env] \(rawKey) not set -> \(defaultValue)(default)")
                 return defaultValue
             }
@@ -38,11 +51,21 @@ final class EnvManager {
         }
     }
 
-    func envValue(rawKey: String, default defaultValue: Int, searchInDomain: Bool) -> Int {
+    func envIntValue(rawKey: String, default defaultValue: Int, searchInDomain: Bool) -> Int {
+        func _envIntValue(_ key: String) -> (String, Int)? {
+            guard let value = Context.environment[key] else {
+                return nil
+            }
+            let result: Int
+            guard let result = Int(value) else {
+                return nil
+            }
+            return (value, result)
+        }
         if searchInDomain {
             for domain in domains {
                 let key = "\(domain.uppercased())_\(rawKey)"
-                guard let (value, result) = _envValue(key) else {
+                guard let (value, result) = _envIntValue(key) else {
                     continue
                 }
                 print("[Env] \(key)=\(value) -> \(result)")
@@ -51,7 +74,7 @@ final class EnvManager {
             print("[Env] \(rawKey) not set -> \(defaultValue)(default)")
             return defaultValue
         } else {
-            guard let (value, result) = _envValue(rawKey) else {
+            guard let (value, result) = _envIntValue(rawKey) else {
                 print("[Env] \(rawKey) not set -> \(defaultValue)(default)")
                 return defaultValue
             }
@@ -60,30 +83,32 @@ final class EnvManager {
         }
     }
 
-    private func _envEnable(_ key: String) -> (String, Bool)? {
-        guard let value = Context.environment[key] else {
-            return nil
+    func envStringValue(rawKey: String, default defaultValue: String, searchInDomain: Bool) -> String {
+        func _envStringValue(_ key: String) -> (String, String)? {
+            guard let value = Context.environment[key] else {
+                return nil
+            }
+            return (value, value)
         }
-        let result: Bool
-        if value == "1" {
-            result = true
-        } else if value == "0" {
-            result = false
+        if searchInDomain {
+            for domain in domains {
+                let key = "\(domain.uppercased())_\(rawKey)"
+                guard let (value, result) = _envStringValue(key) else {
+                    continue
+                }
+                print("[Env] \(key)=\(value) -> \(result)")
+                return result
+            }
+            print("[Env] \(rawKey) not set -> \(defaultValue)(default)")
+            return defaultValue
         } else {
-            return nil
+            guard let (value, result) = _envStringValue(rawKey) else {
+                print("[Env] \(rawKey) not set -> \(defaultValue)(default)")
+                return defaultValue
+            }
+            print("[Env] \(rawKey)=\(value) -> \(result)")
+            return result
         }
-        return (value, result)
-    }
-
-    private func _envValue(_ key: String) -> (String, Int)? {
-        guard let value = Context.environment[key] else {
-            return nil
-        }
-        let result: Int
-        guard let result = Int(value) else {
-            return nil
-        }
-        return (value, result)
     }
 }
 EnvManager.shared.register(domain: "OpenAttributeGraph")
@@ -91,13 +116,15 @@ EnvManager.shared.register(domain: "OpenSwiftUI")
 
 @MainActor
 func envEnable(_ key: String, default defaultValue: Bool = false, searchInDomain: Bool = true) -> Bool {
-    EnvManager.shared.envEnable(rawKey: key, default: defaultValue, searchInDomain: searchInDomain)
+    EnvManager.shared.envBoolValue(rawKey: key, default: defaultValue, searchInDomain: searchInDomain)
 }
 
 @MainActor
 func envValue(_ key: String, default defaultValue: Int, searchInDomain: Bool = true) -> Int {
-    EnvManager.shared.envValue(rawKey: key, default: defaultValue, searchInDomain: searchInDomain)
+    EnvManager.shared.envIntValue(rawKey: key, default: defaultValue, searchInDomain: searchInDomain)
 }
+
+// MARK: - Env and config
 
 #if os(macOS)
 // NOTE: #if os(macOS) check is not accurate if we are cross compiling for Linux platform. So we add an env key to specify it.
@@ -105,20 +132,16 @@ let buildForDarwinPlatform = envEnable("BUILD_FOR_DARWIN_PLATFORM", default: tru
 #else
 let buildForDarwinPlatform = envEnable("BUILD_FOR_DARWIN_PLATFORM")
 #endif
-
-
 // https://github.com/SwiftPackageIndex/SwiftPackageIndex-Server/issues/3061#issuecomment-2118821061
 // By-pass https://github.com/swiftlang/swift-package-manager/issues/7580
-let isSPIDocGenerationBuild = envEnable("SPI_GENERATE_DOCS", default: false)
-let isSPIBuild = envEnable("SPI_BUILD")
-
-// MARK: - Env and Config
+let isSPIDocGenerationBuild = envEnable("SPI_GENERATE_DOCS", searchInDomain: false)
+let isSPIBuild = envEnable("SPI_BUILD", searchInDomain: false)
 
 let isXcodeEnv = Context.environment["__CFBundleIdentifier"] == "com.apple.dt.Xcode"
 let development = envEnable("DEVELOPMENT", default: false)
 
-// From Swift toolchain being installed or from Swift SDK.
-func detectLibSwiftPath() -> String {
+let libSwiftPath = {
+    // From Swift toolchain being installed or from Swift SDK.
     guard let libSwiftPath = Context.environment["OPENATTRIBUTEGRAPH_LIB_SWIFT_PATH"] else {
         // Fallback when LIB_SWIFT_PATH is not set
         let swiftBinPath = Context.environment["OPENATTRIBUTEGRAPH_BIN_SWIFT_PATH"] ?? Context.environment["_"] ?? "/usr/bin/swift"
@@ -127,8 +150,13 @@ func detectLibSwiftPath() -> String {
         return SDKPath.appending("/usr/lib/swift")
     }
     return libSwiftPath
-}
-let libSwiftPath = detectLibSwiftPath()
+}()
+
+let swiftToolchainPath = Context.environment["OPENATTRIBUTEGRAPH_SWIFT_TOOLCHAIN_PATH"] ?? (development ? "/Volumes/BuildMachine/swift-project" : "")
+let swiftToolchainVersion = Context.environment["OPENATTRIBUTEGRAPH_SWIFT_TOOLCHAIN_VERSION"] ?? (development ? "6.0.2" : "")
+let swiftToolchainSupported = envEnable("SWIFT_TOOLCHAIN_SUPPORTED", default: !swiftToolchainVersion.isEmpty)
+
+
 
 var sharedCSettings: [CSetting] = [
     .unsafeFlags(["-I", libSwiftPath], .when(platforms: .nonDarwinPlatforms)),
@@ -156,7 +184,6 @@ var sharedSwiftSettings: [SwiftSetting] = [
 //
 // where <$OPENATTRIBUTEGRAPH_SWIFT_TOOLCHAIN_PATH> is the parent directory of the swift repository.
 
-let swiftToolchainPath = Context.environment["OPENATTRIBUTEGRAPH_SWIFT_TOOLCHAIN_PATH"] ?? (development ? "/Volumes/BuildMachine/swift-project" : "")
 if !swiftToolchainPath.isEmpty {
     sharedCSettings.append(
         .unsafeFlags(
@@ -180,7 +207,6 @@ if !swiftToolchainPath.isEmpty {
 
 // MARK: [env] OPENATTRIBUTEGRAPH_SWIFT_TOOLCHAIN_VERSION
 
-let swiftToolchainVersion = Context.environment["OPENATTRIBUTEGRAPH_SWIFT_TOOLCHAIN_VERSION"] ?? (development ? "6.0.2" : "")
 if !swiftToolchainVersion.isEmpty {
     sharedCSettings.append(
         .define("OPENATTRIBUTEGRAPH_SWIFT_TOOLCHAIN_VERSION", to: swiftToolchainVersion)
@@ -189,7 +215,6 @@ if !swiftToolchainVersion.isEmpty {
 
 // MARK: - [env] OPENATTRIBUTEGRAPH_SWIFT_TOOLCHAIN_SUPPORTED
 
-let swiftToolchainSupported = envEnable("SWIFT_TOOLCHAIN_SUPPORTED", default: !swiftToolchainVersion.isEmpty)
 if swiftToolchainSupported {
     sharedCSettings.append(.define("OPENATTRIBUTEGRAPH_SWIFT_TOOLCHAIN_SUPPORTED"))
     sharedSwiftSettings.append(.define("OPENATTRIBUTEGRAPH_SWIFT_TOOLCHAIN_SUPPORTED"))

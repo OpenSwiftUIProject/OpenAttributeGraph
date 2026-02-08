@@ -145,7 +145,8 @@ let libraryEvolutionCondition = envBoolValue("LIBRARY_EVOLUTION", default: build
 let compatibilityTestCondition = envBoolValue("COMPATIBILITY_TEST", default: false)
 
 let useLocalDeps = envBoolValue("USE_LOCAL_DEPS")
-let attributeGraphCondition = envBoolValue("ATTRIBUTEGRAPH", default: buildForDarwinPlatform && !isSPIBuild)
+let computeCondition = envBoolValue("OPENATTRIBUTESHIMS_COMPUTE", default: true)
+let attributeGraphCondition = envBoolValue("OPENATTRIBUTESHIMS_ATTRIBUTEGRAPH", default: buildForDarwinPlatform && !isSPIBuild)
 
 // MARK: - Shared Settings
 
@@ -226,6 +227,15 @@ extension Target {
         )
         var swiftSettings = swiftSettings ?? []
         swiftSettings.append(.define("OPENATTRIBUTEGRAPH_ATTRIBUTEGRAPH"))
+        self.swiftSettings = swiftSettings
+    }
+
+    func addComputeBinarySettings() {
+        dependencies.append(
+            "Compute",
+        )
+        var swiftSettings = swiftSettings ?? []
+        swiftSettings.append(.define("OPENATTRIBUTEGRAPH_COMPUTE"))
         self.swiftSettings = swiftSettings
     }
 }
@@ -385,7 +395,25 @@ if buildForDarwinPlatform {
     package.targets.append(openAttributeGraphCompatibilityTestsTarget)
 }
 
-if attributeGraphCondition {
+if computeCondition {
+    let computeBinary = envBoolValue("OPENATTRIBUTESHIMS_COMPUTE_BINARY", default: true)
+    if computeBinary {
+        let computeVersion = envStringValue("OPENATTRIBUTESHIMS_COMPUTE_BINARY_VERSION", default: "0.0.1")
+        let computeURL = envStringValue("OPENATTRIBUTESHIMS_COMPUTE_BINARY_URL", default: "https://github.com/Kyle-Ye/Compute/releases/download/\(computeVersion)/Compute.xcframework.zip")
+        let computeChecksum = envStringValue("OPENATTRIBUTESHIMS_COMPUTE_BINARY_CHECKSUM", default: "95a256da2055d7c73184aeb9be088ba7019f7ea79b8a31e2dd930526c5ccbe8f")
+        package.targets.append(
+            .binaryTarget(
+                name: "Compute",
+                url: computeURL,
+                checksum: computeChecksum
+            ),
+        )
+        openAttributeGraphShimsTarget.addComputeBinarySettings()
+    } else {
+        // TODO
+    }
+    package.platforms = [.iOS(.v18), .macOS(.v15), .macCatalyst(.v18), .tvOS(.v18), .watchOS(.v10), .visionOS(.v2)]
+} else if attributeGraphCondition {
     let privateFrameworkRepo: Package.Dependency
     if useLocalDeps {
         privateFrameworkRepo = Package.Dependency.package(path: "../DarwinPrivateFrameworks")

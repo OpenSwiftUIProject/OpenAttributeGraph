@@ -12,6 +12,9 @@ public let swiftToolchainSupported = false
 #endif
 #else
 @_exported public import AttributeGraph
+#if os(iOS) && !targetEnvironment(simulator)
+@_exported public import _AttributeGraphDeviceSwiftShims
+#endif
 public typealias OAGAttributeInfo = AGAttributeInfo
 public typealias OAGCachedValueOptions = AGCachedValueOptions
 public typealias OAGChangedValueFlags = AGChangedValueFlags

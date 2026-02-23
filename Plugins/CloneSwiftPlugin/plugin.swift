@@ -24,7 +24,7 @@ struct CloneSwiftPlugin: BuildToolPlugin {
                 executable: URL(filePath: "/bin/zsh"),
                 arguments: [
                     "-c",
-                    "\(scriptArgs) 2>&1 || echo 'warning: CloneSwiftPlugin: clone-swift.sh failed (sandbox may have blocked it). Run Scripts/clone-swift.sh manually.'",
+                    "\(scriptArgs) 2>&1 || echo 'warning: CloneSwiftPlugin: clone-swift.sh failed. Run Scripts/clone-swift.sh manually or use swift build --disable-sandbox.'",
                 ],
                 outputFilesDirectory: context.pluginWorkDirectoryURL
             )

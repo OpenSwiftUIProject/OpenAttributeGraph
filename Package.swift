@@ -219,6 +219,11 @@ extension [Platform] {
 
 // MARK: - Targets
 
+let swiftClonePlugin = Target.plugin(
+    name: "CloneSwiftPlugin",
+    capability: .buildTool()
+)
+
 let openAttributeGraphTarget = Target.target(
     name: "OpenAttributeGraph",
     dependencies: ["OpenAttributeGraphCxx"],
@@ -236,7 +241,7 @@ let openAttributeGraphSPITarget = Target.target(
     linkerSettings: [
         .linkedLibrary("z"),
     ],
-    plugins: ["CloneSwiftPlugin"]
+    plugins: [.plugin(name: swiftClonePlugin.name)]
 )
 let openAttributeGraphShimsTarget = Target.target(
     name: "OpenAttributeGraphShims",
@@ -295,10 +300,7 @@ let package = Package(
         .package(url: "https://github.com/apple/swift-numerics", from: "1.0.2"),
     ],
     targets: [
-        .plugin(
-            name: "CloneSwiftPlugin",
-            capability: .buildTool()
-        ),
+        swiftClonePlugin,
         openAttributeGraphTarget,
         openAttributeGraphSPITarget,
         openAttributeGraphShimsTarget,

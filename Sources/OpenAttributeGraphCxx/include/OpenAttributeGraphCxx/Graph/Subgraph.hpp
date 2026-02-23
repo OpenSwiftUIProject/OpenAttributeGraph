@@ -9,7 +9,7 @@
 #include <OpenAttributeGraphCxx/Graph/Graph.hpp>
 #include <OpenAttributeGraphCxx/Attribute/AttributeID.hpp>
 #include <OpenAttributeGraphCxx/Data/ClosureFunction.hpp>
-#include <OpenAttributeGraphCxx/Runtime/metadata.hpp>
+namespace OAG { namespace swift { class metadata; } }
 #include <pthread.h>
 
 typedef struct OAG_BRIDGED_TYPE(id) OAGSubgraphStorage * OAGSubgraphRef;

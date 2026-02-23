@@ -149,10 +149,6 @@ let libSwiftPath = {
 }()
 
 let swiftCheckoutPath = "\(Context.packageDirectory)/.build/checkouts/swift"
-let swiftCheckoutExists = FileManager.default.fileExists(
-    atPath: "\(swiftCheckoutPath)/include/swift/Runtime/Metadata.h"
-)
-let swiftToolchainSupported = envBoolValue("SWIFT_TOOLCHAIN_SUPPORTED", default: swiftCheckoutExists)
 
 let releaseVersion = envIntValue("TARGET_RELEASE", default: 2024)
 
@@ -184,10 +180,6 @@ sharedCSettings.append(
         "-isystem", "\(swiftCheckoutPath)/stdlib/public/SwiftShims",
     ])
 )
-if swiftToolchainSupported {
-    sharedCSettings.append(.define("OPENATTRIBUTEGRAPH_SWIFT_TOOLCHAIN_SUPPORTED"))
-    sharedSwiftSettings.append(.define("OPENATTRIBUTEGRAPH_SWIFT_TOOLCHAIN_SUPPORTED"))
-}
 if releaseVersion >= 2021 {
     for year in 2021 ... releaseVersion {
         sharedSwiftSettings.append(.define("OPENATTRIBUTEGRAPH_SUPPORT_\(year)_API"))

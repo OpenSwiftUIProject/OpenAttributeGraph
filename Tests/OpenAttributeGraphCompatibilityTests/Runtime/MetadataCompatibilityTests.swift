@@ -4,7 +4,7 @@
 
 import Testing
 
-@Suite(.enabled(if: swiftToolchainSupported))
+@Suite
 struct MetadataCompatibilityTests {
     class T1 {
         var a = 0

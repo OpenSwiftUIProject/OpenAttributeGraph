@@ -4,7 +4,7 @@
 
 import Testing
 
-@Suite(.enabled(if: swiftToolchainSupported))
+@Suite
 struct TupleTypeCompatibilityTests {
     class T1 {
         var a = 0
@@ -140,7 +140,7 @@ struct TupleTypeCompatibilityTests {
     }
 }
 
-@Suite(.enabled(if: swiftToolchainSupported))
+@Suite
 struct UnsafeMutableTupleCompatibilityTests {
     class T1 {
         var a = 0

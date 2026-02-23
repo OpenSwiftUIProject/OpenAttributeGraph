@@ -148,9 +148,11 @@ let libSwiftPath = {
     return libSwiftPath
 }()
 
-let swiftToolchainPath = envStringValue("SWIFT_TOOLCHAIN_PATH") ?? (development ? "/Volumes/BuildMachine/swift-project" : "")
-let swiftToolchainVersion = envStringValue("SWIFT_TOOLCHAIN_VERSION") ?? (development ? "6.0.2" : "")
-let swiftToolchainSupported = envBoolValue("SWIFT_TOOLCHAIN_SUPPORTED", default: !swiftToolchainVersion.isEmpty)
+let swiftCheckoutPath = "\(Context.packageDirectory)/.build/checkouts/swift"
+let swiftCheckoutExists = FileManager.default.fileExists(
+    atPath: "\(swiftCheckoutPath)/include/swift/Runtime/Metadata.h"
+)
+let swiftToolchainSupported = envBoolValue("SWIFT_TOOLCHAIN_SUPPORTED", default: swiftCheckoutExists)
 
 let releaseVersion = envIntValue("TARGET_RELEASE", default: 2024)
 
@@ -175,44 +177,13 @@ var sharedSwiftSettings: [SwiftSetting] = [
     .define("OPENATTRIBUTEGRAPH_RELEASE_\(releaseVersion)"),
 ]
 
-// Modified from: https://github.com/swiftlang/swift/blob/main/SwiftCompilerSources/Package.swift
-//
-// Create a couple of symlinks to an existing Ninja build:
-//
-//     ```shell
-//     cd $OPENATTRIBUTEGRAPH_SWIFT_TOOLCHAIN_PATH
-//     mkdir -p build/Default
-//     ln -s build/<Ninja-Build>/llvm-<os+arch> build/Default/llvm
-//     ln -s build/<Ninja-Build>/swift-<os+arch> build/Default/swift
-//     ```
-//
-// where <$OPENATTRIBUTEGRAPH_SWIFT_TOOLCHAIN_PATH> is the parent directory of the swift repository.
-
-if !swiftToolchainPath.isEmpty {
-    sharedCSettings.append(
-        .unsafeFlags(
-            [
-                "-static",
-                "-DCOMPILED_WITH_SWIFT",
-                "-DPURE_BRIDGING_MODE",
-                "-UIBOutlet", "-UIBAction", "-UIBInspectable",
-                "-I\(swiftToolchainPath)/swift/include",
-                "-I\(swiftToolchainPath)/swift/stdlib/public/SwiftShims",
-                "-I\(swiftToolchainPath)/llvm-project/llvm/include",
-                "-I\(swiftToolchainPath)/llvm-project/clang/include",
-                "-I\(swiftToolchainPath)/build/Default/swift/include",
-                "-I\(swiftToolchainPath)/build/Default/llvm/include",
-                "-I\(swiftToolchainPath)/build/Default/llvm/tools/clang/include",
-                "-DLLVM_DISABLE_ABI_BREAKING_CHECKS_ENFORCING", // Required to fix LLVM link issue
-            ]
-        )
-    )
-}
-if !swiftToolchainVersion.isEmpty {
-    sharedCSettings.append(
-        .define("OPENATTRIBUTEGRAPH_SWIFT_TOOLCHAIN_VERSION", to: swiftToolchainVersion)
-    )
-}
+sharedCSettings.append(
+    .unsafeFlags([
+        "-isystem", "\(swiftCheckoutPath)/include",
+        "-isystem", "\(swiftCheckoutPath)/stdlib/include",
+        "-isystem", "\(swiftCheckoutPath)/stdlib/public/SwiftShims",
+    ])
+)
 if swiftToolchainSupported {
     sharedCSettings.append(.define("OPENATTRIBUTEGRAPH_SWIFT_TOOLCHAIN_SUPPORTED"))
     sharedSwiftSettings.append(.define("OPENATTRIBUTEGRAPH_SWIFT_TOOLCHAIN_SUPPORTED"))
@@ -272,7 +243,8 @@ let openAttributeGraphSPITarget = Target.target(
     ],
     linkerSettings: [
         .linkedLibrary("z"),
-    ]
+    ],
+    plugins: ["CloneSwiftPlugin"]
 )
 let openAttributeGraphShimsTarget = Target.target(
     name: "OpenAttributeGraphShims",
@@ -331,6 +303,10 @@ let package = Package(
         .package(url: "https://github.com/apple/swift-numerics", from: "1.0.2"),
     ],
     targets: [
+        .plugin(
+            name: "CloneSwiftPlugin",
+            capability: .buildTool()
+        ),
         openAttributeGraphTarget,
         openAttributeGraphSPITarget,
         openAttributeGraphShimsTarget,

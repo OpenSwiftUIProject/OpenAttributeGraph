@@ -302,7 +302,8 @@ let utilitiesTestsTarget = Target.testTarget(
     dependencies: [
         .target(name: utilitiesTarget.name),
     ],
-    cxxSettings: [.define("SWIFT_TESTING"), .headerSearchPath("Sources/OpenAttributeGraphCxx/include")],
+    cSettings: sharedCSettings + [.define("SWIFT_TESTING")],
+    cxxSettings: sharedCxxSettings + [.define("SWIFT_TESTING")],
     swiftSettings: [.interoperabilityMode(.Cxx)]
 )
 let openAttributeGraphCxxTestsTarget = Target.testTarget(
@@ -312,7 +313,7 @@ let openAttributeGraphCxxTestsTarget = Target.testTarget(
     ],
     exclude: ["README.md"],
     cSettings: sharedCSettings + [.define("SWIFT_TESTING")],
-    cxxSettings: sharedCxxSettings,
+    cxxSettings: sharedCxxSettings + [.define("SWIFT_TESTING")],
     swiftSettings: sharedSwiftSettings + [.interoperabilityMode(.Cxx)]
 )
 let openAttributeGraphShimsTestsTarget = Target.testTarget(

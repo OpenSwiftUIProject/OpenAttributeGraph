@@ -10,15 +10,6 @@
 
 #include <Utilities/Base.hpp>
 
-#if OAG_TARGET_OS_DARWIN
-#include <CoreFoundation/CoreFoundation.h>
-#else
-#include <SwiftCorelibsCoreFoundation/CFBase.h>
-#ifdef SWIFT_TESTING
-#include <SwiftCorelibsCoreFoundation/CFData.h>
-#endif
-#endif
-
 OAG_ASSUME_NONNULL_BEGIN
 
 namespace util {

@@ -52,11 +52,11 @@ For a simpler setup, you can use the prebuilt XCFramework available on the [rele
 |--------|-------------|
 | **OpenAttributeGraph** | Main Swift module exposing the public API |
 | **OpenAttributeGraphCxx** | Core C++ engine implementation |
-| **OpenAttributeGraphShims** | Compatibility shims (uses OAG/AG implementation according to macro definition) |
-| **Utilities** | Low-level C++ data structures and smart pointers (Heap, HashTable, ForwardList, cf_ptr) |
+| **OpenAttributeGraphShims** | Compatibility shims for OAG API |
+| **Utilities** | Low-level C++ data structures and smart pointers |
 | **Platform** | Cross-platform abstraction for logging and memory allocation |
-| **SwiftBridging** | Swift/C++ bridging compatibility header |
-| **SwiftCorelibsCoreFoundation** | CoreFoundation API headers for non-Darwin platforms |
+| **SwiftBridging** | Cross-platform Swift/C++ bridging compatibility header |
+| **SwiftCorelibs** | System SDK API compatibility headers for non-Darwin platforms |
 
 ## Build
 
@@ -72,26 +72,6 @@ The project requires Swift toolchain headers for compilation. You can either clo
 
 # Option 2: Let the build plugin clone headers (requires --disable-sandbox)
 swift build --disable-sandbox
-```
-
-### Set up LIB_SWIFT_PATH on non-Darwin platform
-
-If your swift binary path is located in your `<toolchain>/usr/bin/swift` (eg. installed by [swiftbox](https://github.com/stevapple/swiftbox)), no setup is required.
-
-Otherwise set up it manully by exporting `LIB_SWIFT_PATH` environment variable.
-
-> The following command assume you already have [swiftly](https://github.com/swiftlang/swiftly) installed.
-
-```shell
-export OPENATTRIBUTEGRAPH_LIB_SWIFT_PATH="$(swiftly use --print-location)/usr/lib/swift"
-# Or use the swift_static path
-export OPENATTRIBUTEGRAPH_LIB_SWIFT_PATH="$(swiftly use --print-location)/usr/lib/swift_static"
-```
-
-Alternatively, you can set the path using the Swift SDK location. For example:
-
-```shell
-export OPENATTRIBUTEGRAPH_LIB_SWIFT_PATH=~/.swiftpm/swift-sdks/swift-6.1.3-RELEASE_static-linux-0.0.1.artifactbundle/swift-6.1.3-RELEASE_static-linux-0.0.1/swift-linux-musl/musl-1.2.5.sdk/aarch64/usr/lib/swift_static
 ```
 
 ## License

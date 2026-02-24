@@ -15,7 +15,7 @@ XCODEBUILD_DERIVED_DATA_PATH="$XCODEBUILD_BUILD_DIR/DerivedData"
 mkdir -p "$PROJECT_BUILD_DIR"
 cat > "$PROJECT_BUILD_DIR/module.modulemap" << 'EOF'
 framework module OpenAttributeGraph {
-  umbrella header "OpenAttributeGraph-umbrella.h"
+  umbrella header "OpenAttributeGraph.h"
   export *
   module * { export * }
 }

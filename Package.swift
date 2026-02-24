@@ -163,11 +163,17 @@ let attributeGraphCondition = envBoolValue("ATTRIBUTEGRAPH", default: buildForDa
 var sharedCSettings: [CSetting] = [
     .unsafeFlags(["-I", libSwiftPath], .when(platforms: .nonDarwinPlatforms)),
     .define("NDEBUG", .when(configuration: .release)),
+    // Rewrite malloc() to malloc_type_malloc() for type-isolated allocation buckets (xzone malloc).
+    .unsafeFlags(["-ftyped-memory-operations"], .when(platforms: .darwinPlatforms)),
 ]
 
 var sharedCxxSettings: [CXXSetting] = [
     .unsafeFlags(["-I", libSwiftPath], .when(platforms: .nonDarwinPlatforms)),
     .define("NDEBUG", .when(configuration: .release)),
+    // Rewrite malloc() to malloc_type_malloc() for type-isolated allocation buckets (xzone malloc).
+    .unsafeFlags(["-ftyped-memory-operations"], .when(platforms: .darwinPlatforms)),
+    // Rewrite operator new/delete to typed variants (operator new(size_t, std::__type_descriptor_t)).
+    .unsafeFlags(["-ftyped-cxx-new-delete"], .when(platforms: .darwinPlatforms)),
 ]
 
 var sharedSwiftSettings: [SwiftSetting] = [
@@ -226,6 +232,9 @@ extension Target {
 }
 
 extension [Platform] {
+    static var darwinPlatforms: [Platform] {
+        [.macOS, .iOS, .tvOS, .watchOS, .visionOS, .macCatalyst]
+    }
     static var nonDarwinPlatforms: [Platform] {
         [.linux, .android, .wasi, .openbsd, .windows]
     }

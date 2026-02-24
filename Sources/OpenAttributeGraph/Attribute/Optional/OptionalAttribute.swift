@@ -2,7 +2,7 @@
 //  OptionalAttribute.swift
 //  OpenAttributeGraph
 //
-//  Audited for RELEASE_2021
+//  Audited for 3.2.1
 //  Status: Complete
 
 /// An optional attribute wrapper that may or may not contain a value.

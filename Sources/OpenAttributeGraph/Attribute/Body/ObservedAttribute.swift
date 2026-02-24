@@ -2,7 +2,7 @@
 //  ObservedAttribute.swift
 //  OpenAttributeGraph
 //
-//  Audited for RELEASE_2021
+//  Audited for 3.2.1
 //  Status: Complete
 
 public protocol ObservedAttribute: _AttributeBody {

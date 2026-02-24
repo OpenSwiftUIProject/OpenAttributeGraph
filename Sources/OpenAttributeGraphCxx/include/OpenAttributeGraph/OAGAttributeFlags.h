@@ -2,7 +2,7 @@
 //  OAGAttributeFlags.h
 //  OpenAttributeGraphCxx
 //
-//  Audited for RELEASE_2021
+//  Audited for 3.2.1
 //  Status: Complete
 
 #ifndef OAGAttributeFlags_h

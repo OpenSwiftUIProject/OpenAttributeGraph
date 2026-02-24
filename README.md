@@ -46,6 +46,18 @@ dependencies: [
 
 For a simpler setup, you can use the prebuilt XCFramework available on the [releases page](https://github.com/OpenSwiftUIProject/OpenAttributeGraph/releases).
 
+## Project Structure
+
+| Target | Description |
+|--------|-------------|
+| **OpenAttributeGraph** | Main Swift module exposing the public API |
+| **OpenAttributeGraphCxx** | Core C++ engine implementation |
+| **OpenAttributeGraphShims** | Compatibility shims (uses OAG/AG implementation according to macro definition) |
+| **Utilities** | Low-level C++ data structures and smart pointers (Heap, HashTable, ForwardList, cf_ptr) |
+| **Platform** | Cross-platform abstraction for logging and memory allocation |
+| **SwiftBridging** | Swift/C++ bridging compatibility header |
+| **SwiftCorelibsCoreFoundation** | CoreFoundation API headers for non-Darwin platforms |
+
 ## Build
 
 The current suggested toolchain to build the project is Swift 6.1.2 / Xcode 16.4.

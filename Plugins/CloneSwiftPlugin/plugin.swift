@@ -21,7 +21,7 @@ struct CloneSwiftPlugin: BuildToolPlugin {
         return [
             .prebuildCommand(
                 displayName: "Clone Swift repository headers",
-                executable: URL(filePath: "/bin/zsh"),
+                executable: URL(filePath: "/bin/bash"),
                 arguments: [
                     "-c",
                     "\(scriptArgs) 2>&1 || echo 'warning: CloneSwiftPlugin: clone-swift.sh failed. Run Scripts/clone-swift.sh manually or use swift build --disable-sandbox.'",

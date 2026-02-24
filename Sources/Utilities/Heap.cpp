@@ -2,6 +2,7 @@
 //  Heap.cpp
 //  Utilities
 //
+//  Audited for 6.5.4
 //  Status: Complete
 
 #include <Utilities/Heap.hpp>

@@ -251,7 +251,7 @@ let swiftClonePlugin = Target.plugin(
 
 let platformTarget = Target.target(
     name: "Platform",
-    cSettings: [
+    cSettings: sharedCSettings + [
         .define("_GNU_SOURCE", .when(platforms: [.linux])),
     ]
 )
@@ -302,11 +302,18 @@ let openAttributeGraphShimsTarget = Target.target(
 
 // MARK: - Test Targets
 
+let utilitiesTestsTarget = Target.testTarget(
+    name: "UtilitiesTests",
+    dependencies: [
+        .target(name: utilitiesTarget.name),
+    ],
+    cxxSettings: [.define("SWIFT_TESTING")],
+    swiftSettings: [.interoperabilityMode(.Cxx)]
+)
 let openAttributeGraphCxxTestsTarget = Target.testTarget(
     name: "OpenAttributeGraphCxxTests",
     dependencies: [
         .target(name: openAttributeGraphCxxTarget.name),
-        .target(name: utilitiesTarget.name),
     ],
     exclude: ["README.md"],
     cSettings: sharedCSettings + [.define("SWIFT_TESTING")],
@@ -361,6 +368,7 @@ if compatibilityTestCondition {
     openAttributeGraphCompatibilityTestsTarget.addAGSettings()
 } else {
     package.targets += [
+        utilitiesTestsTarget,
         openAttributeGraphCxxTestsTarget,
         openAttributeGraphShimsTestsTarget,
     ]

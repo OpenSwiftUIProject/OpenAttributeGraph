@@ -82,6 +82,8 @@
 #define OAG_TARGET_OS_DARWIN 0
 #endif
 
+#include <CoreFoundation/CoreFoundation.h>
+
 // MARK: - Swift bridging
 
 #include <SwiftBridging/SwiftBridging.h>

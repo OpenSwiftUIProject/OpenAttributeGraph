@@ -5,11 +5,7 @@
 #include <OpenAttributeGraphCxx/Graph/Graph.hpp>
 #include <OpenAttributeGraphCxx/Graph/Subgraph.hpp>
 #include <OpenAttributeGraph/OAGGraphDescription.h>
-
-#if !OAG_TARGET_OS_WASI
 #include <dispatch/dispatch.h>
-#endif
-
 #include <pthread.h>
 
 pthread_key_t OAG::Graph::_current_update_key;

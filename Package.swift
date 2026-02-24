@@ -137,7 +137,7 @@ let development = envBoolValue("DEVELOPMENT", default: false)
 let warningsAsErrorsCondition = envBoolValue("WERROR", default: isXcodeEnv && development)
 
 let swiftCheckoutPath = "\(Context.packageDirectory)/.build/checkouts/swift"
-let coreFoundationPath = "\(Context.packageDirectory)/Sources/SwiftCorelibsCoreFoundation"
+let swiftCorelibsPath = "\(Context.packageDirectory)/Sources/SwiftCorelibs"
 
 let releaseVersion = envIntValue("TARGET_RELEASE", default: 2024)
 
@@ -178,23 +178,22 @@ sharedCSettings.append(
         "-isystem", "\(swiftCheckoutPath)/stdlib/public/SwiftShims",
     ])
 )
-sharedCSettings.append(
-    .unsafeFlags(
-        ["-isystem", "\(coreFoundationPath)/include",],
-        .when(platforms: .nonDarwinPlatforms)
-    )
-)
 sharedCxxSettings.append(
     .unsafeFlags([
         "-isystem", "\(swiftCheckoutPath)/include",
         "-isystem", "\(swiftCheckoutPath)/stdlib/include",
         "-isystem", "\(swiftCheckoutPath)/stdlib/public/SwiftShims",
-        "-isystem", "\(coreFoundationPath)/include",
     ])
+)
+sharedCSettings.append(
+    .unsafeFlags(
+        ["-isystem", "\(swiftCorelibsPath)/include"],
+        .when(platforms: .nonDarwinPlatforms)
+    )
 )
 sharedCxxSettings.append(
     .unsafeFlags(
-        ["-isystem", "\(coreFoundationPath)/include",],
+        ["-isystem", "\(swiftCorelibsPath)/include"],
         .when(platforms: .nonDarwinPlatforms)
     )
 )

@@ -282,5 +282,5 @@ CF_EXTERN_C_END
 
 #endif /* ! __COREFOUNDATION_CFRUNTIME__ */
 #else
-#include <SwiftCorelibsCoreFoundation/CFRuntime.h>
+#include <CoreFoundation/CFRuntime.h>
 #endif /* OAG_TARGET_OS_DARWIN */

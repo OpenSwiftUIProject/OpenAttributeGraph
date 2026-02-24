@@ -9,9 +9,7 @@
 #include <OpenAttributeGraphCxx/Misc/assert.hpp>
 #include <OpenAttributeGraphCxx/Misc/env.hpp>
 #include <pthread.h>
-#if !OAG_TARGET_OS_WASI
 #include <dispatch/dispatch.h>
-#endif
 
 namespace {
 CFRuntimeClass &subgraph_type_id() {

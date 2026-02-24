@@ -13,7 +13,7 @@
 namespace util {
 
 uint64_t pointer_hash(void const *pointer) {
-    int64_t result = (-1 ^ (int64_t)(pointer) << 0x20) + (int64_t)pointer;
+    uint64_t result = (-1 ^ (uint64_t)(pointer) << 0x20) + (uint64_t)pointer;
     result = result ^ result >> 0x16;
     result = result + (-1 ^ result << 0xd);
     result = (result ^ result >> 8) * 9;

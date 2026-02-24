@@ -165,7 +165,7 @@ var sharedCSettings: [CSetting] = [
     .define("NDEBUG", .when(configuration: .release)),
 ]
 
-var sharedCXXSettings: [CXXSetting] = [
+var sharedCxxSettings: [CXXSetting] = [
     .unsafeFlags(["-I", libSwiftPath], .when(platforms: .nonDarwinPlatforms)),
     .define("NDEBUG", .when(configuration: .release)),
 ]
@@ -185,7 +185,7 @@ sharedCSettings.append(
         "-isystem", "\(swiftCheckoutPath)/stdlib/public/SwiftShims",
     ])
 )
-sharedCXXSettings.append(
+sharedCxxSettings.append(
     .unsafeFlags([
         "-isystem", "\(swiftCheckoutPath)/include",
         "-isystem", "\(swiftCheckoutPath)/stdlib/include",
@@ -208,7 +208,7 @@ if libraryEvolutionCondition {
 }
 if !compatibilityTestCondition {
     sharedCSettings.append(.define("OPENATTRIBUTEGRAPH"))
-    sharedCXXSettings.append(.define("OPENATTRIBUTEGRAPH"))
+    sharedCxxSettings.append(.define("OPENATTRIBUTEGRAPH"))
     sharedSwiftSettings.append(.define("OPENATTRIBUTEGRAPH"))
 }
 
@@ -242,18 +242,25 @@ let openAttributeGraphTarget = Target.target(
     name: "OpenAttributeGraph",
     dependencies: ["OpenAttributeGraphCxx"],
     cSettings: sharedCSettings,
-    cxxSettings: sharedCXXSettings,
+    cxxSettings: sharedCxxSettings,
     swiftSettings: sharedSwiftSettings
 )
 // FIXME: Merge into one target
 // OpenAttributeGraph is a C++ & Swift mix target.
 // The SwiftPM support for such usage is still in progress.
-let openAttributeGraphSPITarget = Target.target(
+let platformTarget = Target.target(
+    name: "Platform",
+    cSettings: [
+        .define("_GNU_SOURCE", .when(platforms: [.linux])),
+    ]
+)
+let openAttributeGraphCxxTarget = Target.target(
     name: "OpenAttributeGraphCxx",
+    dependencies: ["Platform"],
     cSettings: sharedCSettings + [
         .define("__COREFOUNDATION_FORSWIFTFOUNDATIONONLY__", to: "1", .when(platforms: .nonDarwinPlatforms)),
     ],
-    cxxSettings: sharedCXXSettings,
+    cxxSettings: sharedCxxSettings,
     linkerSettings: [
         .linkedLibrary("z"),
     ],
@@ -262,7 +269,7 @@ let openAttributeGraphSPITarget = Target.target(
 let openAttributeGraphShimsTarget = Target.target(
     name: "OpenAttributeGraphShims",
     cSettings: sharedCSettings,
-    cxxSettings: sharedCXXSettings,
+    cxxSettings: sharedCxxSettings,
     swiftSettings: sharedSwiftSettings
 )
 
@@ -275,7 +282,7 @@ let openAttributeGraphTestsTarget = Target.testTarget(
     ],
     exclude: ["README.md"],
     cSettings: sharedCSettings,
-    cxxSettings: sharedCXXSettings,
+    cxxSettings: sharedCxxSettings,
     swiftSettings: sharedSwiftSettings
 )
 let openAttributeGraphCxxTestsTarget = Target.testTarget(
@@ -285,7 +292,7 @@ let openAttributeGraphCxxTestsTarget = Target.testTarget(
     ],
     exclude: ["README.md"],
     cSettings: sharedCSettings + [.define("SWIFT_TESTING")],
-    cxxSettings: sharedCXXSettings,
+    cxxSettings: sharedCxxSettings,
     swiftSettings: sharedSwiftSettings + [.interoperabilityMode(.Cxx)]
 )
 let openAttributeGraphShimsTestsTarget = Target.testTarget(
@@ -295,7 +302,7 @@ let openAttributeGraphShimsTestsTarget = Target.testTarget(
     ],
     exclude: ["README.md"],
     cSettings: sharedCSettings,
-    cxxSettings: sharedCXXSettings,
+    cxxSettings: sharedCxxSettings,
     swiftSettings: sharedSwiftSettings
 )
 let openAttributeGraphCompatibilityTestsTarget = Target.testTarget(
@@ -305,7 +312,7 @@ let openAttributeGraphCompatibilityTestsTarget = Target.testTarget(
     ] + (compatibilityTestCondition ? [] : ["OpenAttributeGraph"]),
     exclude: ["README.md"],
     cSettings: sharedCSettings,
-    cxxSettings: sharedCXXSettings,
+    cxxSettings: sharedCxxSettings,
     swiftSettings: sharedSwiftSettings
 )
 
@@ -322,8 +329,9 @@ let package = Package(
     ],
     targets: [
         swiftClonePlugin,
+        platformTarget,
         openAttributeGraphTarget,
-        openAttributeGraphSPITarget,
+        openAttributeGraphCxxTarget,
         openAttributeGraphShimsTarget,
     ],
     cxxLanguageStandard: .cxx20

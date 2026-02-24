@@ -52,11 +52,11 @@ For a simpler setup, you can use the prebuilt XCFramework available on the [rele
 |--------|-------------|
 | **OpenAttributeGraph** | Main Swift module exposing the public API |
 | **OpenAttributeGraphCxx** | Core C++ engine implementation |
-| **OpenAttributeGraphShims** | Compatibility shims (uses OAG/AG implementation according to macro definition) |
-| **Utilities** | Low-level C++ data structures and smart pointers (Heap, HashTable, ForwardList, cf_ptr) |
+| **OpenAttributeGraphShims** | Compatibility shims for OAG API |
+| **Utilities** | Low-level C++ data structures and smart pointers |
 | **Platform** | Cross-platform abstraction for logging and memory allocation |
-| **SwiftBridging** | Swift/C++ bridging compatibility header |
-| **SwiftCorelibsCoreFoundation** | CoreFoundation API headers for non-Darwin platforms |
+| **SwiftBridging** | Cross-platform Swift/C++ bridging compatibility header |
+| **SwiftCorelibs** | System SDK API compatibility headers for non-Darwin platforms |
 
 ## Build
 

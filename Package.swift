@@ -138,6 +138,7 @@ let warningsAsErrorsCondition = envBoolValue("WERROR", default: isXcodeEnv && de
 
 let swiftCheckoutPath = "\(Context.packageDirectory)/.build/checkouts/swift"
 let swiftCorelibsPath = envStringValue("LIB_SWIFT_PATH") ?? "\(Context.packageDirectory)/Sources/SwiftCorelibs/include"
+let swiftBridgingPath = "\(Context.packageDirectory)/Sources/SwiftBridging/include"
 
 let releaseVersion = envIntValue("TARGET_RELEASE", default: 2024)
 
@@ -176,6 +177,7 @@ sharedCSettings.append(
         "-isystem", "\(swiftCheckoutPath)/include",
         "-isystem", "\(swiftCheckoutPath)/stdlib/include",
         "-isystem", "\(swiftCheckoutPath)/stdlib/public/SwiftShims",
+        "-isystem", swiftBridgingPath,
     ])
 )
 sharedCxxSettings.append(
@@ -183,6 +185,7 @@ sharedCxxSettings.append(
         "-isystem", "\(swiftCheckoutPath)/include",
         "-isystem", "\(swiftCheckoutPath)/stdlib/include",
         "-isystem", "\(swiftCheckoutPath)/stdlib/public/SwiftShims",
+        "-isystem", swiftBridgingPath,
     ])
 )
 sharedCSettings.append(

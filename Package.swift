@@ -299,9 +299,10 @@ let utilitiesTestsTarget = Target.testTarget(
     dependencies: [
         .target(name: utilitiesTarget.name),
     ],
+    exclude: ["README.md"],
     cSettings: sharedCSettings + [.define("SWIFT_TESTING")],
     cxxSettings: sharedCxxSettings + [.define("SWIFT_TESTING")],
-    swiftSettings: [.interoperabilityMode(.Cxx)]
+    swiftSettings: sharedSwiftSettings + [.interoperabilityMode(.Cxx)]
 )
 let openAttributeGraphCxxTestsTarget = Target.testTarget(
     name: "OpenAttributeGraphCxxTests",

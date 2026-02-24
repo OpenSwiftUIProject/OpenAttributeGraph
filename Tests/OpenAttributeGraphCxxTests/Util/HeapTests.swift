@@ -2,7 +2,7 @@
 //  HeapTests.swift
 //  OpenAttributeGraphCxxTests
 
-import OpenAttributeGraphCxx_Private.Util
+import Utilities
 import Testing
 
 @Suite("Heap tests")

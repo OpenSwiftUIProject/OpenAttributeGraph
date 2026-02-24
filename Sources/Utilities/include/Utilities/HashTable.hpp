@@ -1,15 +1,14 @@
 //
 //  HashTable.hpp
-//  OpenAttributeGraphCxx
+//  Utilities
 //
 //  Status: Complete
 //  Modified based Compute code
 
-#ifndef OPENATTRIBUTEGRAPH_CXX_UTIL_HASHTABLE_HPP
-#define OPENATTRIBUTEGRAPH_CXX_UTIL_HASHTABLE_HPP
+#ifndef UTILITIES_HASHTABLE_HPP
+#define UTILITIES_HASHTABLE_HPP
 
-#include <OpenAttributeGraph/OAGBase.h>
-#include <OpenAttributeGraphCxx/SwiftBridging.h>
+#include <Utilities/Base.hpp>
 
 OAG_ASSUME_NONNULL_BEGIN
 
@@ -130,4 +129,4 @@ public:
 
 OAG_ASSUME_NONNULL_END
 
-#endif /* OPENATTRIBUTEGRAPH_CXX_UTIL_HASHTABLE_HPP */
+#endif /* UTILITIES_HASHTABLE_HPP */

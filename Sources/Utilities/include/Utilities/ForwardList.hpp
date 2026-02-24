@@ -1,15 +1,15 @@
 //
 //  ForwardList.hpp
-//  OpenAttributeGraphCxx
+//  Utilities
 //
 //  Status: Complete
 //  Modified based Compute code
 
-#ifndef OPENATTRIBUTEGRAPH_CXX_UTIL_FORWARD_LIST_HPP
-#define OPENATTRIBUTEGRAPH_CXX_UTIL_FORWARD_LIST_HPP
+#ifndef UTILITIES_FORWARD_LIST_HPP
+#define UTILITIES_FORWARD_LIST_HPP
 
-#include <OpenAttributeGraph/OAGBase.h>
-#include <OpenAttributeGraphCxx/Util/Heap.hpp>
+#include <Utilities/Base.hpp>
+#include <Utilities/Heap.hpp>
 
 OAG_ASSUME_NONNULL_BEGIN
 
@@ -176,4 +176,4 @@ void UInt64ForwardList::pop_front() { ForwardList<uint64_t>::pop_front(); }
 
 OAG_ASSUME_NONNULL_END
 
-#endif /* OPENATTRIBUTEGRAPH_CXX_UTIL_FORWARD_LIST_HPP */
+#endif /* UTILITIES_FORWARD_LIST_HPP */

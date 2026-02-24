@@ -1,0 +1,6 @@
+module Utilities {
+    requires cplusplus
+    umbrella "Utilities"
+    export *
+    module * { export * }
+}

@@ -246,12 +246,26 @@ let platformTarget = Target.target(
         .define("_GNU_SOURCE", .when(platforms: [.linux])),
     ]
 )
+let swiftCorelibsCoreFoundationTarget = Target.target(
+    name: "SwiftCorelibsCoreFoundation"
+)
+let utilitiesTarget = Target.target(
+    name: "Utilities",
+    dependencies: [
+        .target(name: platformTarget.name),
+        .target(name: swiftCorelibsCoreFoundationTarget.name, condition: .when(platforms: .nonDarwinPlatforms)),
+    ],
+    cxxSettings: sharedCxxSettings
+)
 // FIXME: Merge into one target
 // OpenAttributeGraph is a C++ & Swift mix target.
 // The SwiftPM support for such usage is still in progress.
 let openAttributeGraphCxxTarget = Target.target(
     name: "OpenAttributeGraphCxx",
-    dependencies: [.target(name: platformTarget.name)],
+    dependencies: [
+        .target(name: platformTarget.name),
+        .target(name: utilitiesTarget.name),
+    ],
     cSettings: sharedCSettings + [
         .define("__COREFOUNDATION_FORSWIFTFOUNDATIONONLY__", to: "1", .when(platforms: .nonDarwinPlatforms)),
     ],
@@ -283,6 +297,7 @@ let openAttributeGraphCxxTestsTarget = Target.testTarget(
     name: "OpenAttributeGraphCxxTests",
     dependencies: [
         .target(name: openAttributeGraphCxxTarget.name),
+        .target(name: utilitiesTarget.name),
     ],
     exclude: ["README.md"],
     cSettings: sharedCSettings + [.define("SWIFT_TESTING")],
@@ -324,6 +339,8 @@ let package = Package(
     targets: [
         swiftClonePlugin,
         platformTarget,
+        swiftCorelibsCoreFoundationTarget,
+        utilitiesTarget,
         openAttributeGraphTarget,
         openAttributeGraphCxxTarget,
         openAttributeGraphShimsTarget,

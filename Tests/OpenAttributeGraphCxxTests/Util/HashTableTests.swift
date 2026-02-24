@@ -2,7 +2,7 @@
 //  HashTableTests.swift
 //  OpenAttributeGraphCxxTests
 
-import OpenAttributeGraphCxx_Private.Util
+import Utilities
 import Testing
 
 @Suite("HashTable tests")

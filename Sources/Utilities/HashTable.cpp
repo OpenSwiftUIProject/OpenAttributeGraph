@@ -1,13 +1,14 @@
 //
 //  HashTable.cpp
-//  OpenAttributeGraphCxx
+//  Utilities
 //
 //  Status: Complete
 //  Modified based Compute code
 
-#include <OpenAttributeGraphCxx/Util/HashTable.hpp>
-#include <OpenAttributeGraphCxx/Util/Heap.hpp>
+#include <Utilities/HashTable.hpp>
+#include <Utilities/Heap.hpp>
 #include <memory>
+#include <cstring>
 
 namespace util {
 

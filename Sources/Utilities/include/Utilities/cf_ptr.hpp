@@ -1,15 +1,23 @@
 //
 //  cf_ptr.hpp
-//  OpenAttributeGraphCxx
+//  Utilities
 //
 //  Status: Complete
 //  Modified based Compute code
 
-#ifndef OPENATTRIBUTEGRAPH_CXX_UTIL_CF_PTR_HPP
-#define OPENATTRIBUTEGRAPH_CXX_UTIL_CF_PTR_HPP
+#ifndef UTILITIES_CF_PTR_HPP
+#define UTILITIES_CF_PTR_HPP
 
-#include <OpenAttributeGraph/OAGBase.h>
+#include <Utilities/Base.hpp>
+
+#if OAG_TARGET_OS_DARWIN
 #include <CoreFoundation/CoreFoundation.h>
+#else
+#include <SwiftCorelibsCoreFoundation/CFBase.h>
+#ifdef SWIFT_TESTING
+#include <SwiftCorelibsCoreFoundation/CFData.h>
+#endif
+#endif
 
 OAG_ASSUME_NONNULL_BEGIN
 
@@ -106,4 +114,4 @@ using cf_mutable_data_ptr = cf_ptr<CFMutableDataRef>;
 
 OAG_ASSUME_NONNULL_END
 
-#endif /* OPENATTRIBUTEGRAPH_CXX_UTIL_CF_PTR_HPP */
+#endif /* UTILITIES_CF_PTR_HPP */

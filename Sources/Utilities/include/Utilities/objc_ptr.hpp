@@ -1,14 +1,14 @@
 //
 //  objc_ptr.hpp
-//  OpenAttributeGraphCxx
+//  Utilities
 //
 //  Status: Complete
 //  Modified based Compute code
 
-#ifndef OPENATTRIBUTEGRAPH_CXX_UTIL_OBJC_PTR_HPP
-#define OPENATTRIBUTEGRAPH_CXX_UTIL_OBJC_PTR_HPP
+#ifndef UTILITIES_OBJC_PTR_HPP
+#define UTILITIES_OBJC_PTR_HPP
 
-#include <OpenAttributeGraph/OAGBase.h>
+#include <Utilities/Base.hpp>
 
 #if OAG_TARGET_OS_DARWIN
 #include <objc/objc.h>
@@ -112,4 +112,4 @@ OAG_ASSUME_NONNULL_END
 
 #endif
 
-#endif /* OPENATTRIBUTEGRAPH_CXX_UTIL_OBJC_PTR_HPP */
+#endif /* UTILITIES_OBJC_PTR_HPP */

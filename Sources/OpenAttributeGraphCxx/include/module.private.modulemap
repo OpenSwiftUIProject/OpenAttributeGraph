@@ -44,13 +44,6 @@ module OpenAttributeGraphCxx_Private.Runtime {
     export *
 }
 
-module OpenAttributeGraphCxx_Private.Util {
-    requires cplusplus
-    umbrella "OpenAttributeGraphCxx/Util"
-    export *
-    module * { export * }
-}
-
 module OpenAttributeGraphCxx_Private.Vector {
     requires cplusplus
     umbrella "OpenAttributeGraphCxx/Vector"

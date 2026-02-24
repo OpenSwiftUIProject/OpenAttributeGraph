@@ -1,11 +1,11 @@
 //
 //  Heap.cpp
-//  OpenAttributeGraphCxx
+//  Utilities
 //
 //  Status: Complete
 //  Modified based Compute code
 
-#include <OpenAttributeGraphCxx/Util/Heap.hpp>
+#include <Utilities/Heap.hpp>
 #include <algorithm>
 
 namespace util {

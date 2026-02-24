@@ -58,10 +58,6 @@ public:
 
     void print() const;
 
-    #ifdef SWIFT_TESTING
-    uint64_t *_Nonnull alloc_uint64(size_t count = 1) SWIFT_RETURNS_INDEPENDENT_VALUE { return alloc<uint64_t>(count); }
-    #endif
-
 } SWIFT_UNSAFE_REFERENCE;
 
 template <unsigned int _inline_size> class InlineHeap : public Heap {

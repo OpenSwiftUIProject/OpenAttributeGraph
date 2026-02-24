@@ -159,7 +159,7 @@ struct HashTableTests {
         }
     }
 
-    @Test("Remove head of bucket then insert - should not create cycle", .disabled("FIXME"))
+    @Test("Remove head of bucket then insert - should not create cycle")
     @available(iOS 16.4, *)
     func removeHeadThenInsert() {
         let table = util.UntypedTable.create()
@@ -214,7 +214,7 @@ struct HashTableTests {
         #expect(iterationCount == 32, "for_each should visit exactly count() items")
     }
 
-    @Test("Remove and reinsert same key - lookup should work", .disabled("FIXME"))
+    @Test("Remove and reinsert same key - lookup should work")
     @available(iOS 16.4, *)
     func removeAndReinsertSameKey() {
         let table = util.UntypedTable.create()
@@ -291,7 +291,7 @@ struct HashTableTests {
         #expect(iterationCount == 2, "for_each should visit exactly 2 items after reinsertion")
     }
 
-    @Test("Grow buckets should not lose nodes", .disabled("FIXME"))
+    @Test("Grow buckets should not lose nodes")
     @available(iOS 16.4, *)
     func growBucketsPreservesAllNodes() {
         let table = util.UntypedTable.create()

@@ -34,7 +34,19 @@ jobs:
         run: Scripts/CI/darwin_setup_build.sh
         shell: bash
       - name: Swift version
-        run: swift --version
+        id: swift-version
+        run: |
+          swift --version
+          SWIFT_VERSION=$(swift --version 2>/dev/null | grep -oE 'Swift version [0-9]+\.[0-9]+' | grep -oE '[0-9]+\.[0-9]+')
+          echo "major=$(echo $SWIFT_VERSION | cut -d. -f1)" >> $GITHUB_OUTPUT
+          echo "minor=$(echo $SWIFT_VERSION | cut -d. -f2)" >> $GITHUB_OUTPUT
+        shell: bash
+      - name: Checkout Swift headers
+        uses: ./.github/actions/checkout-swift-headers
+        with:
+          path: .build/checkouts/swift
+          swift-version-major: ${{ steps.swift-version.outputs.major }}
+          swift-version-minor: ${{ steps.swift-version.outputs.minor }}
       - name: Run tests against Apple's AttributeGraph on macOS via SwiftPM
         run: |
           swift test \

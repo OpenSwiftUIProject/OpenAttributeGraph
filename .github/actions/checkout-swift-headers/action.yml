@@ -1,0 +1,22 @@
+name: Checkout Swift Headers
+description: |
+  This action checks-out certain header files from the swiftlang/swift
+  repository by running Scripts/clone-swift.sh.
+
+inputs:
+  path:
+    description: Relative path under $GITHUB_WORKSPACE to place the repository
+    required: true
+  swift-version-major:
+    description: The Swift toolchain major version.
+    required: true
+  swift-version-minor:
+    description: The Swift toolchain minor version.
+    required: true
+
+runs:
+  using: "composite"
+  steps:
+    - name: Checkout Swift headers
+      run: ./Scripts/clone-swift.sh --path "${{ inputs.path }}" --swift-version "${{ inputs.swift-version-major }}.${{ inputs.swift-version-minor }}"
+      shell: bash

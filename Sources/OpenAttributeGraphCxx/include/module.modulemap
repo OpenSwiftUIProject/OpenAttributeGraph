@@ -3,6 +3,6 @@ module OpenAttributeGraphCxx {
 }
 
 module OpenAttributeGraphCxx.C {
-    umbrella header "OpenAttributeGraph/OpenAttributeGraph-umbrella.h"
+    umbrella header "OpenAttributeGraph/OpenAttributeGraph.h"
     export *
 }

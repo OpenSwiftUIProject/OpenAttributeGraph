@@ -59,7 +59,11 @@
 
 #include "OAGSwiftSupport.h"
 #include "OAGTargetConditionals.h"
+#if OAG_TARGET_OS_DARWIN
 #include <CoreFoundation/CoreFoundation.h>
+#else
+#include <SwiftCorelibsCoreFoundation/CoreFoundation.h>
+#endif
 #include <stdbool.h>
 #include <stdint.h>
 

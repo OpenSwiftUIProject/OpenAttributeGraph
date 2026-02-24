@@ -74,26 +74,6 @@ The project requires Swift toolchain headers for compilation. You can either clo
 swift build --disable-sandbox
 ```
 
-### Set up LIB_SWIFT_PATH on non-Darwin platform
-
-If your swift binary path is located in your `<toolchain>/usr/bin/swift` (eg. installed by [swiftbox](https://github.com/stevapple/swiftbox)), no setup is required.
-
-Otherwise set up it manully by exporting `LIB_SWIFT_PATH` environment variable.
-
-> The following command assume you already have [swiftly](https://github.com/swiftlang/swiftly) installed.
-
-```shell
-export OPENATTRIBUTEGRAPH_LIB_SWIFT_PATH="$(swiftly use --print-location)/usr/lib/swift"
-# Or use the swift_static path
-export OPENATTRIBUTEGRAPH_LIB_SWIFT_PATH="$(swiftly use --print-location)/usr/lib/swift_static"
-```
-
-Alternatively, you can set the path using the Swift SDK location. For example:
-
-```shell
-export OPENATTRIBUTEGRAPH_LIB_SWIFT_PATH=~/.swiftpm/swift-sdks/swift-6.1.3-RELEASE_static-linux-0.0.1.artifactbundle/swift-6.1.3-RELEASE_static-linux-0.0.1/swift-linux-musl/musl-1.2.5.sdk/aarch64/usr/lib/swift_static
-```
-
 ## License
 
 See LICENSE file - MIT

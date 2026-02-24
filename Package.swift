@@ -136,19 +136,8 @@ let isXcodeEnv = envStringValue("__CFBundleIdentifier", searchInDomain: false) =
 let development = envBoolValue("DEVELOPMENT", default: false)
 let warningsAsErrorsCondition = envBoolValue("WERROR", default: isXcodeEnv && development)
 
-let libSwiftPath = {
-    // From Swift toolchain being installed or from Swift SDK.
-    guard let libSwiftPath = envStringValue("LIB_SWIFT_PATH") else {
-        // Fallback when LIB_SWIFT_PATH is not set
-        let swiftBinPath = envStringValue("BIN_SWIFT_PATH") ?? envStringValue("_", searchInDomain: false) ?? "/usr/bin/swift"
-        let swiftBinURL = URL(fileURLWithPath: swiftBinPath)
-        let SDKPath = swiftBinURL.deletingLastPathComponent().deletingLastPathComponent().deletingLastPathComponent().path
-        return SDKPath.appending("/usr/lib/swift")
-    }
-    return libSwiftPath
-}()
-
 let swiftCheckoutPath = "\(Context.packageDirectory)/.build/checkouts/swift"
+let coreFoundationPath = "\(Context.packageDirectory)/Sources/SwiftCorelibsCoreFoundation"
 
 let releaseVersion = envIntValue("TARGET_RELEASE", default: 2024)
 
@@ -161,14 +150,12 @@ let attributeGraphCondition = envBoolValue("ATTRIBUTEGRAPH", default: buildForDa
 // MARK: - Shared Settings
 
 var sharedCSettings: [CSetting] = [
-    .unsafeFlags(["-I", libSwiftPath], .when(platforms: .nonDarwinPlatforms)),
     .define("NDEBUG", .when(configuration: .release)),
     // Rewrite malloc() to malloc_type_malloc() for type-isolated allocation buckets (xzone malloc).
     .unsafeFlags(["-ftyped-memory-operations"], .when(platforms: .darwinPlatforms)),
 ]
 
 var sharedCxxSettings: [CXXSetting] = [
-    .unsafeFlags(["-I", libSwiftPath], .when(platforms: .nonDarwinPlatforms)),
     .define("NDEBUG", .when(configuration: .release)),
     // Rewrite malloc() to malloc_type_malloc() for type-isolated allocation buckets (xzone malloc).
     .unsafeFlags(["-ftyped-memory-operations"], .when(platforms: .darwinPlatforms)),
@@ -191,14 +178,26 @@ sharedCSettings.append(
         "-isystem", "\(swiftCheckoutPath)/stdlib/public/SwiftShims",
     ])
 )
+sharedCSettings.append(
+    .unsafeFlags(
+        ["-isystem", "\(coreFoundationPath)/include",],
+        .when(platforms: .nonDarwinPlatforms)
+    )
+)
 sharedCxxSettings.append(
     .unsafeFlags([
         "-isystem", "\(swiftCheckoutPath)/include",
         "-isystem", "\(swiftCheckoutPath)/stdlib/include",
         "-isystem", "\(swiftCheckoutPath)/stdlib/public/SwiftShims",
+        "-isystem", "\(coreFoundationPath)/include",
     ])
 )
-
+sharedCxxSettings.append(
+    .unsafeFlags(
+        ["-isystem", "\(coreFoundationPath)/include",],
+        .when(platforms: .nonDarwinPlatforms)
+    )
+)
 if releaseVersion >= 2021 {
     for year in 2021 ... releaseVersion {
         sharedSwiftSettings.append(.define("OPENATTRIBUTEGRAPH_SUPPORT_\(year)_API"))
@@ -255,14 +254,10 @@ let platformTarget = Target.target(
         .define("_GNU_SOURCE", .when(platforms: [.linux])),
     ]
 )
-let swiftCorelibsCoreFoundationTarget = Target.target(
-    name: "SwiftCorelibsCoreFoundation"
-)
 let utilitiesTarget = Target.target(
     name: "Utilities",
     dependencies: [
         .target(name: platformTarget.name),
-        .target(name: swiftCorelibsCoreFoundationTarget.name, condition: .when(platforms: .nonDarwinPlatforms)),
     ],
     cxxSettings: sharedCxxSettings
 )
@@ -275,9 +270,7 @@ let openAttributeGraphCxxTarget = Target.target(
         .target(name: platformTarget.name),
         .target(name: utilitiesTarget.name),
     ],
-    cSettings: sharedCSettings + [
-        .define("__COREFOUNDATION_FORSWIFTFOUNDATIONONLY__", to: "1", .when(platforms: .nonDarwinPlatforms)),
-    ],
+    cSettings: sharedCSettings,
     cxxSettings: sharedCxxSettings,
     linkerSettings: [
         .linkedLibrary("z"),
@@ -355,7 +348,6 @@ let package = Package(
     targets: [
         swiftClonePlugin,
         platformTarget,
-        swiftCorelibsCoreFoundationTarget,
         utilitiesTarget,
         openAttributeGraphTarget,
         openAttributeGraphCxxTarget,

@@ -9,4 +9,4 @@ OPENATTRIBUTEGRAPH_ROOT="$(dirname $(dirname $(filepath $0)))"
 
 cd $OPENATTRIBUTEGRAPH_ROOT
 
-swift build
+swift build --disable-sandbox

@@ -1,14 +1,14 @@
 //
 //  free_deleter.hpp
-//  OpenAttributeGraphCxx
+//  Utilities
 //
+//  Audited for 6.5.4
 //  Status: Complete
-//  Modified based Compute code
 
-#ifndef OPENATTRIBUTEGRAPH_CXX_UTIL_FREE_DELETER_HPP
-#define OPENATTRIBUTEGRAPH_CXX_UTIL_FREE_DELETER_HPP
+#ifndef UTILITIES_FREE_DELETER_HPP
+#define UTILITIES_FREE_DELETER_HPP
 
-#include <OpenAttributeGraph/OAGBase.h>
+#include <Utilities/Base.hpp>
 
 OAG_ASSUME_NONNULL_BEGIN
 
@@ -27,4 +27,4 @@ public:
 
 OAG_ASSUME_NONNULL_END
 
-#endif /* OPENATTRIBUTEGRAPH_CXX_UTIL_FREE_DELETER_HPP */
+#endif /* UTILITIES_FREE_DELETER_HPP */

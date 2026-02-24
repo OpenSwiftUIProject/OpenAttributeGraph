@@ -1,0 +1,6 @@
+module Utilities {
+    header "Utilities/Utilities.hpp"
+    requires cplusplus
+
+    export *
+}

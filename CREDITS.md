@@ -7,6 +7,7 @@ This project uses third-party libraries and code. Their licenses and acknowledge
 ## Compute
 
 OpenAttributeGraphCxx's Data, Graph, Vector and more is modified based on [Compute](https://github.com/jcmosc/Compute)'s implementations.
+Platform, SwiftCorelibsCoreFoundation and Utilities are also modified based on Compute's implementations.
 
 Compute is licensed as follows:
 

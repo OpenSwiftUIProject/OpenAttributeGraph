@@ -163,11 +163,17 @@ let attributeGraphCondition = envBoolValue("ATTRIBUTEGRAPH", default: buildForDa
 var sharedCSettings: [CSetting] = [
     .unsafeFlags(["-I", libSwiftPath], .when(platforms: .nonDarwinPlatforms)),
     .define("NDEBUG", .when(configuration: .release)),
+    // Rewrite malloc() to malloc_type_malloc() for type-isolated allocation buckets (xzone malloc).
+    .unsafeFlags(["-ftyped-memory-operations"], .when(platforms: .darwinPlatforms)),
 ]
 
 var sharedCxxSettings: [CXXSetting] = [
     .unsafeFlags(["-I", libSwiftPath], .when(platforms: .nonDarwinPlatforms)),
     .define("NDEBUG", .when(configuration: .release)),
+    // Rewrite malloc() to malloc_type_malloc() for type-isolated allocation buckets (xzone malloc).
+    .unsafeFlags(["-ftyped-memory-operations"], .when(platforms: .darwinPlatforms)),
+    // Rewrite operator new/delete to typed variants (operator new(size_t, std::__type_descriptor_t)).
+    .unsafeFlags(["-ftyped-cxx-new-delete"], .when(platforms: .darwinPlatforms)),
 ]
 
 var sharedSwiftSettings: [SwiftSetting] = [
@@ -226,6 +232,9 @@ extension Target {
 }
 
 extension [Platform] {
+    static var darwinPlatforms: [Platform] {
+        [.macOS, .iOS, .tvOS, .watchOS, .visionOS, .macCatalyst]
+    }
     static var nonDarwinPlatforms: [Platform] {
         [.linux, .android, .wasi, .openbsd, .windows]
     }
@@ -242,16 +251,30 @@ let swiftClonePlugin = Target.plugin(
 
 let platformTarget = Target.target(
     name: "Platform",
-    cSettings: [
+    cSettings: sharedCSettings + [
         .define("_GNU_SOURCE", .when(platforms: [.linux])),
     ]
+)
+let swiftCorelibsCoreFoundationTarget = Target.target(
+    name: "SwiftCorelibsCoreFoundation"
+)
+let utilitiesTarget = Target.target(
+    name: "Utilities",
+    dependencies: [
+        .target(name: platformTarget.name),
+        .target(name: swiftCorelibsCoreFoundationTarget.name, condition: .when(platforms: .nonDarwinPlatforms)),
+    ],
+    cxxSettings: sharedCxxSettings
 )
 // FIXME: Merge into one target
 // OpenAttributeGraph is a C++ & Swift mix target.
 // The SwiftPM support for such usage is still in progress.
 let openAttributeGraphCxxTarget = Target.target(
     name: "OpenAttributeGraphCxx",
-    dependencies: [.target(name: platformTarget.name)],
+    dependencies: [
+        .target(name: platformTarget.name),
+        .target(name: utilitiesTarget.name),
+    ],
     cSettings: sharedCSettings + [
         .define("__COREFOUNDATION_FORSWIFTFOUNDATIONONLY__", to: "1", .when(platforms: .nonDarwinPlatforms)),
     ],
@@ -279,6 +302,14 @@ let openAttributeGraphShimsTarget = Target.target(
 
 // MARK: - Test Targets
 
+let utilitiesTestsTarget = Target.testTarget(
+    name: "UtilitiesTests",
+    dependencies: [
+        .target(name: utilitiesTarget.name),
+    ],
+    cxxSettings: [.define("SWIFT_TESTING")],
+    swiftSettings: [.interoperabilityMode(.Cxx)]
+)
 let openAttributeGraphCxxTestsTarget = Target.testTarget(
     name: "OpenAttributeGraphCxxTests",
     dependencies: [
@@ -324,6 +355,8 @@ let package = Package(
     targets: [
         swiftClonePlugin,
         platformTarget,
+        swiftCorelibsCoreFoundationTarget,
+        utilitiesTarget,
         openAttributeGraphTarget,
         openAttributeGraphCxxTarget,
         openAttributeGraphShimsTarget,
@@ -335,6 +368,7 @@ if compatibilityTestCondition {
     openAttributeGraphCompatibilityTestsTarget.addAGSettings()
 } else {
     package.targets += [
+        utilitiesTestsTarget,
         openAttributeGraphCxxTestsTarget,
         openAttributeGraphShimsTestsTarget,
     ]

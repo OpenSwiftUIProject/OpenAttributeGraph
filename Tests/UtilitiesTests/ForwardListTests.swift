@@ -1,8 +1,8 @@
 //
 //  ForwardListTests.swift
-//  OpenAttributeGraphCxxTests
+//  UtilitiesTests
 
-import OpenAttributeGraphCxx_Private.Util
+import Utilities
 import Testing
 
 @Suite("List tests")

@@ -3,7 +3,6 @@
 //  OpenAttributeGraphCxx
 //
 //  Status: Complete
-//  Modified based Compute code
 
 #ifndef ptr_hpp
 #define ptr_hpp

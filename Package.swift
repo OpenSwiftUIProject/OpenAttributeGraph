@@ -137,7 +137,7 @@ let development = envBoolValue("DEVELOPMENT", default: false)
 let warningsAsErrorsCondition = envBoolValue("WERROR", default: isXcodeEnv && development)
 
 let swiftCheckoutPath = "\(Context.packageDirectory)/.build/checkouts/swift"
-let swiftCorelibsPath = "\(Context.packageDirectory)/Sources/SwiftCorelibs"
+let swiftCorelibsPath = envStringValue("LIB_SWIFT_PATH") ?? "\(Context.packageDirectory)/Sources/SwiftCorelibs/include"
 
 let releaseVersion = envIntValue("TARGET_RELEASE", default: 2024)
 
@@ -187,13 +187,13 @@ sharedCxxSettings.append(
 )
 sharedCSettings.append(
     .unsafeFlags(
-        ["-isystem", "\(swiftCorelibsPath)/include"],
+        ["-isystem", swiftCorelibsPath],
         .when(platforms: .nonDarwinPlatforms)
     )
 )
 sharedCxxSettings.append(
     .unsafeFlags(
-        ["-isystem", "\(swiftCorelibsPath)/include"],
+        ["-isystem", swiftCorelibsPath],
         .when(platforms: .nonDarwinPlatforms)
     )
 )

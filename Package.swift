@@ -231,32 +231,27 @@ extension [Platform] {
     }
 }
 
-// MARK: - Targets
+// MARK: - Plugin
 
 let swiftClonePlugin = Target.plugin(
     name: "CloneSwiftPlugin",
     capability: .buildTool()
 )
 
-let openAttributeGraphTarget = Target.target(
-    name: "OpenAttributeGraph",
-    dependencies: ["OpenAttributeGraphCxx"],
-    cSettings: sharedCSettings,
-    cxxSettings: sharedCxxSettings,
-    swiftSettings: sharedSwiftSettings
-)
-// FIXME: Merge into one target
-// OpenAttributeGraph is a C++ & Swift mix target.
-// The SwiftPM support for such usage is still in progress.
+// MARK: - Targets
+
 let platformTarget = Target.target(
     name: "Platform",
     cSettings: [
         .define("_GNU_SOURCE", .when(platforms: [.linux])),
     ]
 )
+// FIXME: Merge into one target
+// OpenAttributeGraph is a C++ & Swift mix target.
+// The SwiftPM support for such usage is still in progress.
 let openAttributeGraphCxxTarget = Target.target(
     name: "OpenAttributeGraphCxx",
-    dependencies: ["Platform"],
+    dependencies: [.target(name: platformTarget.name)],
     cSettings: sharedCSettings + [
         .define("__COREFOUNDATION_FORSWIFTFOUNDATIONONLY__", to: "1", .when(platforms: .nonDarwinPlatforms)),
     ],
@@ -265,6 +260,15 @@ let openAttributeGraphCxxTarget = Target.target(
         .linkedLibrary("z"),
     ],
     plugins: [.plugin(name: swiftClonePlugin.name)]
+)
+let openAttributeGraphTarget = Target.target(
+    name: "OpenAttributeGraph",
+    dependencies: [
+        .target(name: openAttributeGraphCxxTarget.name),
+    ],
+    cSettings: sharedCSettings,
+    cxxSettings: sharedCxxSettings,
+    swiftSettings: sharedSwiftSettings
 )
 let openAttributeGraphShimsTarget = Target.target(
     name: "OpenAttributeGraphShims",
@@ -278,7 +282,7 @@ let openAttributeGraphShimsTarget = Target.target(
 let openAttributeGraphTestsTarget = Target.testTarget(
     name: "OpenAttributeGraphTests",
     dependencies: [
-        "OpenAttributeGraph",
+        .target(name: openAttributeGraphTarget.name),
     ],
     exclude: ["README.md"],
     cSettings: sharedCSettings,
@@ -288,7 +292,7 @@ let openAttributeGraphTestsTarget = Target.testTarget(
 let openAttributeGraphCxxTestsTarget = Target.testTarget(
     name: "OpenAttributeGraphCxxTests",
     dependencies: [
-        "OpenAttributeGraphCxx",
+        .target(name: openAttributeGraphCxxTarget.name),
     ],
     exclude: ["README.md"],
     cSettings: sharedCSettings + [.define("SWIFT_TESTING")],
@@ -298,7 +302,7 @@ let openAttributeGraphCxxTestsTarget = Target.testTarget(
 let openAttributeGraphShimsTestsTarget = Target.testTarget(
     name: "OpenAttributeGraphShimsTests",
     dependencies: [
-        "OpenAttributeGraphShims",
+        .target(name: openAttributeGraphShimsTarget.name),
     ],
     exclude: ["README.md"],
     cSettings: sharedCSettings,
@@ -309,7 +313,7 @@ let openAttributeGraphCompatibilityTestsTarget = Target.testTarget(
     name: "OpenAttributeGraphCompatibilityTests",
     dependencies: [
         .product(name: "Numerics", package: "swift-numerics"),
-    ] + (compatibilityTestCondition ? [] : ["OpenAttributeGraph"]),
+    ] + (compatibilityTestCondition ? [] : [.target(name: openAttributeGraphTarget.name)]),
     exclude: ["README.md"],
     cSettings: sharedCSettings,
     cxxSettings: sharedCxxSettings,
@@ -321,8 +325,8 @@ let openAttributeGraphCompatibilityTestsTarget = Target.testTarget(
 let package = Package(
     name: "OpenAttributeGraph",
     products: [
-        .library(name: "OpenAttributeGraph", type: .dynamic, targets: ["OpenAttributeGraph", "OpenAttributeGraphCxx"]),
-        .library(name: "OpenAttributeGraphShims", type: .dynamic, targets: ["OpenAttributeGraph", "OpenAttributeGraphCxx", "OpenAttributeGraphShims"]),
+        .library(name: "OpenAttributeGraph", type: .dynamic, targets: [openAttributeGraphTarget.name, openAttributeGraphCxxTarget.name]),
+        .library(name: "OpenAttributeGraphShims", type: .dynamic, targets: [openAttributeGraphTarget.name, openAttributeGraphCxxTarget.name, openAttributeGraphShimsTarget.name]),
     ],
     dependencies: [
         .package(url: "https://github.com/apple/swift-numerics", from: "1.0.2"),
@@ -370,6 +374,6 @@ if attributeGraphCondition {
         default: nil
     }
 } else {
-    openAttributeGraphShimsTarget.dependencies.append("OpenAttributeGraph")
+    openAttributeGraphShimsTarget.dependencies.append(.target(name: openAttributeGraphTarget.name))
     package.platforms = [.iOS(.v13), .macOS(.v10_15), .macCatalyst(.v13), .tvOS(.v13), .watchOS(.v5)]
 }

@@ -1,6 +1,6 @@
 module Utilities {
+    header "Utilities/Utilities.hpp"
     requires cplusplus
-    umbrella "Utilities"
+
     export *
-    module * { export * }
 }

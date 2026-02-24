@@ -1,6 +1,6 @@
 //
 //  SwiftBridging.h
-//  OpenAttributeGraphCxx
+//  SwiftBridging
 //
 //  Cross-platform Swift bridging compatibility header to solve <swift/bridging> issue on non-Darwin swift toolchain
 //  Based on WebKit's SwiftBridging.h approach https://github.com/WebKit/WebKit/blob/84fc0edf9e8649a56cca35cc48c73f211e310d14/Source/WTF/wtf/SwiftBridging.h

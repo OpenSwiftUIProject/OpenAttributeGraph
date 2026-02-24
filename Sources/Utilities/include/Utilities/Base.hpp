@@ -84,28 +84,4 @@
 
 // MARK: - Swift bridging
 
-#if __has_include(<swift/bridging>)
-#include <swift/bridging>
-#else
-#ifdef __has_attribute
-#define _CXX_INTEROP_HAS_ATTRIBUTE(x) __has_attribute(x)
-#else
-#define _CXX_INTEROP_HAS_ATTRIBUTE(x) 0
-#endif
-
-#if _CXX_INTEROP_HAS_ATTRIBUTE(swift_attr)
-#define _CXX_INTEROP_STRINGIFY(_x) #_x
-#define SWIFT_UNSAFE_REFERENCE                                                  \
-  __attribute__((swift_attr("import_reference")))                         \
-  __attribute__((swift_attr(_CXX_INTEROP_STRINGIFY(retain:immortal))))    \
-  __attribute__((swift_attr(_CXX_INTEROP_STRINGIFY(release:immortal))))   \
-  __attribute__((swift_attr("unsafe")))
-#else
-#define SWIFT_UNSAFE_REFERENCE
-#endif
-#undef _CXX_INTEROP_HAS_ATTRIBUTE
-#endif
-
-#ifndef SWIFT_UNSAFE_REFERENCE
-#define SWIFT_UNSAFE_REFERENCE
-#endif
+#include <SwiftBridging/SwiftBridging.h>

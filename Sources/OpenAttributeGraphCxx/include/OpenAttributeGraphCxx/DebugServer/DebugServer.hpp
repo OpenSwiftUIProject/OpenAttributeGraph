@@ -14,7 +14,7 @@
 #include <OpenAttributeGraphCxx/Vector/vector.hpp>
 #include <dispatch/dispatch.h>
 #include <memory>
-#include <OpenAttributeGraphCxx/SwiftBridging.h>
+#include <SwiftBridging/SwiftBridging.h>
 
 OAG_ASSUME_NONNULL_BEGIN
 

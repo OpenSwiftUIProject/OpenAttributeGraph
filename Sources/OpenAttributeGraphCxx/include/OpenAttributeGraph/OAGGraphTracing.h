@@ -40,12 +40,43 @@ void OAGGraphStopTracing(_Nullable OAGGraphRef graph) OAG_SWIFT_NAME(OAGGraphRef
 
 OAG_EXPORT
 OAG_REFINED_FOR_SWIFT
-OAGUniqueID OAGGraphAddTrace(OAGGraphRef graph, const OAGTraceRef trace, void *_Nullable context)
-OAG_SWIFT_NAME(OAGGraphRef.addTrace(self:_:context:));
+void OAGGraphSyncTracing(_Nullable OAGGraphRef graph) OAG_SWIFT_NAME(OAGGraphRef.syncTracing(_:));
+
+OAG_EXPORT
+OAG_REFINED_FOR_SWIFT
+CFStringRef OAGGraphCopyTracePath(_Nullable OAGGraphRef graph) OAG_SWIFT_NAME(OAGGraphRef.tracePath(_:));
+
+OAG_EXPORT
+OAG_REFINED_FOR_SWIFT
+OAGUniqueID OAGGraphAddTrace(OAGGraphRef graph, const OAGTraceRef trace, void *_Nullable context) OAG_SWIFT_NAME(OAGGraphRef.addTrace(self:_:context:));
 
 OAG_EXPORT
 OAG_REFINED_FOR_SWIFT
 void OAGGraphRemoveTrace(OAGGraphRef graph, OAGUniqueID trace_id) OAG_SWIFT_NAME(OAGGraphRef.removeTrace(self:traceID:));
+
+OAG_EXPORT
+OAG_REFINED_FOR_SWIFT
+void OAGGraphSetTrace(OAGGraphRef graph, const OAGTraceRef trace, void *_Nullable context) OAG_SWIFT_NAME(OAGGraphRef.setTrace(self:_:context:));
+
+OAG_EXPORT
+OAG_REFINED_FOR_SWIFT
+void OAGGraphResetTrace(OAGGraphRef graph) OAG_SWIFT_NAME(OAGGraphRef.resetTrace(self:));
+
+OAG_EXPORT
+OAG_REFINED_FOR_SWIFT
+bool OAGGraphIsTracingActive(OAGGraphRef graph) OAG_SWIFT_NAME(getter:OAGGraphRef.isTracingActive(self:));
+
+OAG_EXPORT
+OAG_REFINED_FOR_SWIFT
+const char *_Nullable OAGGraphGetTraceEventName(uint32_t event_id) OAG_SWIFT_NAME(OAGGraphRef.traceEventName(for:));
+
+OAG_EXPORT
+OAG_REFINED_FOR_SWIFT
+const char *_Nullable OAGGraphGetTraceEventSubsystem(uint32_t event_id) OAG_SWIFT_NAME(OAGGraphRef.traceEventSubsystem(for:));
+
+OAG_EXPORT
+OAG_REFINED_FOR_SWIFT
+uint32_t OAGGraphRegisterNamedTraceEvent(const char *event_name, const char *event_subsystem) OAG_SWIFT_NAME(OAGGraphRef.registerNamedTraceEvent(name:subsystem:));
 
 OAG_EXTERN_C_END
 

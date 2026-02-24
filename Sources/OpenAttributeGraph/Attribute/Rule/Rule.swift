@@ -2,7 +2,7 @@
 //  _AttributeBody.swift
 //  OpenAttributeGraph
 //
-//  Audited for RELEASE_2021
+//  Audited for 3.2.1
 //  Status: Complete
 
 public import OpenAttributeGraphCxx
@@ -65,7 +65,7 @@ extension Rule {
     public static func _update(_ pointer: UnsafeMutableRawPointer, attribute _: AnyAttribute) {
         let rule = pointer.assumingMemoryBound(to: Self.self)
         let value = rule.pointee.value
-        // Verified for RELEASE_2023
+        // Verified for 5.0.77
         withUnsafePointer(to: value) { value in
             Graph.setOutputValue(value)
         }
@@ -75,7 +75,7 @@ extension Rule {
         guard let initialValue else {
             return
         }
-        // Verified for RELEASE_2023
+        // Verified for 5.0.77
         withUnsafePointer(to: initialValue) { value in
             Graph.setOutputValue(value)
         }

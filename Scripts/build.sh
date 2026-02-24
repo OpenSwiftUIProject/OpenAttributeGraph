@@ -1,4 +1,4 @@
-#!/bin/zsh
+#!/bin/bash
 
 # A `realpath` alternative using the default C implementation.
 filepath() {

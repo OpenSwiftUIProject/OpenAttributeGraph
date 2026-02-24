@@ -148,9 +148,7 @@ let libSwiftPath = {
     return libSwiftPath
 }()
 
-let swiftToolchainPath = envStringValue("SWIFT_TOOLCHAIN_PATH") ?? (development ? "/Volumes/BuildMachine/swift-project" : "")
-let swiftToolchainVersion = envStringValue("SWIFT_TOOLCHAIN_VERSION") ?? (development ? "6.0.2" : "")
-let swiftToolchainSupported = envBoolValue("SWIFT_TOOLCHAIN_SUPPORTED", default: !swiftToolchainVersion.isEmpty)
+let swiftCheckoutPath = "\(Context.packageDirectory)/.build/checkouts/swift"
 
 let releaseVersion = envIntValue("TARGET_RELEASE", default: 2024)
 
@@ -167,6 +165,11 @@ var sharedCSettings: [CSetting] = [
     .define("NDEBUG", .when(configuration: .release)),
 ]
 
+var sharedCXXSettings: [CXXSetting] = [
+    .unsafeFlags(["-I", libSwiftPath], .when(platforms: .nonDarwinPlatforms)),
+    .define("NDEBUG", .when(configuration: .release)),
+]
+
 var sharedSwiftSettings: [SwiftSetting] = [
     .enableUpcomingFeature("InternalImportsByDefault"),
     .enableExperimentalFeature("Extern"),
@@ -175,48 +178,21 @@ var sharedSwiftSettings: [SwiftSetting] = [
     .define("OPENATTRIBUTEGRAPH_RELEASE_\(releaseVersion)"),
 ]
 
-// Modified from: https://github.com/swiftlang/swift/blob/main/SwiftCompilerSources/Package.swift
-//
-// Create a couple of symlinks to an existing Ninja build:
-//
-//     ```shell
-//     cd $OPENATTRIBUTEGRAPH_SWIFT_TOOLCHAIN_PATH
-//     mkdir -p build/Default
-//     ln -s build/<Ninja-Build>/llvm-<os+arch> build/Default/llvm
-//     ln -s build/<Ninja-Build>/swift-<os+arch> build/Default/swift
-//     ```
-//
-// where <$OPENATTRIBUTEGRAPH_SWIFT_TOOLCHAIN_PATH> is the parent directory of the swift repository.
+sharedCSettings.append(
+    .unsafeFlags([
+        "-isystem", "\(swiftCheckoutPath)/include",
+        "-isystem", "\(swiftCheckoutPath)/stdlib/include",
+        "-isystem", "\(swiftCheckoutPath)/stdlib/public/SwiftShims",
+    ])
+)
+sharedCXXSettings.append(
+    .unsafeFlags([
+        "-isystem", "\(swiftCheckoutPath)/include",
+        "-isystem", "\(swiftCheckoutPath)/stdlib/include",
+        "-isystem", "\(swiftCheckoutPath)/stdlib/public/SwiftShims",
+    ])
+)
 
-if !swiftToolchainPath.isEmpty {
-    sharedCSettings.append(
-        .unsafeFlags(
-            [
-                "-static",
-                "-DCOMPILED_WITH_SWIFT",
-                "-DPURE_BRIDGING_MODE",
-                "-UIBOutlet", "-UIBAction", "-UIBInspectable",
-                "-I\(swiftToolchainPath)/swift/include",
-                "-I\(swiftToolchainPath)/swift/stdlib/public/SwiftShims",
-                "-I\(swiftToolchainPath)/llvm-project/llvm/include",
-                "-I\(swiftToolchainPath)/llvm-project/clang/include",
-                "-I\(swiftToolchainPath)/build/Default/swift/include",
-                "-I\(swiftToolchainPath)/build/Default/llvm/include",
-                "-I\(swiftToolchainPath)/build/Default/llvm/tools/clang/include",
-                "-DLLVM_DISABLE_ABI_BREAKING_CHECKS_ENFORCING", // Required to fix LLVM link issue
-            ]
-        )
-    )
-}
-if !swiftToolchainVersion.isEmpty {
-    sharedCSettings.append(
-        .define("OPENATTRIBUTEGRAPH_SWIFT_TOOLCHAIN_VERSION", to: swiftToolchainVersion)
-    )
-}
-if swiftToolchainSupported {
-    sharedCSettings.append(.define("OPENATTRIBUTEGRAPH_SWIFT_TOOLCHAIN_SUPPORTED"))
-    sharedSwiftSettings.append(.define("OPENATTRIBUTEGRAPH_SWIFT_TOOLCHAIN_SUPPORTED"))
-}
 if releaseVersion >= 2021 {
     for year in 2021 ... releaseVersion {
         sharedSwiftSettings.append(.define("OPENATTRIBUTEGRAPH_SUPPORT_\(year)_API"))
@@ -232,6 +208,7 @@ if libraryEvolutionCondition {
 }
 if !compatibilityTestCondition {
     sharedCSettings.append(.define("OPENATTRIBUTEGRAPH"))
+    sharedCXXSettings.append(.define("OPENATTRIBUTEGRAPH"))
     sharedSwiftSettings.append(.define("OPENATTRIBUTEGRAPH"))
 }
 
@@ -256,10 +233,16 @@ extension [Platform] {
 
 // MARK: - Targets
 
+let swiftClonePlugin = Target.plugin(
+    name: "CloneSwiftPlugin",
+    capability: .buildTool()
+)
+
 let openAttributeGraphTarget = Target.target(
     name: "OpenAttributeGraph",
     dependencies: ["OpenAttributeGraphCxx"],
     cSettings: sharedCSettings,
+    cxxSettings: sharedCXXSettings,
     swiftSettings: sharedSwiftSettings
 )
 // FIXME: Merge into one target
@@ -270,13 +253,16 @@ let openAttributeGraphSPITarget = Target.target(
     cSettings: sharedCSettings + [
         .define("__COREFOUNDATION_FORSWIFTFOUNDATIONONLY__", to: "1", .when(platforms: .nonDarwinPlatforms)),
     ],
+    cxxSettings: sharedCXXSettings,
     linkerSettings: [
         .linkedLibrary("z"),
-    ]
+    ],
+    plugins: [.plugin(name: swiftClonePlugin.name)]
 )
 let openAttributeGraphShimsTarget = Target.target(
     name: "OpenAttributeGraphShims",
     cSettings: sharedCSettings,
+    cxxSettings: sharedCXXSettings,
     swiftSettings: sharedSwiftSettings
 )
 
@@ -289,6 +275,7 @@ let openAttributeGraphTestsTarget = Target.testTarget(
     ],
     exclude: ["README.md"],
     cSettings: sharedCSettings,
+    cxxSettings: sharedCXXSettings,
     swiftSettings: sharedSwiftSettings
 )
 let openAttributeGraphCxxTestsTarget = Target.testTarget(
@@ -298,6 +285,7 @@ let openAttributeGraphCxxTestsTarget = Target.testTarget(
     ],
     exclude: ["README.md"],
     cSettings: sharedCSettings + [.define("SWIFT_TESTING")],
+    cxxSettings: sharedCXXSettings,
     swiftSettings: sharedSwiftSettings + [.interoperabilityMode(.Cxx)]
 )
 let openAttributeGraphShimsTestsTarget = Target.testTarget(
@@ -307,6 +295,7 @@ let openAttributeGraphShimsTestsTarget = Target.testTarget(
     ],
     exclude: ["README.md"],
     cSettings: sharedCSettings,
+    cxxSettings: sharedCXXSettings,
     swiftSettings: sharedSwiftSettings
 )
 let openAttributeGraphCompatibilityTestsTarget = Target.testTarget(
@@ -316,6 +305,7 @@ let openAttributeGraphCompatibilityTestsTarget = Target.testTarget(
     ] + (compatibilityTestCondition ? [] : ["OpenAttributeGraph"]),
     exclude: ["README.md"],
     cSettings: sharedCSettings,
+    cxxSettings: sharedCXXSettings,
     swiftSettings: sharedSwiftSettings
 )
 
@@ -331,6 +321,7 @@ let package = Package(
         .package(url: "https://github.com/apple/swift-numerics", from: "1.0.2"),
     ],
     targets: [
+        swiftClonePlugin,
         openAttributeGraphTarget,
         openAttributeGraphSPITarget,
         openAttributeGraphShimsTarget,

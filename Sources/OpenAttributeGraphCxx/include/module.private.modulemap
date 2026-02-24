@@ -40,7 +40,7 @@ module OpenAttributeGraphCxx_Private.Misc {
 
 module OpenAttributeGraphCxx_Private.Runtime {
     requires cplusplus
-    umbrella "OpenAttributeGraphCxx/Runtime"
+    textual header "OpenAttributeGraphCxx/Runtime/metadata.hpp"
     export *
 }
 

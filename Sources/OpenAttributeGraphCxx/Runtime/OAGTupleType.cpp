@@ -9,12 +9,14 @@
 #include <OpenAttributeGraphCxx/Runtime/metadata.hpp>
 #include <OpenAttributeGraphCxx/Misc/assert.hpp>
 
-#ifdef OPENATTRIBUTEGRAPH_SWIFT_TOOLCHAIN_SUPPORTED
 #include <swift/Runtime/Metadata.h>
+#if OAG_TARGET_OS_DARWIN
+#include <malloc/malloc.h>
+#else
+#include <malloc.h>
 #endif
 
 OAGTupleType OAGNewTupleType(size_t count, const OAGTypeID *elements) {
-    #ifdef OPENATTRIBUTEGRAPH_SWIFT_TOOLCHAIN_SUPPORTED
     if (count == 1) {
         return elements[0];
     }
@@ -24,35 +26,23 @@ OAGTupleType OAGNewTupleType(size_t count, const OAGTypeID *elements) {
         OAG::precondition_failure("invalid tuple type.");
     }
     return reinterpret_cast<OAGTupleType>(response.Value);
-    #else
-    return nullptr;
-    #endif
 }
 
 size_t OAGTupleCount(OAGTupleType tuple_type) {
-    #ifdef OPENATTRIBUTEGRAPH_SWIFT_TOOLCHAIN_SUPPORTED
     auto metadata = reinterpret_cast<OAG::swift::metadata const*>(tuple_type);
     if (metadata->getKind() != swift::MetadataKind::Tuple) {
         return 1;
     }
     auto tuple_metadata = reinterpret_cast<const swift::TupleTypeMetadata *>(metadata);
     return tuple_metadata->NumElements;
-    #else
-    return 0;
-    #endif
 }
 
 size_t OAGTupleSize(OAGTupleType tuple_type) {
-    #ifdef OPENATTRIBUTEGRAPH_SWIFT_TOOLCHAIN_SUPPORTED
     auto metadata = reinterpret_cast<OAG::swift::metadata const*>(tuple_type);
     return metadata->vw_size();
-    #else
-    return 0;
-    #endif
 }
 
 OAGTypeID OAGTupleElementType(OAGTupleType tuple_type, size_t index) {
-    #ifdef OPENATTRIBUTEGRAPH_SWIFT_TOOLCHAIN_SUPPORTED
     auto metadata = reinterpret_cast<OAG::swift::metadata const*>(tuple_type);
     if (metadata->getKind() != swift::MetadataKind::Tuple) {
         if (index != 0) {
@@ -66,13 +56,9 @@ OAGTypeID OAGTupleElementType(OAGTupleType tuple_type, size_t index) {
     }
     auto element = tuple_metadata->getElement(unsigned(index));
     return reinterpret_cast<OAGTypeID>(element.Type);
-    #else
-    return nullptr;
-    #endif
 }
 
 size_t OAGTupleElementSize(OAGTupleType tuple_type, size_t index) {
-    #ifdef OPENATTRIBUTEGRAPH_SWIFT_TOOLCHAIN_SUPPORTED
     auto metadata = reinterpret_cast<OAG::swift::metadata const*>(tuple_type);
     if (metadata->getKind() != swift::MetadataKind::Tuple) {
         if (index != 0) {
@@ -86,13 +72,9 @@ size_t OAGTupleElementSize(OAGTupleType tuple_type, size_t index) {
     }
     auto element = tuple_metadata->getElement(unsigned(index));
     return element.Type->vw_size();
-    #else
-    return 0;
-    #endif
 }
 
 size_t OAGTupleElementOffset(OAGTupleType tuple_type, size_t index) {
-    #ifdef OPENATTRIBUTEGRAPH_SWIFT_TOOLCHAIN_SUPPORTED
     auto metadata = reinterpret_cast<OAG::swift::metadata const*>(tuple_type);
     if (metadata->getKind() != swift::MetadataKind::Tuple) {
         if (index != 0) {
@@ -106,13 +88,9 @@ size_t OAGTupleElementOffset(OAGTupleType tuple_type, size_t index) {
     }
     auto element = tuple_metadata->getElement(unsigned(index));
     return element.Offset;
-    #else
-    return 0;
-    #endif
 }
 
 size_t OAGTupleElementOffsetChecked(OAGTupleType tuple_type, size_t index, OAGTypeID check_type) {
-    #ifdef OPENATTRIBUTEGRAPH_SWIFT_TOOLCHAIN_SUPPORTED
     auto metadata = reinterpret_cast<OAG::swift::metadata const*>(tuple_type);
     if (metadata->getKind() != swift::MetadataKind::Tuple) {
         if (index != 0) {
@@ -132,12 +110,8 @@ size_t OAGTupleElementOffsetChecked(OAGTupleType tuple_type, size_t index, OAGTy
         OAG::precondition_failure("element type mismatch");
     }
     return element.Offset;
-    #else
-    return 0;
-    #endif
 }
 
-#ifdef OPENATTRIBUTEGRAPH_SWIFT_TOOLCHAIN_SUPPORTED
 void *update(void* dst_ptr, const void *src_ptr, const OAG::swift::metadata * metadata, OAGTupleCopyOptions options) {
     auto dst = reinterpret_cast<swift::OpaqueValue *>(dst_ptr);
     auto src = reinterpret_cast<swift::OpaqueValue *>(const_cast<void *>(src_ptr));
@@ -154,10 +128,8 @@ void *update(void* dst_ptr, const void *src_ptr, const OAG::swift::metadata * me
             OAG::precondition_failure("unknown copy options: %d", options);
     }
 }
-#endif
 
 void *OAGTupleSetElement(OAGTupleType tuple_type, void* tuple_value, size_t index, const void *element_value, OAGTypeID check_type, OAGTupleCopyOptions options) {
-    #ifdef OPENATTRIBUTEGRAPH_SWIFT_TOOLCHAIN_SUPPORTED
     auto metadata = reinterpret_cast<OAG::swift::metadata const*>(tuple_type);
     if (metadata->getKind() != swift::MetadataKind::Tuple) {
         if (index != 0) {
@@ -177,13 +149,9 @@ void *OAGTupleSetElement(OAGTupleType tuple_type, void* tuple_value, size_t inde
         OAG::precondition_failure("element type mismatch");
     }
     return update((void *)(element.findIn(reinterpret_cast<swift::OpaqueValue *>(tuple_value))), element_value, reinterpret_cast<const OAG::swift::metadata *>(element.Type), options);
-    #else
-    return nullptr;
-    #endif
 }
 
 void *OAGTupleGetElement(OAGTupleType tuple_type, void* tuple_value, size_t index, void *element_value, OAGTypeID check_type, OAGTupleCopyOptions options) {
-    #ifdef OPENATTRIBUTEGRAPH_SWIFT_TOOLCHAIN_SUPPORTED
     auto metadata = reinterpret_cast<OAG::swift::metadata const*>(tuple_type);
     if (metadata->getKind() != swift::MetadataKind::Tuple) {
         if (index != 0) {
@@ -203,20 +171,14 @@ void *OAGTupleGetElement(OAGTupleType tuple_type, void* tuple_value, size_t inde
         OAG::precondition_failure("element type mismatch");
     }
     return update(element_value, (const void *)(element.findIn(reinterpret_cast<swift::OpaqueValue *>(tuple_value))), reinterpret_cast<const OAG::swift::metadata *>(element.Type), options);
-    #else
-    return nullptr;
-    #endif
 }
 
 void OAGTupleDestroy(OAGTupleType tuple_type, void *value) {
-    #ifdef OPENATTRIBUTEGRAPH_SWIFT_TOOLCHAIN_SUPPORTED
     auto metadata = reinterpret_cast<OAG::swift::metadata const*>(tuple_type);
     metadata->vw_destroy(reinterpret_cast<swift::OpaqueValue *>(value));
-    #endif
 }
 
 void OAGTupleDestroyElement(OAGTupleType tuple_type, void *value, size_t index) {
-    #ifdef OPENATTRIBUTEGRAPH_SWIFT_TOOLCHAIN_SUPPORTED
     auto metadata = reinterpret_cast<OAG::swift::metadata const*>(tuple_type);
     if (metadata->getKind() != swift::MetadataKind::Tuple) {
         if (index != 0) {
@@ -231,11 +193,9 @@ void OAGTupleDestroyElement(OAGTupleType tuple_type, void *value, size_t index) 
     auto element = tuple_metadata->getElement(unsigned(index));
     auto element_type = element.Type;
     element_type->vw_destroy(reinterpret_cast<swift::OpaqueValue *>((intptr_t)value + index));
-    #endif
 }
 
 void OAGTupleWithBuffer(OAGTupleType tuple_type, size_t count, const void (* function)(const OAGUnsafeMutableTuple mutableTuple, const void * context OAG_SWIFT_CONTEXT) OAG_SWIFT_CC(swift), const void *context) {
-    #ifdef OPENATTRIBUTEGRAPH_SWIFT_TOOLCHAIN_SUPPORTED
     auto metadata = reinterpret_cast<OAG::swift::metadata const*>(tuple_type);
     auto buffer_size = metadata->vw_stride() * count;
     OAGUnsafeMutableTuple tuple;
@@ -248,7 +208,12 @@ void OAGTupleWithBuffer(OAGTupleType tuple_type, size_t count, const void (* fun
         // So we need to call function in this scope.
         function(tuple, context);
     } else {
+        #if OAG_TARGET_OS_DARWIN
         void *buffer = malloc_type_malloc(buffer_size, 0x100004077774924);
+        #else
+        // FIXME
+        void *buffer = malloc(buffer_size);
+        #endif
         if (buffer == nullptr) {
             OAG::precondition_failure("memory allocation failure");
         }
@@ -256,5 +221,4 @@ void OAGTupleWithBuffer(OAGTupleType tuple_type, size_t count, const void (* fun
         function(tuple, context);
         free(buffer);
     }
-    #endif
 }

@@ -1,0 +1,3 @@
+module Platform {
+    header "platform/platform.h"
+}

@@ -50,6 +50,18 @@ For a simpler setup, you can use the prebuilt XCFramework available on the [rele
 
 The current suggested toolchain to build the project is Swift 6.1.2 / Xcode 16.4.
 
+### Clone Swift headers
+
+The project requires Swift toolchain headers for compilation. You can either clone them manually or let the build plugin handle it:
+
+```shell
+# Option 1: Clone headers manually
+./Scripts/clone-swift.sh
+
+# Option 2: Let the build plugin clone headers (requires --disable-sandbox)
+swift build --disable-sandbox
+```
+
 ### Set up LIB_SWIFT_PATH on non-Darwin platform
 
 If your swift binary path is located in your `<toolchain>/usr/bin/swift` (eg. installed by [swiftbox](https://github.com/stevapple/swiftbox)), no setup is required.

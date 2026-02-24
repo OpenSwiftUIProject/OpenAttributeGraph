@@ -165,7 +165,7 @@ var sharedCSettings: [CSetting] = [
     .define("NDEBUG", .when(configuration: .release)),
 ]
 
-var sharedCXXSettings: [CXXSetting] = [
+var sharedCxxSettings: [CXXSetting] = [
     .unsafeFlags(["-I", libSwiftPath], .when(platforms: .nonDarwinPlatforms)),
     .define("NDEBUG", .when(configuration: .release)),
 ]
@@ -185,7 +185,7 @@ sharedCSettings.append(
         "-isystem", "\(swiftCheckoutPath)/stdlib/public/SwiftShims",
     ])
 )
-sharedCXXSettings.append(
+sharedCxxSettings.append(
     .unsafeFlags([
         "-isystem", "\(swiftCheckoutPath)/include",
         "-isystem", "\(swiftCheckoutPath)/stdlib/include",
@@ -208,7 +208,7 @@ if libraryEvolutionCondition {
 }
 if !compatibilityTestCondition {
     sharedCSettings.append(.define("OPENATTRIBUTEGRAPH"))
-    sharedCXXSettings.append(.define("OPENATTRIBUTEGRAPH"))
+    sharedCxxSettings.append(.define("OPENATTRIBUTEGRAPH"))
     sharedSwiftSettings.append(.define("OPENATTRIBUTEGRAPH"))
 }
 
@@ -231,38 +231,49 @@ extension [Platform] {
     }
 }
 
-// MARK: - Targets
+// MARK: - Plugin
 
 let swiftClonePlugin = Target.plugin(
     name: "CloneSwiftPlugin",
     capability: .buildTool()
 )
 
-let openAttributeGraphTarget = Target.target(
-    name: "OpenAttributeGraph",
-    dependencies: ["OpenAttributeGraphCxx"],
-    cSettings: sharedCSettings,
-    cxxSettings: sharedCXXSettings,
-    swiftSettings: sharedSwiftSettings
+// MARK: - Targets
+
+let platformTarget = Target.target(
+    name: "Platform",
+    cSettings: [
+        .define("_GNU_SOURCE", .when(platforms: [.linux])),
+    ]
 )
 // FIXME: Merge into one target
 // OpenAttributeGraph is a C++ & Swift mix target.
 // The SwiftPM support for such usage is still in progress.
-let openAttributeGraphSPITarget = Target.target(
+let openAttributeGraphCxxTarget = Target.target(
     name: "OpenAttributeGraphCxx",
+    dependencies: [.target(name: platformTarget.name)],
     cSettings: sharedCSettings + [
         .define("__COREFOUNDATION_FORSWIFTFOUNDATIONONLY__", to: "1", .when(platforms: .nonDarwinPlatforms)),
     ],
-    cxxSettings: sharedCXXSettings,
+    cxxSettings: sharedCxxSettings,
     linkerSettings: [
         .linkedLibrary("z"),
     ],
     plugins: [.plugin(name: swiftClonePlugin.name)]
 )
+let openAttributeGraphTarget = Target.target(
+    name: "OpenAttributeGraph",
+    dependencies: [
+        .target(name: openAttributeGraphCxxTarget.name),
+    ],
+    cSettings: sharedCSettings,
+    cxxSettings: sharedCxxSettings,
+    swiftSettings: sharedSwiftSettings
+)
 let openAttributeGraphShimsTarget = Target.target(
     name: "OpenAttributeGraphShims",
     cSettings: sharedCSettings,
-    cxxSettings: sharedCXXSettings,
+    cxxSettings: sharedCxxSettings,
     swiftSettings: sharedSwiftSettings
 )
 
@@ -271,41 +282,41 @@ let openAttributeGraphShimsTarget = Target.target(
 let openAttributeGraphTestsTarget = Target.testTarget(
     name: "OpenAttributeGraphTests",
     dependencies: [
-        "OpenAttributeGraph",
+        .target(name: openAttributeGraphTarget.name),
     ],
     exclude: ["README.md"],
     cSettings: sharedCSettings,
-    cxxSettings: sharedCXXSettings,
+    cxxSettings: sharedCxxSettings,
     swiftSettings: sharedSwiftSettings
 )
 let openAttributeGraphCxxTestsTarget = Target.testTarget(
     name: "OpenAttributeGraphCxxTests",
     dependencies: [
-        "OpenAttributeGraphCxx",
+        .target(name: openAttributeGraphCxxTarget.name),
     ],
     exclude: ["README.md"],
     cSettings: sharedCSettings + [.define("SWIFT_TESTING")],
-    cxxSettings: sharedCXXSettings,
+    cxxSettings: sharedCxxSettings,
     swiftSettings: sharedSwiftSettings + [.interoperabilityMode(.Cxx)]
 )
 let openAttributeGraphShimsTestsTarget = Target.testTarget(
     name: "OpenAttributeGraphShimsTests",
     dependencies: [
-        "OpenAttributeGraphShims",
+        .target(name: openAttributeGraphShimsTarget.name),
     ],
     exclude: ["README.md"],
     cSettings: sharedCSettings,
-    cxxSettings: sharedCXXSettings,
+    cxxSettings: sharedCxxSettings,
     swiftSettings: sharedSwiftSettings
 )
 let openAttributeGraphCompatibilityTestsTarget = Target.testTarget(
     name: "OpenAttributeGraphCompatibilityTests",
     dependencies: [
         .product(name: "Numerics", package: "swift-numerics"),
-    ] + (compatibilityTestCondition ? [] : ["OpenAttributeGraph"]),
+    ] + (compatibilityTestCondition ? [] : [.target(name: openAttributeGraphTarget.name)]),
     exclude: ["README.md"],
     cSettings: sharedCSettings,
-    cxxSettings: sharedCXXSettings,
+    cxxSettings: sharedCxxSettings,
     swiftSettings: sharedSwiftSettings
 )
 
@@ -314,16 +325,17 @@ let openAttributeGraphCompatibilityTestsTarget = Target.testTarget(
 let package = Package(
     name: "OpenAttributeGraph",
     products: [
-        .library(name: "OpenAttributeGraph", type: .dynamic, targets: ["OpenAttributeGraph", "OpenAttributeGraphCxx"]),
-        .library(name: "OpenAttributeGraphShims", type: .dynamic, targets: ["OpenAttributeGraph", "OpenAttributeGraphCxx", "OpenAttributeGraphShims"]),
+        .library(name: "OpenAttributeGraph", type: .dynamic, targets: [openAttributeGraphTarget.name, openAttributeGraphCxxTarget.name]),
+        .library(name: "OpenAttributeGraphShims", type: .dynamic, targets: [openAttributeGraphTarget.name, openAttributeGraphCxxTarget.name, openAttributeGraphShimsTarget.name]),
     ],
     dependencies: [
         .package(url: "https://github.com/apple/swift-numerics", from: "1.0.2"),
     ],
     targets: [
         swiftClonePlugin,
+        platformTarget,
         openAttributeGraphTarget,
-        openAttributeGraphSPITarget,
+        openAttributeGraphCxxTarget,
         openAttributeGraphShimsTarget,
     ],
     cxxLanguageStandard: .cxx20
@@ -362,6 +374,6 @@ if attributeGraphCondition {
         default: nil
     }
 } else {
-    openAttributeGraphShimsTarget.dependencies.append("OpenAttributeGraph")
+    openAttributeGraphShimsTarget.dependencies.append(.target(name: openAttributeGraphTarget.name))
     package.platforms = [.iOS(.v13), .macOS(.v10_15), .macCatalyst(.v13), .tvOS(.v13), .watchOS(.v5)]
 }

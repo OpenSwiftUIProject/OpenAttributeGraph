@@ -3,7 +3,6 @@
 //  Utilities
 //
 //  Status: Complete
-//  Modified based Compute code
 
 #include <Utilities/Heap.hpp>
 #include <algorithm>

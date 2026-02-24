@@ -2,8 +2,8 @@
 //  Heap.hpp
 //  Utilities
 //
+//  Audited for 6.5.4
 //  Status: Complete
-//  Modified based Compute code
 
 #ifndef UTILITIES_HEAP_HPP
 #define UTILITIES_HEAP_HPP

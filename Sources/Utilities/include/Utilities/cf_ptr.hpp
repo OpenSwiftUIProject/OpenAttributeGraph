@@ -2,8 +2,8 @@
 //  cf_ptr.hpp
 //  Utilities
 //
+//  Audited for 6.5.4
 //  Status: Complete
-//  Modified based Compute code
 
 #ifndef UTILITIES_CF_PTR_HPP
 #define UTILITIES_CF_PTR_HPP

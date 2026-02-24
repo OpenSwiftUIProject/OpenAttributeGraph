@@ -2,8 +2,8 @@
 //  free_deleter.hpp
 //  Utilities
 //
+//  Audited for 6.5.4
 //  Status: Complete
-//  Modified based Compute code
 
 #ifndef UTILITIES_FREE_DELETER_HPP
 #define UTILITIES_FREE_DELETER_HPP

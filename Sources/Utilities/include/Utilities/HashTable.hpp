@@ -2,8 +2,8 @@
 //  HashTable.hpp
 //  Utilities
 //
+//  Audited for 6.5.4
 //  Status: Complete
-//  Modified based Compute code
 
 #ifndef UTILITIES_HASHTABLE_HPP
 #define UTILITIES_HASHTABLE_HPP

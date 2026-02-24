@@ -4,7 +4,6 @@
 //
 //  Audited for 6.5.1
 //  Status: WIP
-//  Modified based Compute code
 
 #include <OpenAttributeGraphCxx/Data/table.hpp>
 #include <OpenAttributeGraphCxx/Data/page.hpp>

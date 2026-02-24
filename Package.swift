@@ -279,16 +279,6 @@ let openAttributeGraphShimsTarget = Target.target(
 
 // MARK: - Test Targets
 
-let openAttributeGraphTestsTarget = Target.testTarget(
-    name: "OpenAttributeGraphTests",
-    dependencies: [
-        .target(name: openAttributeGraphTarget.name),
-    ],
-    exclude: ["README.md"],
-    cSettings: sharedCSettings,
-    cxxSettings: sharedCxxSettings,
-    swiftSettings: sharedSwiftSettings
-)
 let openAttributeGraphCxxTestsTarget = Target.testTarget(
     name: "OpenAttributeGraphCxxTests",
     dependencies: [
@@ -345,7 +335,6 @@ if compatibilityTestCondition {
     openAttributeGraphCompatibilityTestsTarget.addAGSettings()
 } else {
     package.targets += [
-        openAttributeGraphTestsTarget,
         openAttributeGraphCxxTestsTarget,
         openAttributeGraphShimsTestsTarget,
     ]

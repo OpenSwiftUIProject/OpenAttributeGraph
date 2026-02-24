@@ -307,7 +307,7 @@ let utilitiesTestsTarget = Target.testTarget(
     dependencies: [
         .target(name: utilitiesTarget.name),
     ],
-    cxxSettings: [.define("SWIFT_TESTING")],
+    cxxSettings: [.define("SWIFT_TESTING"), .headerSearchPath("Sources/OpenAttributeGraphCxx/include")],
     swiftSettings: [.interoperabilityMode(.Cxx)]
 )
 let openAttributeGraphCxxTestsTarget = Target.testTarget(

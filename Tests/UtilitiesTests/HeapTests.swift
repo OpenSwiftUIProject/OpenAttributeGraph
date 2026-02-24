@@ -79,13 +79,46 @@ struct HeapTests {
         defer {
             util.Heap.destroy(heap)
         }
-        
+
         // Test that print method can be called without crashing
         heap.print()
-        
+
         // Verify heap is still functional after print
         #expect(heap.increment() == 1024)
         #expect(heap.num_nodes() == 0)
         #expect(heap.capacity() == 0)
+    }
+
+    @Test("Allocating small object uses node")
+    @available(iOS 16.4, *)
+    func allocateSmallObjects() {
+        let heap = util.Heap.create(nil, 0, 0)
+        defer { util.Heap.destroy(heap) }
+
+        let _ = heap.alloc_uint64()
+
+        // creates 1 node
+        #expect(heap.num_nodes() == 1)
+        #expect(heap.capacity() == 0x2000 - nodeSize - 8)
+
+        let _ = heap.alloc_uint64()
+
+        // second object is allocated from same node
+        #expect(heap.num_nodes() == 1)
+        #expect(heap.capacity() == 0x2000 - nodeSize - 2 * 8)
+    }
+
+    @Test("Allocating large object creates new node")
+    @available(iOS 16.4, *)
+    func allocateLargeObject() {
+        let heap = util.Heap.create(nil, 0, 0)
+        defer { util.Heap.destroy(heap) }
+
+        // larger than minimum increment
+        let _ = heap.alloc_uint64(500)
+
+        // data is allocated from second node
+        #expect(heap.num_nodes() == 2)
+        #expect(heap.capacity() == 0x2000 - 2 * nodeSize)
     }
 }

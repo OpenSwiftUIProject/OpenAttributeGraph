@@ -14,7 +14,7 @@ Only used on non-Darwin platforms (Linux, WASI, Windows) via `-isystem` include 
 
 ### Alternative: Use Swift toolchain headers
 
-Instead of the bundled headers, you can point to your Swift toolchain's headers by setting the `LIB_SWIFT_PATH` environment variable:
+Instead of the bundled headers, you can point to your Swift toolchain's headers by setting the `OPENATTRIBUTEGRAPH_LIB_SWIFT_PATH` environment variable:
 
 ```shell
 # Using swiftly
@@ -24,4 +24,4 @@ export OPENATTRIBUTEGRAPH_LIB_SWIFT_PATH="$(swiftly use --print-location)/usr/li
 export OPENATTRIBUTEGRAPH_LIB_SWIFT_PATH=~/.swiftpm/swift-sdks/<sdk>/usr/lib/swift
 ```
 
-When `LIB_SWIFT_PATH` is set, it overrides the bundled SwiftCorelibs headers.
+When `OPENATTRIBUTEGRAPH_LIB_SWIFT_PATH` is set, it overrides the bundled SwiftCorelibs headers.

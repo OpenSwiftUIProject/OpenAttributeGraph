@@ -10,6 +10,11 @@
 #include <OpenAttributeGraphCxx/Misc/assert.hpp>
 
 #include <swift/Runtime/Metadata.h>
+#if OAG_TARGET_OS_DARWIN
+#include <malloc/malloc.h>
+#else
+#include <malloc.h>
+#endif
 
 OAGTupleType OAGNewTupleType(size_t count, const OAGTypeID *elements) {
     if (count == 1) {
@@ -203,7 +208,12 @@ void OAGTupleWithBuffer(OAGTupleType tuple_type, size_t count, const void (* fun
         // So we need to call function in this scope.
         function(tuple, context);
     } else {
+        #if OAG_TARGET_OS_DARWIN
         void *buffer = malloc_type_malloc(buffer_size, 0x100004077774924);
+        #else
+        // FIXME
+        void *buffer = malloc(buffer_size);
+        #endif
         if (buffer == nullptr) {
             OAG::precondition_failure("memory allocation failure");
         }

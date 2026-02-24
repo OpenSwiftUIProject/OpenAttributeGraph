@@ -38,10 +38,12 @@ public:
         switch (getKind()) {
             case MetadataKind::Class: {
                 const auto cls = static_cast<const ClassMetadata *>(getType());
+                #if SWIFT_OBJC_INTEROP
                 // We may build this with a newer OS SDK but run on old OS.
                 // So instead of using `isTypeMetadata` / `(Data & SWIFT_CLASS_IS_SWIFT_MASK)`,
                 // we manully use 3 here to check isTypeMetadata
                 if ((cls->Data & 3) == 0) return nullptr;
+                #endif
                 return cls->getDescription();
             }
             case MetadataKind::Struct:

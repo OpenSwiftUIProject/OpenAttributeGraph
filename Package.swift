@@ -146,7 +146,7 @@ let compatibilityTestCondition = envBoolValue("COMPATIBILITY_TEST", default: fal
 
 let useLocalDeps = envBoolValue("USE_LOCAL_DEPS")
 let computeCondition = envBoolValue("OPENATTRIBUTESHIMS_COMPUTE", default: false)
-let attributeGraphCondition = envBoolValue("OPENATTRIBUTESHIMS_ATTRIBUTEGRAPH", default: buildForDarwinPlatform && !isSPIBuild)
+let attributeGraphCondition = envBoolValue("OPENATTRIBUTESHIMS_ATTRIBUTEGRAPH", default: false)
 
 // MARK: - Shared Settings
 
@@ -453,14 +453,14 @@ if computeCondition {
             openAttributeGraphTarget,
             openAttributeGraphCxxTarget,
         ])
-        package.products.append(
-            .library(name: "OpenAttributeGraph", type: .dynamic, targets: [openAttributeGraphTarget.name, openAttributeGraphCxxTarget.name])
-        )
     }
     openAttributeGraphShimsTarget.dependencies.append(.target(name: openAttributeGraphTarget.name))
 
     if buildForDarwinPlatform {
         package.targets.append(openAttributeGraphCompatibilityTestsTarget)
+        package.dependencies.append(
+            .package(url: "https://github.com/apple/swift-numerics", from: "1.1.1")
+        )
     }
 
     if compatibilityTestCondition {
@@ -473,8 +473,9 @@ if computeCondition {
             openAttributeGraphShimsTestsTarget,
         ]
     }
-    package.dependencies.append(
-        .package(url: "https://github.com/apple/swift-numerics", from: "1.1.1")
+
+    package.products.append(
+        .library(name: "OpenAttributeGraph", type: .dynamic, targets: [openAttributeGraphTarget.name, openAttributeGraphCxxTarget.name])
     )
     package.platforms = [.iOS(.v13), .macOS(.v10_15), .macCatalyst(.v13), .tvOS(.v13), .watchOS(.v5)]
 }

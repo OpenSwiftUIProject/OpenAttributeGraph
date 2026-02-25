@@ -205,6 +205,7 @@ if releaseVersion >= 2021 {
 if warningsAsErrorsCondition {
     sharedSwiftSettings.append(.unsafeFlags(["-warnings-as-errors"]))
 }
+
 if libraryEvolutionCondition {
     // NOTE: -enable-library-evolution will cause module verify failure for `swift build`.
     // Either set OPENATTRIBUTEGRAPH_LIBRARY_EVOLUTION=0 or add `-Xswiftc -no-verify-emitted-module-interface` after `swift build`
@@ -235,6 +236,19 @@ extension [Platform] {
     }
     static var nonDarwinPlatforms: [Platform] {
         [.linux, .android, .wasi, .openbsd, .windows]
+    }
+}
+
+extension [SwiftSetting] {
+    // C++ interop test targets need .interoperabilityMode(.Cxx) but must not use
+    // -warnings-as-errors, because Swift's Clang importer emits unavoidable warnings
+    // for C++ stdlib types (e.g., 'import_owned' ignored on 'basic_string').
+    func addCxxInterop() -> [SwiftSetting] {
+        var settings = filter { setting in
+            "\(setting)" != "\(SwiftSetting.unsafeFlags(["-warnings-as-errors"]))"
+        }
+        settings.append(.interoperabilityMode(.Cxx))
+        return settings
     }
 }
 
@@ -299,9 +313,10 @@ let utilitiesTestsTarget = Target.testTarget(
     dependencies: [
         .target(name: utilitiesTarget.name),
     ],
+    exclude: ["README.md"],
     cSettings: sharedCSettings + [.define("SWIFT_TESTING")],
     cxxSettings: sharedCxxSettings + [.define("SWIFT_TESTING")],
-    swiftSettings: [.interoperabilityMode(.Cxx)]
+    swiftSettings: sharedSwiftSettings.addCxxInterop()
 )
 let openAttributeGraphCxxTestsTarget = Target.testTarget(
     name: "OpenAttributeGraphCxxTests",
@@ -311,7 +326,7 @@ let openAttributeGraphCxxTestsTarget = Target.testTarget(
     exclude: ["README.md"],
     cSettings: sharedCSettings + [.define("SWIFT_TESTING")],
     cxxSettings: sharedCxxSettings + [.define("SWIFT_TESTING")],
-    swiftSettings: sharedSwiftSettings + [.interoperabilityMode(.Cxx)]
+    swiftSettings: sharedSwiftSettings.addCxxInterop()
 )
 let openAttributeGraphShimsTestsTarget = Target.testTarget(
     name: "OpenAttributeGraphShimsTests",

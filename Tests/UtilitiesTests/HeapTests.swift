@@ -95,13 +95,13 @@ struct HeapTests {
         let heap = util.Heap.create(nil, 0, 0)
         defer { util.Heap.destroy(heap) }
 
-        let _ = heap.alloc_uint64()
+        let _ = util.heap_alloc_uint64(heap)
 
         // creates 1 node
         #expect(heap.num_nodes() == 1)
         #expect(heap.capacity() == 0x2000 - nodeSize - 8)
 
-        let _ = heap.alloc_uint64()
+        let _ = util.heap_alloc_uint64(heap)
 
         // second object is allocated from same node
         #expect(heap.num_nodes() == 1)
@@ -115,7 +115,7 @@ struct HeapTests {
         defer { util.Heap.destroy(heap) }
 
         // larger than minimum increment
-        let _ = heap.alloc_uint64(500)
+        let _ = util.heap_alloc_uint64(heap, 500)
 
         // data is allocated from second node
         #expect(heap.num_nodes() == 2)

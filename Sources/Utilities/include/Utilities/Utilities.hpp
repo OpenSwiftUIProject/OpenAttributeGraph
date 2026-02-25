@@ -7,3 +7,4 @@
 #include <Utilities/HashTable.hpp>
 #include <Utilities/Heap.hpp>
 #include <Utilities/objc_ptr.hpp>
+#include <Utilities/TestingSupport.hpp>

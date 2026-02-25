@@ -138,40 +138,6 @@ template <typename T> void ForwardList<T>::pop_front() {
     _front = next;
 }
 
-#ifdef SWIFT_TESTING
-
-class UInt64ForwardList : public ForwardList<uint64_t> {
-  public:
-    static UInt64ForwardList *create();
-    static void destroy(UInt64ForwardList *value);
-
-    bool empty() const noexcept;
-
-    uint64_t front();
-
-    void push_front(const uint64_t &element);
-    void push_front(uint64_t &&element);
-
-    void pop_front();
-
-} SWIFT_UNSAFE_REFERENCE;
-
-UInt64ForwardList *UInt64ForwardList::create() { return new UInt64ForwardList(); }
-
-void UInt64ForwardList::destroy(UInt64ForwardList *value) { delete value; }
-
-bool UInt64ForwardList::empty() const noexcept { return ForwardList<uint64_t>::empty(); }
-
-uint64_t UInt64ForwardList::front() { return ForwardList<uint64_t>::front(); }
-
-void UInt64ForwardList::push_front(const uint64_t &element) { ForwardList<uint64_t>::push_front(element); }
-
-void UInt64ForwardList::push_front(uint64_t &&element) { ForwardList<uint64_t>::push_front(element); }
-
-void UInt64ForwardList::pop_front() { ForwardList<uint64_t>::pop_front(); }
-
-#endif
-
 } /* namespace util */
 
 OAG_ASSUME_NONNULL_END

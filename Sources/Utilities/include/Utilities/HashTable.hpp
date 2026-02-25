@@ -52,6 +52,30 @@ private:
     bool _is_heap_owner;
     bool _compare_by_pointer;
 
+    #if DEBUG
+    // Layout verification
+    static constexpr void _verify_layout() {
+        static_assert(offsetof(HashNode, next) == 0x00);
+        static_assert(offsetof(HashNode, key) == 0x08);
+        static_assert(offsetof(HashNode, value) == 0x10);
+        static_assert(offsetof(HashNode, hash_value) == 0x18);
+        static_assert(sizeof(HashNode) == 0x20);
+        static_assert(offsetof(UntypedTable, _hash) == 0x00);
+        static_assert(offsetof(UntypedTable, _compare) == 0x08);
+        static_assert(offsetof(UntypedTable, _did_remove_key) == 0x10);
+        static_assert(offsetof(UntypedTable, _did_remove_value) == 0x18);
+        static_assert(offsetof(UntypedTable, _heap) == 0x20);
+        static_assert(offsetof(UntypedTable, _spare_node) == 0x28);
+        static_assert(offsetof(UntypedTable, _buckets) == 0x30);
+        static_assert(offsetof(UntypedTable, _count) == 0x38);
+        static_assert(offsetof(UntypedTable, _bucket_mask) == 0x40);
+        static_assert(offsetof(UntypedTable, _bucket_mask_width) == 0x48);
+        static_assert(offsetof(UntypedTable, _is_heap_owner) == 0x4c);
+        static_assert(offsetof(UntypedTable, _compare_by_pointer) == 0x4d);
+        static_assert(sizeof(UntypedTable) == 0x50);
+    }
+    #endif
+
     // Managing buckets
     void create_buckets();
     void grow_buckets();

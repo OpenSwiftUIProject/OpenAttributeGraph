@@ -71,10 +71,19 @@ jobs:
             -skipPackagePluginValidation \
             -skipMacroValidation
             # OTHER_SWIFT_FLAGS="-warnings-as-errors" Conflicting options '-warnings-as-errors' and '-suppress-warnings'
+      - name: Generate iOS coverage report
+        run: |
+          XCRESULT=$(find .build-test-debug/Logs/Test -name "*.xcresult" -maxdepth 1 | head -1)
+          if [ -n "$XCRESULT" ]; then
+            xcrun xccov view --report --json "$XCRESULT" > coverage.json
+          fi
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v5
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
           flags: ios
-          swift_project: OpenAttributeGraph-Package
+          files: coverage.json
+          # swift_project doesn't auto-discover xcodebuild coverage from derived data.
+          # We use xcrun xccov to explicitly extract coverage from the xcresult bundle instead.
+          # swift_project: OpenAttributeGraph-Package
           verbose: true

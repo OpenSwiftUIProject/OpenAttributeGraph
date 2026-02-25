@@ -18,7 +18,7 @@ extension Subgraph {
     public func addObserver(_ observer: @escaping () -> Void) -> Int {
         Subgraph.addObserver(self, observer: observer)
     }
-    
+
     public func apply<Value>(_ body: () -> Value) -> Value {
         #if !os(WASI)
         let update = Graph.clearUpdate()
@@ -33,7 +33,7 @@ extension Subgraph {
         fatalError("upstream SIL Compiler assert issue")
         #endif
     }
-    
+
     public func forEach(_ flags: Flags, _ callback: (AnyAttribute) -> Void) {
         Subgraph.apply(self, flags: flags, callback: callback)
     }
@@ -45,13 +45,13 @@ extension Subgraph {
             __OAGSubgraphBeginTreeElement(value.identifier, Metadata(Value.self), flags)
         }
     }
-    
+
     public static func addTreeValue<Value>(_ value: Attribute<Value>, forKey key: UnsafePointer<Int8>, flags: UInt32) {
         if shouldRecordTree {
             __OAGSubgraphAddTreeValue(value.identifier, Metadata(Value.self), key, flags)
         }
     }
-    
+
     public static func endTreeElement<Value>(value: Attribute<Value>) {
         if shouldRecordTree {
             __OAGSubgraphEndTreeElement(value.identifier)
@@ -63,7 +63,7 @@ extension Subgraph {
 extension Subgraph {
     @_silgen_name("OAGSubgraphApply")
     private static func apply(_ graph: Subgraph, flags: Flags, callback: (AnyAttribute) -> Void)
-    
+
     @_silgen_name("OAGSubgraphAddObserver")
     private static func addObserver(_ graph: Subgraph, observer: @escaping () -> Void) -> Int
 }

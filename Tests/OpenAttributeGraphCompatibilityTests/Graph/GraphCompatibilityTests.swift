@@ -2,8 +2,8 @@
 //  GraphCompatibilityTests.swift
 //  OpenAttributeGraphCompatibilityTests
 
-import Testing
 import Foundation
+import Testing
 
 @MainActor
 struct GraphCompatibilityTests {
@@ -11,14 +11,14 @@ struct GraphCompatibilityTests {
     func graphCreate() throws {
         _ = Graph()
     }
-    
+
     @Test
     func graphCreateShared() throws {
         let graph = Graph()
         _ = Graph(shared: graph)
         _ = Graph(shared: nil)
     }
-    
+
     #if canImport(Darwin)
     @Test(.disabled(if: !compatibilityTestEnabled, "Not implemented on OAG"))
     func graphArchiveJSON() throws {
@@ -38,7 +38,7 @@ struct GraphCompatibilityTests {
         let graphs = try JSONDecoder().decode(Graphs.self, from: data)
         #expect(graphs.version == 2)
     }
-    
+
     @Test(.disabled(if: !compatibilityTestEnabled, "Not implemented on OAG"))
     func graphDescriptionDict() throws {
         let description = try #require(Graph.description(
@@ -47,11 +47,11 @@ struct GraphCompatibilityTests {
                 DescriptionOption.format: Graph.descriptionFormatDictionary
             ] as NSDictionary
         ))
-        let dic = description as! Dictionary<String, AnyHashable>
+        let dic = description as! [String: AnyHashable]
         #expect(dic["version"] as? UInt32 == 2)
         #expect((dic["graphs"] as? NSArray)?.count == 0)
     }
-    
+
     @Test(.disabled(if: !compatibilityTestEnabled, "Not implemented on OAG"))
     func graphDescriptionDot() throws {
         let options = NSMutableDictionary()
@@ -63,11 +63,11 @@ struct GraphCompatibilityTests {
         let expectedEmptyDotGraph = #"""
         digraph {
         }
-        
+
         """#
         #expect(dotGraph == expectedEmptyDotGraph)
     }
-    
+
     @Test
     func graphCallback() {
         let graph = Graph()
@@ -78,24 +78,24 @@ struct GraphCompatibilityTests {
             print("Invalidate \(attr)")
         }
     }
-    
+
     @Test(.disabled(if: !compatibilityTestEnabled, "Not implemented on OAG"))
     func counter() {
         let graph = Graph()
         #expect(graph.mainUpdates == 0)
     }
     #endif
-    
+
     @Test(.disabled(if: !compatibilityTestEnabled, "Not implemented on OAG"))
     func beginDeferringSubgraphInvalidation() {
         let graph = Graph()
-        
+
         let wasDeferring1 = graph.beginDeferringSubgraphInvalidation()
         #expect(wasDeferring1 == false)
-        
+
         let wasDeferring2 = graph.beginDeferringSubgraphInvalidation()
         #expect(wasDeferring2 == true)
-        
+
         graph.endDeferringSubgraphInvalidation(wasDeferring: wasDeferring2)
         graph.endDeferringSubgraphInvalidation(wasDeferring: wasDeferring1)
     }

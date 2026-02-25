@@ -3,12 +3,11 @@
 //  UtilitiesTests
 
 #if canImport(Darwin)
-import Utilities
 import Testing
+import Utilities
 
 @Suite("objc_ptr tests")
 struct ObjCPtrTests {
-
     @Test("Default construction is null")
     @available(iOS 16.4, *)
     func defaultConstruction() {

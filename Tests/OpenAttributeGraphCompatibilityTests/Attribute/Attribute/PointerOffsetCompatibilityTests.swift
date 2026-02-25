@@ -39,7 +39,7 @@ struct PointerOffsetCompatibilityTests {
         let invalidPointer = PointerOffset<Base, Int>.invalidScenePointer()
         let stride = MemoryLayout<Base>.stride
         #expect(stride == 16)
-        
+
         if compatibilityTestEnabled {
             if #available(iOS 18, macOS 15, *) {
                 #expect(invalidPointer == UnsafeMutablePointer(bitPattern: 0x1))
@@ -53,7 +53,6 @@ struct PointerOffsetCompatibilityTests {
             #expect(invalidPointer == UnsafeMutablePointer(bitPattern: stride))
             #endif
         }
-        
     }
 
     @Test(.bug("https://github.com/OpenSwiftUIProject/OpenAttributeGraph/issues/70", id: 70, "Verify fix of #70"))
@@ -110,7 +109,7 @@ struct PointerOffsetCompatibilityTests {
 
                 pointer[offset: firstOffset] = 3
                 pointer[offset: secondOffset] = 4.0
-                
+
                 #expect(pointer[offset: firstOffset] == 3)
                 #expect(pointer[offset: secondOffset].isApproximatelyEqual(to: 4.0))
             }
@@ -135,7 +134,7 @@ struct PointerOffsetCompatibilityTests {
             let firstOffset = PointerOffset<Base, Int>.offset { .of(&$0.first) }
             let secondOffset = PointerOffset<Base, Int>.offset { .of(&$0.second) }
             let thirdOffset = PointerOffset<Base, Int>.offset { .of(&$0.third) }
-            
+
             withUnsafePointer(to: triple) { pointer in
                 #expect((pointer + firstOffset).pointee == 0)
                 #expect((pointer + secondOffset).pointee == 1)
@@ -149,10 +148,10 @@ struct PointerOffsetCompatibilityTests {
                 (pointer + firstOffset).pointee = 3
                 (pointer + secondOffset).pointee = 4
                 (pointer + thirdOffset).pointee = 5
-                
-                 #expect((pointer + firstOffset).pointee == 3)
-                 #expect((pointer + secondOffset).pointee == 4)
-                 #expect((pointer + thirdOffset).pointee == 5)
+
+                #expect((pointer + firstOffset).pointee == 3)
+                #expect((pointer + secondOffset).pointee == 4)
+                #expect((pointer + thirdOffset).pointee == 5)
             }
             withUnsafePointer(to: &triple) { pointer in
                 #expect((pointer + firstOffset).pointee == 3)

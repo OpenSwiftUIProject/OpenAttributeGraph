@@ -12,7 +12,7 @@ public import OpenAttributeGraphCxx
 /// `WeakAttribute` provides a way to hold weak references to attributes, preventing strong reference cycles in the attribute graph while still allowing access to reactive values.
 ///
 ///     @WeakAttribute var parentAttribute: SomeType?
-///     
+///
 ///     // Safe access to potentially deallocated attribute
 ///     if let value = parentAttribute {
 ///         print("Parent value: \(value)")
@@ -23,7 +23,7 @@ public import OpenAttributeGraphCxx
 /// ## Key Features
 ///
 /// - Weak references: Prevents retain cycles in attribute relationships
-/// - Automatic nil assignment: Referenced attributes become nil when deallocated  
+/// - Automatic nil assignment: Referenced attributes become nil when deallocated
 /// - Dynamic member lookup: Access nested properties through weak references
 /// - Optional semantics: All values are optional since references may be deallocated
 ///
@@ -63,7 +63,7 @@ public struct WeakAttribute<Value> {
             .pointee
     }
 
-    public var projectedValue: Attribute<Value>?{
+    public var projectedValue: Attribute<Value>? {
         get { attribute }
         set { attribute = newValue }
         _modify { yield &attribute }
@@ -99,4 +99,8 @@ extension WeakAttribute: CustomStringConvertible {
 }
 
 @_silgen_name("OAGGraphGetWeakValue")
-private func OAGGraphGetWeakValue<Value>(_ attribute: AnyWeakAttribute, options: OAGValueOptions = [], type: Value.Type = Value.self) -> OAGWeakValue
+private func OAGGraphGetWeakValue<Value>(
+    _ attribute: AnyWeakAttribute,
+    options: OAGValueOptions = [],
+    type: Value.Type = Value.self
+) -> OAGWeakValue

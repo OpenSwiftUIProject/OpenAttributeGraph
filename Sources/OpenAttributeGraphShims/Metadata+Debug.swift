@@ -9,21 +9,22 @@ extension Metadata {
     public struct Option {
         let maxLevel: Int
         let ignoreStdlib: Bool
-        
+
         public static var `default` = Option(maxLevel: 3, ignoreStdlib: true)
     }
-    
+
     public var layoutDescription: String {
         var result = ""
         _layoutDescription(&result, recursive: false, level: 0)
         return result
     }
+
     public var recursiveLayoutDescription: String {
         var result = ""
         _layoutDescription(&result, recursive: true, level: 0)
         return result
     }
-    
+
     private func _layoutDescription(
         _ result: inout String,
         recursive: Bool = false,
@@ -44,9 +45,9 @@ extension Metadata {
             write(&result, string: "enum \(type) {", level: level)
             _ = forEachField(options: [.enumerateEnumCases]) { name, offset, type in
                 let fieldName = String(cString: name)
-                write(&result, string: "case \(fieldName)(\(type)) // offset = \(offset.hex)", level: level+1)
+                write(&result, string: "case \(fieldName)(\(type)) // offset = \(offset.hex)", level: level + 1)
                 if recursive {
-                    Metadata(type)._layoutDescription(&result, recursive: true, level: level+1)
+                    Metadata(type)._layoutDescription(&result, recursive: true, level: level + 1)
                 }
                 return true
             }
@@ -54,9 +55,9 @@ extension Metadata {
         case .optional:
             _ = forEachField(options: [.enumerateEnumCases]) { name, offset, type in
                 let fieldName = String(cString: name)
-                write(&result, string: "case \(fieldName)(\(type)) // offset = \(offset.hex)", level: level+1)
+                write(&result, string: "case \(fieldName)(\(type)) // offset = \(offset.hex)", level: level + 1)
                 if recursive {
-                    Metadata(type)._layoutDescription(&result, recursive: true, level: level+1)
+                    Metadata(type)._layoutDescription(&result, recursive: true, level: level + 1)
                 }
                 return true
             }
@@ -64,9 +65,9 @@ extension Metadata {
             write(&result, string: "struct \(type) {", level: level)
             _ = forEachField(options: [.continueAfterUnknownField]) { name, offset, type in
                 let fieldName = String(cString: name)
-                write(&result, string: "var \(fieldName): \(type) // offset = \(offset.hex)", level: level+1)
+                write(&result, string: "var \(fieldName): \(type) // offset = \(offset.hex)", level: level + 1)
                 if recursive {
-                    Metadata(type)._layoutDescription(&result, recursive: true, level: level+1)
+                    Metadata(type)._layoutDescription(&result, recursive: true, level: level + 1)
                 }
                 return true
             }
@@ -76,10 +77,10 @@ extension Metadata {
             write(&result, string: "class \(type) {", level: level)
             _ = forEachField(options: [.enumerateClassFields, .continueAfterUnknownField]) { name, offset, type in
                 let fieldName = String(cString: name)
-                
-                write(&result, string: "var \(fieldName): \(type) // offset = \(offset.hex)", level: level+1)
+
+                write(&result, string: "var \(fieldName): \(type) // offset = \(offset.hex)", level: level + 1)
                 if recursive {
-                    Metadata(type)._layoutDescription(&result, recursive: true, level: level+1)
+                    Metadata(type)._layoutDescription(&result, recursive: true, level: level + 1)
                 }
                 return true
             }
@@ -91,6 +92,6 @@ extension Metadata {
 
 extension Int {
     fileprivate var hex: String {
-        "0x\(String(format:"%X", self))"
+        "0x\(String(format: "%X", self))"
     }
 }

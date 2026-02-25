@@ -4,8 +4,8 @@
 
 #if canImport(Darwin) && DEBUG
 
-import Testing
 import OpenAttributeGraphShims
+import Testing
 
 @MainActor
 @Suite(.disabled(if: !attributeGraphEnabled, "Subgraph is not implemented on OAG"), .graphScope)

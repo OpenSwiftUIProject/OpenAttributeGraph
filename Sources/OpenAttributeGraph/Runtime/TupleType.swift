@@ -42,12 +42,22 @@ extension TupleType {
     }
 
     @_transparent
-    public func setElement<T>(in tupleValue: UnsafeMutableRawPointer, at index: Int, from srcValue: UnsafePointer<T>, options: CopyOptions) {
+    public func setElement<T>(
+        in tupleValue: UnsafeMutableRawPointer,
+        at index: Int,
+        from srcValue: UnsafePointer<T>,
+        options: CopyOptions
+    ) {
         __OAGTupleSetElement(self, tupleValue, index, srcValue, Metadata(T.self), options)
     }
 
     @_transparent
-    public func getElement<T>(in tupleValue: UnsafeMutableRawPointer, at index: Int, to dstValue: UnsafeMutablePointer<T>, options: CopyOptions) {
+    public func getElement<T>(
+        in tupleValue: UnsafeMutableRawPointer,
+        at index: Int,
+        to dstValue: UnsafeMutablePointer<T>,
+        options: CopyOptions
+    ) {
         __OAGTupleGetElement(self, tupleValue, index, dstValue, Metadata(T.self), options)
     }
 }

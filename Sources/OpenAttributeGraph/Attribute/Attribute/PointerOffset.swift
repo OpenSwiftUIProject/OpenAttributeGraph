@@ -8,7 +8,7 @@
 @frozen
 public struct PointerOffset<Base, Member> {
     public var byteOffset: Int
-    
+
     public init(byteOffset: Int) {
         self.byteOffset = byteOffset
     }
@@ -28,14 +28,14 @@ extension PointerOffset {
         UnsafeMutablePointer(bitPattern: MemoryLayout<Base>.stride)!
         #endif
     }
-    
+
     public static func of(_ member: inout Member) -> PointerOffset {
         withUnsafePointer(to: &member) { memberPointer in
             let offset = UnsafeRawPointer(memberPointer) - UnsafeRawPointer(invalidScenePointer())
             return PointerOffset(byteOffset: offset)
         }
     }
-    
+
     public static func offset(_ body: (inout Base) -> PointerOffset) -> PointerOffset {
         guard MemoryLayout<Member>.size != 0 else {
             return PointerOffset(byteOffset: 0)
@@ -56,7 +56,7 @@ extension UnsafePointer {
                 .assumingMemoryBound(to: Member.self)
         }
     }
-    
+
     public static func + <Member>(
         _ lhs: UnsafePointer,
         _ rhs: PointerOffset<Pointee, Member>
@@ -74,14 +74,14 @@ extension UnsafeMutablePointer {
                 .advanced(by: offset.byteOffset)
                 .assumingMemoryBound(to: Member.self)
         }
-        
+
         nonmutating unsafeMutableAddress {
             UnsafeMutableRawPointer(self)
                 .advanced(by: offset.byteOffset)
                 .assumingMemoryBound(to: Member.self)
         }
     }
-    
+
     public static func + <Member>(
         _ lhs: UnsafeMutablePointer,
         _ rhs: PointerOffset<Pointee, Member>

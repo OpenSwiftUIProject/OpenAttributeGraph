@@ -15,7 +15,7 @@ public import OpenAttributeGraphCxx
 ///     struct DoubledRule: Rule {
 ///         typealias Value = Int
 ///         let source: Attribute<Int>
-///         
+///
 ///         var value: Int {
 ///             source.wrappedValue * 2
 ///         }
@@ -49,10 +49,10 @@ public import OpenAttributeGraphCxx
 public protocol Rule: _AttributeBody {
     /// The type of value produced by this rule.
     associatedtype Value
-    
+
     /// An optional initial value to use before the rule is first evaluated.
     static var initialValue: Value? { get }
-    
+
     /// Computes and returns the current value of the rule.
     var value: Value { get }
 }
@@ -111,13 +111,21 @@ extension Rule where Self: Hashable {
             ).pointee
         }
     }
-    
+
     public func cachedValueIfExists(
         options: OAGCachedValueOptions = [],
         owner: AnyAttribute?
     ) -> Value? {
         withUnsafePointer(to: self) { bodyPointer in
-            let value = __OAGGraphReadCachedAttributeIfExists(hashValue, Metadata(Self.self), bodyPointer, Metadata(Value.self), options, owner ?? .nil, false)
+            let value = __OAGGraphReadCachedAttributeIfExists(
+                hashValue,
+                Metadata(Self.self),
+                bodyPointer,
+                Metadata(Value.self),
+                options,
+                owner ?? .nil,
+                false
+            )
             guard let value else { return nil }
             return value.assumingMemoryBound(to: Value.self).pointee
         }
@@ -126,12 +134,20 @@ extension Rule where Self: Hashable {
     public static func _cachedValue(
         options: OAGCachedValueOptions = [],
         owner: AnyAttribute?,
-        hashValue: Int, 
-        bodyPtr: UnsafeRawPointer, 
+        hashValue: Int,
+        bodyPtr: UnsafeRawPointer,
         update: AttributeUpdateBlock
     ) -> UnsafePointer<Value> {
         // TODO: pass closure here
-        __OAGGraphReadCachedAttribute(hashValue, Metadata(Self.self), bodyPtr, Metadata(Value.self), options, owner ?? .nil, false)
-            .assumingMemoryBound(to: Value.self)
+        __OAGGraphReadCachedAttribute(
+            hashValue,
+            Metadata(Self.self),
+            bodyPtr,
+            Metadata(Value.self),
+            options,
+            owner ?? .nil,
+            false
+        )
+        .assumingMemoryBound(to: Value.self)
     }
 }

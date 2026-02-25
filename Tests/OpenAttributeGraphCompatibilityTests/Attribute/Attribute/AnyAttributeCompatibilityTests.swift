@@ -27,11 +27,11 @@ struct AnyAttributeCompatibilityTests {
     func description() throws {
         let attribute = AnyAttribute(rawValue: 0)
         #expect(attribute.description == "#0")
-        
+
         let attributeNil = AnyAttribute.nil
         #expect(attributeNil.description == "#2")
     }
-    
+
     @Test
     func current() {
         if compatibilityTestEnabled {
@@ -43,45 +43,48 @@ struct AnyAttributeCompatibilityTests {
             #expect(AnyAttribute.current == nil)
         }
     }
-    
+
     @Test
     func setFlags() throws {
         typealias Flags = AnyAttribute.Flags
 
         let attribute = AnyAttribute(Attribute(value: 0))
         #expect(attribute.flags == [])
-        
+
         // Test mask = []
         attribute.flags = []
-        
+
         attribute.setFlags([Flags(rawValue: 1)], mask: [])
         #expect(attribute.flags == [])
-        
+
         attribute.setFlags([Flags(rawValue: 2)], mask: [])
         #expect(attribute.flags == [])
-        
+
         attribute.setFlags([Flags(rawValue: 1), Flags(rawValue: 4)], mask: [])
         #expect(attribute.flags == [])
-    
+
         // Test mask
         attribute.flags = []
         attribute.setFlags([Flags(rawValue: 1)], mask: [Flags(rawValue: 1)])
         #expect(attribute.flags == [Flags(rawValue: 1)])
-        
+
         attribute.setFlags([Flags(rawValue: 2)], mask: [Flags(rawValue: 2)])
         #expect(attribute.flags == [Flags(rawValue: 1), Flags(rawValue: 2)])
-        
+
         attribute.setFlags([Flags(rawValue: 4)], mask: [Flags(rawValue: 1)])
         #expect(attribute.flags == [Flags(rawValue: 2)])
-        
-        attribute.setFlags([Flags(rawValue: 1), Flags(rawValue: 4)], mask: [Flags(rawValue: 1), Flags(rawValue: 2), Flags(rawValue: 4)])
+
+        attribute.setFlags(
+            [Flags(rawValue: 1), Flags(rawValue: 4)],
+            mask: [Flags(rawValue: 1), Flags(rawValue: 2), Flags(rawValue: 4)]
+        )
         #expect(attribute.flags == [Flags(rawValue: 1), Flags(rawValue: 4)])
     }
-    
+
     @Test
     func visitBody() async {
         struct Visitor: AttributeBodyVisitor {
-            func visit<Body>(body: UnsafePointer<Body>) where Body : _AttributeBody {
+            func visit<Body: _AttributeBody>(body: UnsafePointer<Body>) {
                 guard let confirm = body.pointee as? Confirmation else {
                     Issue.record()
                     return
@@ -89,7 +92,7 @@ struct AnyAttributeCompatibilityTests {
                 confirm()
             }
         }
-        
+
         await withKnownIssue("Fetch Confirmation value from the body pointer") {
             await confirmation("Visit Body", expectedCount: 1) { confirm in
                 let attribute = AnyAttribute(Attribute(value: confirm))

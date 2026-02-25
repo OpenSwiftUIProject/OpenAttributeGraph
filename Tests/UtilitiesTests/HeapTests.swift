@@ -2,12 +2,11 @@
 //  HeapTests.swift
 //  UtilitiesTests
 
-import Utilities
 import Testing
+import Utilities
 
 @Suite("Heap tests")
 struct HeapTests {
-
     let nodeSize = 16
 
     @Test("Initializing with default arguments")
@@ -22,7 +21,7 @@ struct HeapTests {
         #expect(heap.increment() == 0x2000)
         #expect(heap.num_nodes() == 0)
     }
-    
+
     @Test("Initializing with custom increment")
     @available(iOS 16.4, *)
     func initWithCustomIncrement() {
@@ -40,8 +39,8 @@ struct HeapTests {
     @Test("Creating heap with initial buffer")
     @available(iOS 16.4, *)
     func createWithInitialBuffer() {
-        var buffer = Array<UInt8>(repeating: 0, count: 1024)
-        
+        var buffer = [UInt8](repeating: 0, count: 1024)
+
         let heap = buffer.withUnsafeMutableBytes { bufferPtr in
             let charPtr = bufferPtr.bindMemory(to: CChar.self)
             return util.Heap.create(charPtr.baseAddress, 1024, 2048)
@@ -49,7 +48,7 @@ struct HeapTests {
         defer {
             util.Heap.destroy(heap)
         }
-        
+
         #expect(heap.capacity() == 1024)
         #expect(heap.increment() == 2048)
         #expect(heap.num_nodes() == 0)
@@ -62,10 +61,10 @@ struct HeapTests {
         defer {
             util.Heap.destroy(heap)
         }
-        
+
         // Reset heap to different configuration
         heap.reset(nil, 0)
-        
+
         // Verify heap properties after reset
         #expect(heap.increment() == 1024)
         #expect(heap.capacity() == 0)
@@ -95,13 +94,13 @@ struct HeapTests {
         let heap = util.Heap.create(nil, 0, 0)
         defer { util.Heap.destroy(heap) }
 
-        let _ = util.heap_alloc_uint64(heap)
+        _ = util.heap_alloc_uint64(heap)
 
         // creates 1 node
         #expect(heap.num_nodes() == 1)
         #expect(heap.capacity() == 0x2000 - nodeSize - 8)
 
-        let _ = util.heap_alloc_uint64(heap)
+        _ = util.heap_alloc_uint64(heap)
 
         // second object is allocated from same node
         #expect(heap.num_nodes() == 1)
@@ -115,7 +114,7 @@ struct HeapTests {
         defer { util.Heap.destroy(heap) }
 
         // larger than minimum increment
-        let _ = util.heap_alloc_uint64(heap, 500)
+        _ = util.heap_alloc_uint64(heap, 500)
 
         // data is allocated from second node
         #expect(heap.num_nodes() == 2)

@@ -12,7 +12,7 @@ struct FocusCompatibilityTests {
         var a: Int
         var b: Double
     }
-    
+
     @Test
     func example() throws {
         let root = Attribute<Demo>(value: Demo(a: 0, b: 1.0))

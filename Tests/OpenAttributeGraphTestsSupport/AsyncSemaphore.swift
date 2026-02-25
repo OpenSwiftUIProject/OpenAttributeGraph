@@ -53,40 +53,40 @@ public final class AsyncSemaphore: @unchecked Sendable {
         enum State {
             /// Initial state. Next is suspendedUnlessCancelled, or cancelled.
             case pending
-            
+
             /// Waiting for a signal, with support for cancellation.
             case suspendedUnlessCancelled(UnsafeContinuation<Void, Error>)
-            
+
             /// Waiting for a signal, with no support for cancellation.
             case suspended(UnsafeContinuation<Void, Never>)
-            
+
             /// Cancelled before we have started waiting.
             case cancelled
         }
-        
+
         var state: State
-        
+
         init(state: State) {
             self.state = state
         }
     }
-    
+
     // MARK: - Internal State
-    
+
     /// The semaphore value.
     private var value: Int
-    
+
     /// As many elements as there are suspended tasks waiting for a signal.
     private var suspensions: [Suspension] = []
-    
+
     /// The lock that protects `value` and `suspensions`.
     ///
     /// It is recursive in order to handle cancellation (see the implementation
     /// of ``waitUnlessCancelled()``).
     private let _lock = NSRecursiveLock()
-    
+
     // MARK: - Creating a Semaphore
-    
+
     /// Creates a semaphore.
     ///
     /// - parameter value: The starting value for the semaphore. Do not pass a
@@ -95,13 +95,16 @@ public final class AsyncSemaphore: @unchecked Sendable {
         precondition(value >= 0, "AsyncSemaphore requires a value equal or greater than zero")
         self.value = value
     }
-    
+
     deinit {
-        precondition(suspensions.isEmpty, "AsyncSemaphore is deallocated while some task(s) are suspended waiting for a signal.")
+        precondition(
+            suspensions.isEmpty,
+            "AsyncSemaphore is deallocated while some task(s) are suspended waiting for a signal."
+        )
     }
-    
+
     // MARK: - Locking
-    
+
     // Let's hide the locking primitive in order to avoid a compiler warning:
     //
     // > Instance method 'lock' is unavailable from asynchronous contexts;
@@ -113,9 +116,9 @@ public final class AsyncSemaphore: @unchecked Sendable {
     // suspension point. So we need a lock.
     private func lock() { _lock.lock() }
     private func unlock() { _lock.unlock() }
-    
+
     // MARK: - Waiting for the Semaphore
-    
+
     /// Waits for, or decrements, a semaphore.
     ///
     /// Decrement the counting semaphore. If the resulting value is less than
@@ -123,13 +126,13 @@ public final class AsyncSemaphore: @unchecked Sendable {
     /// without blocking the underlying thread. Otherwise, no suspension happens.
     public func wait() async {
         lock()
-        
+
         value -= 1
         if value >= 0 {
             unlock()
             return
         }
-        
+
         await withUnsafeContinuation { continuation in
             // Register the continuation that `signal` will resume.
             let suspension = Suspension(state: .suspended(continuation))
@@ -137,7 +140,7 @@ public final class AsyncSemaphore: @unchecked Sendable {
             unlock()
         }
     }
-    
+
     /// Waits for, or decrements, a semaphore, with support for cancellation.
     ///
     /// Decrement the counting semaphore. If the resulting value is less than
@@ -148,11 +151,11 @@ public final class AsyncSemaphore: @unchecked Sendable {
     /// throws `CancellationError`.
     public func waitUnlessCancelled() async throws {
         lock()
-        
+
         value -= 1
         if value >= 0 {
             defer { unlock() }
-            
+
             do {
                 // All code paths check for cancellation
                 try Task.checkCancellation()
@@ -162,14 +165,14 @@ public final class AsyncSemaphore: @unchecked Sendable {
                 value += 1
                 throw error
             }
-            
+
             return
         }
-        
+
         // Get ready for being suspended waiting for a continuation, or for
         // early cancellation.
         let suspension = Suspension(state: .pending)
-        
+
         try await withTaskCancellationHandler {
             try await withUnsafeThrowingContinuation { (continuation: UnsafeContinuation<Void, Error>) in
                 if case .cancelled = suspension.state {
@@ -195,13 +198,13 @@ public final class AsyncSemaphore: @unchecked Sendable {
             // the lock. Being able to handle both situations is the reason why
             // we use a recursive lock.
             lock()
-            
+
             // We're no longer waiting for a signal
             value += 1
             if let index = suspensions.firstIndex(where: { $0 === suspension }) {
                 suspensions.remove(at: index)
             }
-            
+
             if case let .suspendedUnlessCancelled(continuation) = suspension.state {
                 // Late cancellation: the task is cancelled while waiting
                 // from the semaphore. Resume with a CancellationError.
@@ -218,9 +221,9 @@ public final class AsyncSemaphore: @unchecked Sendable {
             }
         }
     }
-    
+
     // MARK: - Signaling the Semaphore
-    
+
     /// Signals (increments) a semaphore.
     ///
     /// Increment the counting semaphore. If the previous value was less than
@@ -233,9 +236,9 @@ public final class AsyncSemaphore: @unchecked Sendable {
     @discardableResult
     public func signal() -> Bool {
         lock()
-        
+
         value += 1
-        
+
         switch suspensions.popLast()?.state { // FIFO
         case let .suspendedUnlessCancelled(continuation):
             unlock()

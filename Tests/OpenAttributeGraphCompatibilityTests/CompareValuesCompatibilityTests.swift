@@ -60,7 +60,6 @@ struct CompareValuesCompatibilityTests {
         }
     }
 
-
     //  Below is the graph to show the expected behavior of compareValues with different modes and types
     //  ┌──────────────────┬────────────────────┬──────────────────┬──────────────────┐
     //  │                  │ mode               │ Layout not ready │ Layout ready     │
@@ -106,7 +105,7 @@ struct CompareValuesCompatibilityTests {
     struct NonPODEquatable: Equatable {
         init(id: Int, v1: Int) {
             self.id = id
-            self.wrapper = Wrapper(v: v1)
+            wrapper = Wrapper(v: v1)
         }
 
         var id: Int
@@ -120,6 +119,7 @@ struct CompareValuesCompatibilityTests {
                 lhs.v == rhs.v
             }
         }
+
         private var wrapper: Wrapper
 
         static func == (lhs: NonPODEquatable, rhs: NonPODEquatable) -> Bool {
@@ -129,7 +129,7 @@ struct CompareValuesCompatibilityTests {
 
     struct NonPODEquatableTrue: Equatable {
         init() {
-            self.wrapper = Wrapper()
+            wrapper = Wrapper()
         }
 
         private var wrapper: Wrapper
@@ -143,7 +143,7 @@ struct CompareValuesCompatibilityTests {
 
     struct NonPODEquatableFalse: Equatable {
         init() {
-            self.wrapper = Wrapper.shared
+            wrapper = Wrapper.shared
         }
 
         private var wrapper: Wrapper
@@ -170,7 +170,10 @@ struct CompareValuesCompatibilityTests {
         #expect(compareValues(PODEquatableTrue(id: 1), PODEquatableTrue(id: 2), mode: mode) == false)
         #expect(compareValues(PODEquatableFalse(id: 1), PODEquatableFalse(id: 1), mode: mode) == true)
         #expect(compareValues(PODEquatableFalse(id: 1), PODEquatableFalse(id: 2), mode: mode) == false)
-        #expect(compareValues(NonPODEquatable(id: 1, v1: 2), NonPODEquatable(id: 1, v1: 2), mode: mode) == false, "bitwize compare will fail since M is a class")
+        #expect(
+            compareValues(NonPODEquatable(id: 1, v1: 2), NonPODEquatable(id: 1, v1: 2), mode: mode) == false,
+            "bitwize compare will fail since M is a class"
+        )
     }
 
     @Test
@@ -202,16 +205,31 @@ struct CompareValuesCompatibilityTests {
 
         #expect(compareValues(PODEquatable(id: 1, v1: 2), PODEquatable(id: 1, v1: 2), mode: mode) == true)
         #expect(compareValues(PODEquatable(id: 1, v1: 2), PODEquatable(id: 1, v1: 3), mode: mode) == false)
-        #expect(compareValues(PODEquatable(id: 1, v1: 2), PODEquatable(id: 1, v1: 4), mode: mode) == false, "POD type, use bitwise compare")
+        #expect(
+            compareValues(PODEquatable(id: 1, v1: 2), PODEquatable(id: 1, v1: 4), mode: mode) == false,
+            "POD type, use bitwise compare"
+        )
 
         #expect(compareValues(PODEquatableTrue(id: 1), PODEquatableTrue(id: 1), mode: mode) == true)
-        #expect(compareValues(PODEquatableTrue(id: 1), PODEquatableTrue(id: 2), mode: mode) == false, "POD type, use bitwise compare")
-        #expect(compareValues(PODEquatableFalse(id: 1), PODEquatableFalse(id: 1), mode: mode) == true, "POD type, use bitwise compare")
+        #expect(
+            compareValues(PODEquatableTrue(id: 1), PODEquatableTrue(id: 2), mode: mode) == false,
+            "POD type, use bitwise compare"
+        )
+        #expect(
+            compareValues(PODEquatableFalse(id: 1), PODEquatableFalse(id: 1), mode: mode) == true,
+            "POD type, use bitwise compare"
+        )
         #expect(compareValues(PODEquatableFalse(id: 1), PODEquatableFalse(id: 2), mode: mode) == false)
 
-        #expect(compareValues(NonPODEquatable(id: 1, v1: 2), NonPODEquatable(id: 1, v1: 2), mode: mode) == true, "Non POD type, use Equatable compare")
+        #expect(
+            compareValues(NonPODEquatable(id: 1, v1: 2), NonPODEquatable(id: 1, v1: 2), mode: mode) == true,
+            "Non POD type, use Equatable compare"
+        )
         #expect(compareValues(NonPODEquatable(id: 1, v1: 2), NonPODEquatable(id: 1, v1: 3), mode: mode) == false)
-        #expect(compareValues(NonPODEquatable(id: 1, v1: 2), NonPODEquatable(id: 1, v1: 4), mode: mode) == true, "Non POD type, use Equatable compare")
+        #expect(
+            compareValues(NonPODEquatable(id: 1, v1: 2), NonPODEquatable(id: 1, v1: 4), mode: mode) == true,
+            "Non POD type, use Equatable compare"
+        )
 
         #expect(compareValues(NonPODEquatableTrue(), NonPODEquatableTrue(), mode: mode) == true)
         #expect(compareValues(NonPODEquatableFalse(), NonPODEquatableFalse(), mode: mode) == false)
@@ -244,15 +262,30 @@ struct CompareValuesCompatibilityTests {
 
         #expect(compareValues(PODEquatable(id: 1, v1: 2), PODEquatable(id: 1, v1: 2), mode: mode) == true)
         #expect(compareValues(PODEquatable(id: 1, v1: 2), PODEquatable(id: 1, v1: 3), mode: mode) == false)
-        #expect(compareValues(PODEquatable(id: 1, v1: 2), PODEquatable(id: 1, v1: 4), mode: mode) == true, "use Equatable compare")
+        #expect(
+            compareValues(PODEquatable(id: 1, v1: 2), PODEquatable(id: 1, v1: 4), mode: mode) == true,
+            "use Equatable compare"
+        )
 
         #expect(compareValues(PODEquatableTrue(id: 1), PODEquatableTrue(id: 1), mode: mode) == true)
-        #expect(compareValues(PODEquatableTrue(id: 1), PODEquatableTrue(id: 2), mode: mode) == true, "use Equatable compare")
-        #expect(compareValues(PODEquatableFalse(id: 1), PODEquatableFalse(id: 1), mode: mode) == false, "use Equatable compare")
+        #expect(
+            compareValues(PODEquatableTrue(id: 1), PODEquatableTrue(id: 2), mode: mode) == true,
+            "use Equatable compare"
+        )
+        #expect(
+            compareValues(PODEquatableFalse(id: 1), PODEquatableFalse(id: 1), mode: mode) == false,
+            "use Equatable compare"
+        )
         #expect(compareValues(PODEquatableFalse(id: 1), PODEquatableFalse(id: 2), mode: mode) == false)
 
-        #expect(compareValues(NonPODEquatable(id: 1, v1: 2), NonPODEquatable(id: 1, v1: 2), mode: mode) == true, "use Equatable compare")
+        #expect(
+            compareValues(NonPODEquatable(id: 1, v1: 2), NonPODEquatable(id: 1, v1: 2), mode: mode) == true,
+            "use Equatable compare"
+        )
         #expect(compareValues(NonPODEquatable(id: 1, v1: 2), NonPODEquatable(id: 1, v1: 3), mode: mode) == false)
-        #expect(compareValues(NonPODEquatable(id: 1, v1: 2), NonPODEquatable(id: 1, v1: 4), mode: mode) == true, "use Equatable compare")
+        #expect(
+            compareValues(NonPODEquatable(id: 1, v1: 2), NonPODEquatable(id: 1, v1: 4), mode: mode) == true,
+            "use Equatable compare"
+        )
     }
 }

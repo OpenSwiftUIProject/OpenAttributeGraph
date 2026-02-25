@@ -16,7 +16,7 @@ struct AnyWeakAttributeCompatibilityTests {
         #expect(w2.attribute == nil)
         #expect(w2.unsafeCast(to: Void.self) == WeakAttribute(base: w2))
     }
-    
+
     @Test
     func hashable() {
         let w1 = AnyWeakAttribute(nil)
@@ -24,12 +24,12 @@ struct AnyWeakAttributeCompatibilityTests {
         #expect(w1 == w2)
         _ = w1.hashValue
     }
-    
+
     @Test
     func description() {
         let attr = Attribute<Int>(value: 1)
         if compatibilityTestEnabled {
-            #expect(AnyWeakAttribute(attr.identifier).description != "nil")            
+            #expect(AnyWeakAttribute(attr.identifier).description != "nil")
         }
         #expect(AnyWeakAttribute(nil).description == "nil")
     }

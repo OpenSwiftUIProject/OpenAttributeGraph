@@ -13,7 +13,7 @@ extension ObservedAttribute {
     public static func _destroySelf(_ pointer: UnsafeMutableRawPointer) {
         pointer.assumingMemoryBound(to: Self.self).pointee.destroy()
     }
-    
+
     public static var _hasDestroySelf: Bool {
         true
     }

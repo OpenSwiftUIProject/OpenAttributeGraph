@@ -18,7 +18,9 @@ struct CFPtrTests {
 
         #expect(helper.has_value() == false)
         #expect(helper.data_length() == -1)
+        #if canImport(Darwin)
         #expect(helper.retain_count() == 0)
+        #endif
     }
 
     @Test("Store and retrieve CFData")
@@ -34,7 +36,9 @@ struct CFPtrTests {
 
         #expect(helper.has_value() == true)
         #expect(helper.data_length() == 5)
+        #if canImport(Darwin)
         #expect(helper.retain_count() >= 1)
+        #endif
     }
 
     @Test("Reset clears value")
@@ -89,7 +93,9 @@ struct CFPtrTests {
             util.CFPtrTestHelper.destroy(original)
         }
 
+        #if canImport(Darwin)
         let retainCountBefore = original.retain_count()
+        #endif
 
         let copied = original.copy_to_new()
         defer {
@@ -104,8 +110,10 @@ struct CFPtrTests {
         #expect(original.data_length() == 3)
         #expect(copied.data_length() == 3)
 
+        #if canImport(Darwin)
         // Retain count should have increased
         #expect(original.retain_count() > retainCountBefore)
+        #endif
     }
 
     @Test("Move transfers ownership")

@@ -150,12 +150,13 @@ public:
         return data ? CFDataGetLength(data) : -1;
     }
 
-#if OAG_TARGET_OS_DARWIN
+    #if OAG_TARGET_OS_DARWIN
+    // CFGetRetainCount is not available in swift-corelibs-foundation on Linux.
     CFIndex retain_count() const {
         auto data = _ptr.get();
         return data ? CFGetRetainCount(data) : 0;
     }
-#endif
+    #endif
 
     void reset() { _ptr.reset(nullptr); }
 

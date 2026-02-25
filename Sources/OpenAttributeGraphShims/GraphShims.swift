@@ -26,12 +26,20 @@ extension Subgraph {
 }
 
 extension Graph {
+    public static func startProfiling() {
+        startProfiling(nil)
+    }
+
+    public static func stopProfiling() {
+        stopProfiling(nil)
+    }
+
     public func startProfiling() {
-        // TODO: placeholder
+        Self.startProfiling(self)
     }
     
     public func stopProfiling() {
-        // TODO: placeholder
+        Self.stopProfiling(self)
     }
     
     public func resetProfile() {

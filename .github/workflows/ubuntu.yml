@@ -16,7 +16,7 @@ jobs:
     runs-on: ubuntu-22.04
     env:
       OPENATTRIBUTEGRAPH_WERROR: 1
-      OPENATTRIBUTEGRAPH_ATTRIBUTEGRAPH: 0
+      OPENATTRIBUTEGRAPH_OPENATTRIBUTESHIMS_ATTRIBUTEGRAPH: 0
       OPENATTRIBUTEGRAPH_COMPATIBILITY_TEST: 0
     container: swift:${{ matrix.swift_version }}-jammy
     steps:

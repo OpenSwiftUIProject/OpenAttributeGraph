@@ -1,0 +1,87 @@
+name: Compute
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  # TODO: Enable once Compute binary is available for Linux or source integration is supported
+  # compute_ubuntu_build:
+  #   name: Build with Compute on Ubuntu
+  #   strategy:
+  #     fail-fast: false
+  #     matrix:
+  #       swift_version: ["6.1.3"]
+  #   runs-on: ubuntu-22.04
+  #   env:
+  #     OPENATTRIBUTEGRAPH_WERROR: 1
+  #     OPENATTRIBUTEGRAPH_OPENATTRIBUTESHIMS_COMPUTE: 1
+  #     OPENATTRIBUTEGRAPH_COMPATIBILITY_TEST: 0
+  #   container: swift:${{ matrix.swift_version }}-jammy
+  #   steps:
+  #     - uses: actions/checkout@v4
+  #     - name: Checkout Swift headers
+  #       uses: ./.github/actions/checkout-swift-headers
+  #     - name: Build in debug mode
+  #       run: swift build -c debug
+
+  compute_macos_build:
+    name: Build with Compute on macOS
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [macos-15]
+        xcode-version: ["16.4"]
+    runs-on: ${{ matrix.os }}
+    env:
+      OPENATTRIBUTEGRAPH_WERROR: 1
+      OPENATTRIBUTEGRAPH_OPENATTRIBUTESHIMS_COMPUTE: 1
+      OPENATTRIBUTEGRAPH_COMPATIBILITY_TEST: 0
+    steps:
+      - uses: actions/checkout@v4
+      - name: Setup Xcode
+        uses: OpenSwiftUIProject/OpenSwiftUI/.github/actions/setup-xcode@main
+        with:
+          xcode-version: ${{ matrix.xcode-version }}
+      - name: Checkout Swift headers
+        uses: ./.github/actions/checkout-swift-headers
+      - name: Build in debug mode
+        run: swift build -c debug
+
+  compute_ios_build:
+    name: Build with Compute on iOS
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [macos-15]
+        xcode-version: ["16.4"]
+        ios-version: ["18.5"]
+        include:
+          - ios-version: "18.5"
+            ios-simulator-name: "iPhone 16 Pro"
+    runs-on: ${{ matrix.os }}
+    env:
+      OPENATTRIBUTEGRAPH_WERROR: 1
+      OPENATTRIBUTEGRAPH_OPENATTRIBUTESHIMS_COMPUTE: 1
+      OPENATTRIBUTEGRAPH_COMPATIBILITY_TEST: 0
+    steps:
+      - uses: actions/checkout@v4
+      - name: Setup Xcode
+        uses: OpenSwiftUIProject/OpenSwiftUI/.github/actions/setup-xcode@main
+        with:
+          xcode-version: ${{ matrix.xcode-version }}
+      - name: Checkout Swift headers
+        uses: ./.github/actions/checkout-swift-headers
+      - name: Build in debug mode on iOS Simulator
+        run: |
+          xcodebuild build \
+            -workspace .swiftpm/xcode/package.xcworkspace \
+            -scheme OpenAttributeGraph-Package \
+            -configuration Debug \
+            -destination "platform=iOS Simulator,OS=${{ matrix.ios-version }},name=${{ matrix.ios-simulator-name }}" \
+            -derivedDataPath .build-debug \
+            -skipMacroValidation \
+            -skipPackagePluginValidation \
+            OTHER_SWIFT_FLAGS="-warnings-as-errors"

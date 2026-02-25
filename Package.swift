@@ -145,7 +145,8 @@ let libraryEvolutionCondition = envBoolValue("LIBRARY_EVOLUTION", default: build
 let compatibilityTestCondition = envBoolValue("COMPATIBILITY_TEST", default: false)
 
 let useLocalDeps = envBoolValue("USE_LOCAL_DEPS")
-let attributeGraphCondition = envBoolValue("ATTRIBUTEGRAPH", default: buildForDarwinPlatform && !isSPIBuild)
+let computeCondition = envBoolValue("OPENATTRIBUTESHIMS_COMPUTE", default: false)
+let attributeGraphCondition = envBoolValue("OPENATTRIBUTESHIMS_ATTRIBUTEGRAPH", default: buildForDarwinPlatform && !isSPIBuild)
 
 // MARK: - Shared Settings
 
@@ -226,6 +227,15 @@ extension Target {
         )
         var swiftSettings = swiftSettings ?? []
         swiftSettings.append(.define("OPENATTRIBUTEGRAPH_ATTRIBUTEGRAPH"))
+        self.swiftSettings = swiftSettings
+    }
+
+    func addComputeBinarySettings() {
+        dependencies.append(
+            "Compute",
+        )
+        var swiftSettings = swiftSettings ?? []
+        swiftSettings.append(.define("OPENATTRIBUTEGRAPH_COMPUTE"))
         self.swiftSettings = swiftSettings
     }
 }
@@ -371,7 +381,32 @@ let package = Package(
     cxxLanguageStandard: .cxx20
 )
 
+private var hasSetupDPFDependency = false
+
+@MainActor
+func setupDPFDependency() {
+    guard !hasSetupDPFDependency else { return }
+    hasSetupDPFDependency = true
+    let privateFrameworkRepo: Package.Dependency
+    if useLocalDeps {
+        privateFrameworkRepo = Package.Dependency.package(path: "../DarwinPrivateFrameworks")
+    } else {
+        privateFrameworkRepo = Package.Dependency.package(url: "https://github.com/OpenSwiftUIProject/DarwinPrivateFrameworks.git", branch: "main")
+    }
+    package.dependencies.append(privateFrameworkRepo)
+
+    let agVersion = EnvManager.shared.withDomain("DarwinPrivateFrameworks") {
+        envIntValue("TARGET_RELEASE", default: 2024)
+    }
+    package.platforms = switch agVersion {
+        case 2024: [.iOS(.v18), .macOS(.v15), .macCatalyst(.v18), .tvOS(.v18), .watchOS(.v10), .visionOS(.v2)]
+        case 2021: [.iOS(.v15), .macOS(.v12), .macCatalyst(.v15), .tvOS(.v15), .watchOS(.v7)]
+        default: nil
+    }
+}
+
 if compatibilityTestCondition {
+    setupDPFDependency()
     openAttributeGraphCompatibilityTestsTarget.addAGSettings()
 } else {
     package.targets += [
@@ -385,24 +420,27 @@ if buildForDarwinPlatform {
     package.targets.append(openAttributeGraphCompatibilityTestsTarget)
 }
 
-if attributeGraphCondition {
-    let privateFrameworkRepo: Package.Dependency
-    if useLocalDeps {
-        privateFrameworkRepo = Package.Dependency.package(path: "../DarwinPrivateFrameworks")
+if computeCondition {
+    let computeBinary = envBoolValue("OPENATTRIBUTESHIMS_COMPUTE_BINARY", default: true)
+    if computeBinary {
+        let computeVersion = envStringValue("OPENATTRIBUTESHIMS_COMPUTE_BINARY_VERSION", default: "0.0.1")
+        let computeURL = envStringValue("OPENATTRIBUTESHIMS_COMPUTE_BINARY_URL", default: "https://github.com/Kyle-Ye/Compute/releases/download/\(computeVersion)/Compute.xcframework.zip")
+        let computeChecksum = envStringValue("OPENATTRIBUTESHIMS_COMPUTE_BINARY_CHECKSUM", default: "95a256da2055d7c73184aeb9be088ba7019f7ea79b8a31e2dd930526c5ccbe8f")
+        package.targets.append(
+            .binaryTarget(
+                name: "Compute",
+                url: computeURL,
+                checksum: computeChecksum
+            ),
+        )
+        openAttributeGraphShimsTarget.addComputeBinarySettings()
     } else {
-        privateFrameworkRepo = Package.Dependency.package(url: "https://github.com/OpenSwiftUIProject/DarwinPrivateFrameworks.git", branch: "main")
+        // TODO
     }
-    package.dependencies.append(privateFrameworkRepo)
+    package.platforms = [.iOS(.v18), .macOS(.v15), .macCatalyst(.v18), .tvOS(.v18), .watchOS(.v10), .visionOS(.v2)]
+} else if attributeGraphCondition {
+    setupDPFDependency()
     openAttributeGraphShimsTarget.addAGSettings()
-
-    let agVersion = EnvManager.shared.withDomain("DarwinPrivateFrameworks") {
-        envIntValue("TARGET_RELEASE", default: 2024)
-    }
-    package.platforms = switch agVersion {
-        case 2024: [.iOS(.v18), .macOS(.v15), .macCatalyst(.v18), .tvOS(.v18), .watchOS(.v10), .visionOS(.v2)]
-        case 2021: [.iOS(.v15), .macOS(.v12), .macCatalyst(.v15), .tvOS(.v15), .watchOS(.v7)]
-        default: nil
-    }
 } else {
     openAttributeGraphShimsTarget.dependencies.append(.target(name: openAttributeGraphTarget.name))
     package.platforms = [.iOS(.v13), .macOS(.v10_15), .macCatalyst(.v13), .tvOS(.v13), .watchOS(.v5)]

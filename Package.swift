@@ -276,16 +276,14 @@ let swiftClonePlugin = Target.plugin(
 // MARK: - Targets
 
 let platformTarget = Target.target(
-    // Avoid target collision with Compute package
-    name: "OpenAttributeGraphPlatform",
+    name: "Platform",
     path: "Sources/Platform",
     cSettings: sharedCSettings + [
         .define("_GNU_SOURCE", .when(platforms: [.linux])),
     ]
 )
 let utilitiesTarget = Target.target(
-    // Avoid target collision with Compute package
-    name: "OpenAttributeGraphUtilities",
+    name: "Utilities",
     dependencies: [
         .target(name: platformTarget.name),
     ],
@@ -372,20 +370,13 @@ let openAttributeGraphCompatibilityTestsTarget = Target.testTarget(
 let package = Package(
     name: "OpenAttributeGraph",
     products: [
-        .library(name: "OpenAttributeGraph", type: .dynamic, targets: [openAttributeGraphTarget.name, openAttributeGraphCxxTarget.name]),
-        .library(name: "OpenAttributeGraphShims", type: .dynamic, targets: [openAttributeGraphShimsTarget.name]),
+        .library(
+            name: "OpenAttributeGraphShims",
+            type: .dynamic,
+            targets: [openAttributeGraphShimsTarget.name]
+        )
     ],
-    dependencies: [
-        .package(url: "https://github.com/apple/swift-numerics", from: "1.0.2"),
-    ],
-    targets: [
-        swiftClonePlugin,
-        platformTarget,
-        utilitiesTarget,
-        openAttributeGraphTarget,
-        openAttributeGraphCxxTarget,
-        openAttributeGraphShimsTarget,
-    ],
+    targets: [openAttributeGraphShimsTarget],
     cxxLanguageStandard: .cxx20
 )
 
@@ -413,33 +404,18 @@ func setupDPFDependency() {
     }
 }
 
-if compatibilityTestCondition {
-    setupDPFDependency()
-    openAttributeGraphCompatibilityTestsTarget.addAGSettings()
-} else {
-    package.targets += [
-        utilitiesTestsTarget,
-        openAttributeGraphCxxTestsTarget,
-        openAttributeGraphShimsTestsTarget,
-    ]
-}
-
-if buildForDarwinPlatform {
-    package.targets.append(openAttributeGraphCompatibilityTestsTarget)
-}
-
 if computeCondition {
     let computeBinary = envBoolValue("OPENATTRIBUTESHIMS_COMPUTE_USE_BINARY", default: false)
     if computeBinary {
-        let computeVersion = envStringValue("OPENATTRIBUTESHIMS_COMPUTE_USE_BINARY_VERSION", default: "0.0.1")
+        let version = envStringValue("OPENATTRIBUTESHIMS_COMPUTE_BINARY_VERSION", default: "0.0.1")
         // TODO: Use upstream link when avaiable. Tracked on https://github.com/jcmosc/Compute/issues/20
-        let computeURL = envStringValue("OPENATTRIBUTESHIMS_COMPUTE_USE_BINARY_URL", default: "https://github.com/Kyle-Ye/Compute/releases/download/\(computeVersion)/Compute.xcframework.zip")
-        let computeChecksum = envStringValue("OPENATTRIBUTESHIMS_COMPUTE_USE_BINARY_CHECKSUM", default: "95a256da2055d7c73184aeb9be088ba7019f7ea79b8a31e2dd930526c5ccbe8f")
+        let url = envStringValue("OPENATTRIBUTESHIMS_COMPUTE_BINARY_URL", default: "https://github.com/Kyle-Ye/Compute/releases/download/\(version)/Compute.xcframework.zip")
+        let checksum = envStringValue("OPENATTRIBUTESHIMS_COMPUTE_USE_BINARY_CHECKSUM", default: "95a256da2055d7c73184aeb9be088ba7019f7ea79b8a31e2dd930526c5ccbe8f")
         package.targets.append(
             .binaryTarget(
                 name: "Compute",
-                url: computeURL,
-                checksum: computeChecksum
+                url: url,
+                checksum: checksum
             )
         )
     } else {
@@ -458,6 +434,47 @@ if computeCondition {
     setupDPFDependency()
     openAttributeGraphShimsTarget.addAGSettings()
 } else {
+    let oagBinary = envBoolValue("OPENATTRIBUTESHIMS_OAG_USE_BINARY", default: false)
+    if oagBinary {
+        let version = envStringValue("OPENATTRIBUTESHIMS_OAG_BINARY_VERSION", default: "0.4.0")
+        let url = envStringValue("OPENATTRIBUTESHIMS_COMPUTE_USE_BINARY_URL", default: "https://github.com/OpenSwiftUIProject/OpenAttributeGraph/releases/download/\(version)/OpenAttributeGraph.xcframework.zip")
+        let checksum = envStringValue("OPENATTRIBUTESHIMS_COMPUTE_USE_BINARY_CHECKSUM", default: "a539f876625288d4af7c7d1dccc80fd8e936058791b8071e0d534f5ec1a8a068")
+        let target = Target.binaryTarget(
+            name: openAttributeGraphTarget.name,
+            url: url,
+            checksum: checksum
+        )
+        package.targets.append(target)
+    } else {
+        package.targets.append(contentsOf: [
+            swiftClonePlugin,
+            platformTarget,
+            utilitiesTarget,
+            openAttributeGraphTarget,
+            openAttributeGraphCxxTarget,
+        ])
+        package.products.append(
+            .library(name: "OpenAttributeGraph", type: .dynamic, targets: [openAttributeGraphTarget.name, openAttributeGraphCxxTarget.name])
+        )
+    }
     openAttributeGraphShimsTarget.dependencies.append(.target(name: openAttributeGraphTarget.name))
+
+    if buildForDarwinPlatform {
+        package.targets.append(openAttributeGraphCompatibilityTestsTarget)
+    }
+
+    if compatibilityTestCondition {
+        setupDPFDependency()
+        openAttributeGraphCompatibilityTestsTarget.addAGSettings()
+    } else {
+        package.targets += [
+            utilitiesTestsTarget,
+            openAttributeGraphCxxTestsTarget,
+            openAttributeGraphShimsTestsTarget,
+        ]
+    }
+    package.dependencies.append(
+        .package(url: "https://github.com/apple/swift-numerics", from: "1.1.1")
+    )
     package.platforms = [.iOS(.v13), .macOS(.v10_15), .macCatalyst(.v13), .tvOS(.v13), .watchOS(.v5)]
 }

@@ -2,6 +2,7 @@
 //  ObjCPtrTests.swift
 //  UtilitiesTests
 
+#if canImport(Darwin)
 import Utilities
 import Testing
 
@@ -103,3 +104,4 @@ struct ObjCPtrTests {
         #expect(dest.has_value() == true)
     }
 }
+#endif

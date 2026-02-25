@@ -2,12 +2,11 @@
 //  CFPtrTests.swift
 //  UtilitiesTests
 
-import Utilities
 import Testing
+import Utilities
 
 @Suite("cf_ptr tests")
 struct CFPtrTests {
-
     @Test("Default construction is null")
     @available(iOS 16.4, *)
     func defaultConstruction() {

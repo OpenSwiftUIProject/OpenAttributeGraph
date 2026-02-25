@@ -11,7 +11,7 @@ extension Attribute: Swift.CustomDebugStringConvertible {
     public var debugDescription: String {
         _debugDescription(indent: 0)
     }
-    
+
     func _debugDescription(indent: Int) -> String {
         let tabs = String(repeating: tab, count: indent)
         return #"""
@@ -26,19 +26,19 @@ extension AnyAttribute: Swift.CustomDebugStringConvertible {
     public var debugDescription: String {
         _debugDescription(indent: 0)
     }
-    
+
     func _debugDescription(indent: Int) -> String {
         let tabs = String(repeating: tab, count: indent)
 
         guard self != .nil else {
             return "\(tabs)AnyAttribute.nil"
         }
-        
+
         var description = #"""
         \#(tabs)rawValue: \#(rawValue)
         \#(tabs)graph: \#(graph)
         """#
-        
+
         if rawValue % 2 == 0 { // direct
             description.append("\n\(tabs)(direct attribute)")
 
@@ -60,7 +60,7 @@ extension AnyAttribute: Swift.CustomDebugStringConvertible {
                 bodyValue = _bodyPointer.assumingMemoryBound(to: type).pointee
             }
             _openExistential(bodyType, do: project2)
-            
+
             let bodyValueDescription = _formatBodyValue(bodyValue!, indent: indent)
             description.append("\n\(tabs)bodyValue:\n\(bodyValueDescription)")
 
@@ -71,7 +71,7 @@ extension AnyAttribute: Swift.CustomDebugStringConvertible {
         }
         return description
     }
-    
+
     private func _formatBodyValue(_ bodyValue: Any, indent: Int) -> String {
         let bodyValueString = String(describing: bodyValue)
         let nextTabs = String(repeating: tab, count: indent + 1)
@@ -80,11 +80,11 @@ extension AnyAttribute: Swift.CustomDebugStringConvertible {
         if bodyValueString.contains("Attribute<") {
             // Split lines and add proper indentation
             let lines = bodyValueString.components(separatedBy: .newlines)
-            return lines.enumerated().map { index, line in
+            return lines.enumerated().map { _, line in
                 return "\(nextTabs)\(line)"
             }.joined(separator: "\n")
         }
-        
+
         return "\(nextTabs)\(bodyValueString)"
     }
 }

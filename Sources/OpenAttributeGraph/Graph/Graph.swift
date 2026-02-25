@@ -142,8 +142,7 @@ extension Graph {
         do {
             try data.write(to: url, options: [])
             print("Wrote graph data to \"\(path)\".")
-        } catch {
-        }
+        } catch {}
         #endif
     }
 }

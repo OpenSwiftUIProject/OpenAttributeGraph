@@ -2,12 +2,11 @@
 //  ForwardListTests.swift
 //  UtilitiesTests
 
-import Utilities
 import Testing
+import Utilities
 
 @Suite("List tests")
 struct ForwardListTests {
-
     @Test("Initialize empty list")
     @available(iOS 16.4, *)
     func initEmpty() {
@@ -67,7 +66,7 @@ struct ForwardListTests {
         let front = list.front()
         #expect(front == 2)
     }
-    
+
     @Test("Sequential operations")
     @available(iOS 16.4, *)
     func sequentialOperations() {
@@ -75,19 +74,19 @@ struct ForwardListTests {
         defer {
             util.UInt64ForwardList.destroy(list)
         }
-        
+
         // Add multiple elements
-        for i in 0..<5 {
+        for i in 0 ..< 5 {
             list.push_front(UInt64(i))
         }
-        
+
         // Remove all elements and verify order (LIFO - last in, first out)
-        for i in (0..<5).reversed() {
+        for i in (0 ..< 5).reversed() {
             #expect(!list.empty())
             #expect(list.front() == UInt64(i))
             list.pop_front()
         }
-        
+
         #expect(list.empty())
     }
 }

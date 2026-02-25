@@ -11,7 +11,7 @@ import Testing
 struct DebugServerTests {
     typealias Command = DebugClient.Command
 
-    private func data(for command: Command) throws -> Data{
+    private func data(for command: Command) throws -> Data {
         let command = ["command": command.rawValue]
         return try JSONSerialization.data(withJSONObject: command)
     }
@@ -43,7 +43,8 @@ struct DebugServerTests {
                         let response = try #require(String(data: responseData, encoding: .utf8))
                         #expect(response == command.rawValue)
                     }
-                    debugServer.shutdown() // TODO: The shutdown should close the connection, but it does not for OAGDebugServer currently.
+                    debugServer
+                        .shutdown() // TODO: The shutdown should close the connection, but it does not for OAGDebugServer currently.
                     client.disconnect()
                 default:
                     break

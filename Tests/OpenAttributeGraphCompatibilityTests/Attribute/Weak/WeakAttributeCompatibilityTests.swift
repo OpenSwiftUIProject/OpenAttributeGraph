@@ -10,10 +10,10 @@ import Testing
 struct WeakAttributeCompatibilityTests {
     @Test
     func initTest() {
-        let _ = WeakAttribute<Int>()
-        let _ = WeakAttribute<Int>(nil)
+        _ = WeakAttribute<Int>()
+        _ = WeakAttribute<Int>(nil)
         let attr = Attribute(value: 0)
-        let _ = WeakAttribute(attr)
+        _ = WeakAttribute(attr)
     }
 }
 #endif

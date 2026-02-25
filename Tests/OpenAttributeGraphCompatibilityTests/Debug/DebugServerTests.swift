@@ -23,7 +23,7 @@ struct DebugServerTests {
     // to your lldbinit or run it before AGDebugServerStart call.
     @Test(.disabled(if: compatibilityTestEnabled, "Skip on AG on CI due to internal_diagnostics check"))
     func testMode1() throws {
-        let _ = try #require(DebugServer.start(mode: [.valid]))
+        _ = try #require(DebugServer.start(mode: [.valid]))
         let url = try #require(DebugServer.copyURL()) as URL
         #expect(url.scheme == "graph")
         let host = try #require(url.host)
@@ -34,7 +34,7 @@ struct DebugServerTests {
 
     @Test(.disabled(if: compatibilityTestEnabled, "Skip on AG on CI due to internal_diagnostics check"))
     func testMode3() throws {
-        let _ = try #require(DebugServer.start(mode: [.valid, .networkInterface]))
+        _ = try #require(DebugServer.start(mode: [.valid, .networkInterface]))
         let url = try #require(DebugServer.copyURL()) as URL
         #expect(url.scheme == "graph")
         let host = try #require(url.host)

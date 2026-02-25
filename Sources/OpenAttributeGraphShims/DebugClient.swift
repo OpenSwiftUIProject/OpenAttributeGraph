@@ -8,13 +8,13 @@ public import Network
 
 public struct ConnectionUpdates: AsyncSequence {
     public typealias Element = NWConnection.State
-    
+
     private let stream: AsyncStream<NWConnection.State>
-    
+
     fileprivate init(stream: AsyncStream<NWConnection.State>) {
         self.stream = stream
     }
-    
+
     public func makeAsyncIterator() -> AsyncStream<NWConnection.State>.AsyncIterator {
         stream.makeAsyncIterator()
     }
@@ -78,7 +78,7 @@ public final class DebugClient {
     }
 
     public func receiveMessage() async throws -> (header: DebugServerMessageHeader, data: Data) {
-        guard let connection = connection else {
+        guard let connection else {
             throw ClientError.notConnected
         }
         let headerData = try await receive(
@@ -123,7 +123,7 @@ public final class DebugClient {
 
     private func receive(length: Int, from connection: NWConnection) async throws -> Data {
         return try await withCheckedThrowingContinuation { continuation in
-            connection.receive(minimumIncompleteLength: length, maximumLength: length) { data, _, isComplete, error in
+            connection.receive(minimumIncompleteLength: length, maximumLength: length) { data, _, _, error in
                 if let error {
                     continuation.resume(throwing: error)
                 } else if let data {

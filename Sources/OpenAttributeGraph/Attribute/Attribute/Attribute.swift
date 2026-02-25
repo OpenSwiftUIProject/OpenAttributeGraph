@@ -8,7 +8,7 @@ public import OpenAttributeGraphCxx
 ///
 ///     @Attribute var count: Int = 0
 ///     @Attribute var doubledCount: Int = count * 2
-///     
+///
 ///     count = 5 // doubledCount automatically becomes 10
 ///
 /// ## Key Features
@@ -25,7 +25,7 @@ public import OpenAttributeGraphCxx
 ///
 ///     struct CounterView {
 ///         @Attribute var count: Int = 0
-///         
+///
 ///         var body: some View {
 ///             Button("Count: \(count)") {
 ///                 count += 1
@@ -48,7 +48,7 @@ public import OpenAttributeGraphCxx
 ///     struct DoubledRule: Rule {
 ///         typealias Value = Int
 ///         let source: Attribute<Int>
-///         
+///
 ///         func value() -> Int {
 ///             source.wrappedValue * 2
 ///         }
@@ -60,9 +60,9 @@ public import OpenAttributeGraphCxx
 @dynamicMemberLookup
 public struct Attribute<Value> {
     public var identifier: AnyAttribute
-    
+
     // MARK: - Initializer
-    
+
     /// Creates an attribute from a type-erased identifier.
     ///
     /// - Parameter identifier: The type-erased attribute identifier
@@ -76,7 +76,7 @@ public struct Attribute<Value> {
     public init(_ attribute: Attribute<Value>) {
         self = attribute
     }
-        
+
     /// Creates an attribute with an initial value.
     ///
     /// - Parameter value: The initial value for the attribute
@@ -89,7 +89,7 @@ public struct Attribute<Value> {
             }
         }
     }
-    
+
     public init(type _: Value.Type) {
         self = withUnsafePointer(to: External<Value>()) { bodyPointer in
             Attribute(body: bodyPointer, value: nil, flags: .external) {
@@ -122,9 +122,9 @@ public struct Attribute<Value> {
         identifier = OAGGraphCreateAttribute(index: index, body: body, value: value)
         #endif
     }
-    
+
     // MARK: - propertyWrapper
-        
+
     /// The current value of the attribute.
     public var wrappedValue: Value {
         unsafeAddress {
@@ -134,7 +134,7 @@ public struct Attribute<Value> {
         }
         nonmutating set { _ = setValue(newValue) }
     }
-    
+
     /// The attribute itself when accessed with the `$` prefix.
     public var projectedValue: Attribute<Value> {
         get { self }
@@ -142,11 +142,11 @@ public struct Attribute<Value> {
     }
 
     // MARK: - dynamicMemberLookup
-        
+
     public subscript<Member>(dynamicMember keyPath: KeyPath<Value, Member>) -> Attribute<Member> {
         self[keyPath: keyPath]
     }
-    
+
     public subscript<Member>(keyPath keyPath: KeyPath<Value, Member>) -> Attribute<Member> {
         if let offset = MemoryLayout<Value>.offset(of: keyPath) {
             return unsafeOffset(at: offset, as: Member.self)
@@ -154,17 +154,17 @@ public struct Attribute<Value> {
             return Attribute<Member>(Focus(root: self, keyPath: keyPath))
         }
     }
-        
+
     public subscript<Member>(offset body: (inout Value) -> PointerOffset<Value, Member>) -> Attribute<Member> {
         unsafeOffset(at: PointerOffset.offset(body).byteOffset, as: Member.self)
     }
-    
+
     // MARK: - Transform
-    
+
     public func unsafeCast<V>(to type: V.Type) -> Attribute<V> {
         identifier.unsafeCast(to: type)
     }
-    
+
     public func unsafeOffset<Member>(at offset: Int, as _: Member.Type) -> Attribute<Member> {
         Attribute<Member>(
             identifier: identifier.create(
@@ -173,15 +173,15 @@ public struct Attribute<Value> {
             )
         )
     }
-    
+
     public func applying<Member>(offset: PointerOffset<Value, Member>) -> Attribute<Member> {
         unsafeOffset(at: offset.byteOffset, as: Member.self)
     }
-    
+
     public func visitBody<Body: AttributeBodyVisitor>(_ visitor: inout Body) {
         identifier.visitBody(&visitor)
     }
-    
+
     public func mutateBody<V>(as type: V.Type, invalidating: Bool, _ body: (inout V) -> Void) {
         identifier.mutateBody(as: type, invalidating: invalidating, body)
     }
@@ -189,9 +189,9 @@ public struct Attribute<Value> {
     public func breadthFirstSearch(options: SearchOptions = [], _ body: (AnyAttribute) -> Bool) -> Bool {
         identifier.breadthFirstSearch(options: options, body)
     }
-    
+
     // MARK: - Graph
-    
+
     public var graph: Graph {
         #if os(WASI)
         fatalError("Compiler Bug")
@@ -199,6 +199,7 @@ public struct Attribute<Value> {
         identifier.graph
         #endif
     }
+
     public var subgraph: Subgraph {
         #if os(WASI)
         fatalError("Compiler Bug")
@@ -206,9 +207,9 @@ public struct Attribute<Value> {
         identifier.subgraph
         #endif
     }
-    
+
     // MARK: - Value
-    
+
     public var value: Value {
         unsafeAddress {
             OAGGraphGetValue(identifier, type: Value.self)
@@ -217,9 +218,9 @@ public struct Attribute<Value> {
         }
         nonmutating set { _ = setValue(newValue) }
     }
-    
+
     public var valueState: ValueState { identifier.valueState }
-    
+
     public func valueAndFlags(options: OAGValueOptions = []) -> (value: Value, flags: OAGChangedValueFlags) {
         let value = OAGGraphGetValue(identifier, options: options, type: Value.self)
         return (
@@ -227,7 +228,7 @@ public struct Attribute<Value> {
             value.flags
         )
     }
-    
+
     public func changedValue(options: OAGValueOptions = []) -> (value: Value, changed: Bool) {
         let value = OAGGraphGetValue(identifier, options: options, type: Value.self)
         return (
@@ -235,13 +236,13 @@ public struct Attribute<Value> {
             value.flags.contains(.changed)
         )
     }
-    
+
     public func setValue(_ value: Value) -> Bool {
         withUnsafePointer(to: value) { valuePointer in
             OAGGraphSetValue(identifier, valuePointer: valuePointer)
         }
     }
-    
+
     public var hasValue: Bool { identifier.hasValue }
     public func updateValue() { identifier.updateValue() }
     public func prefetchValue() { identifier.prefetchValue() }
@@ -249,15 +250,15 @@ public struct Attribute<Value> {
     public func validate() { identifier.verify(type: Metadata(Value.self)) }
 
     // MARK: - Input
-    
+
     public func addInput(_ attribute: AnyAttribute, options: OAGInputOptions = [], token: Int) {
         identifier.addInput(attribute, options: options, token: token)
     }
-    
+
     public func addInput<V>(_ attribute: Attribute<V>, options: OAGInputOptions = [], token: Int) {
         identifier.addInput(attribute, options: options, token: token)
     }
-    
+
     // MARK: - Flags
 
     public typealias Flags = AnyAttribute.Flags
@@ -266,7 +267,7 @@ public struct Attribute<Value> {
         get { identifier.flags }
         nonmutating set { identifier.flags = newValue }
     }
-    
+
     public func setFlags(_ newFlags: Flags, mask: Flags) {
         identifier.setFlags(newFlags, mask: mask)
     }
@@ -288,7 +289,7 @@ extension Attribute {
             Attribute(body: pointer, value: nil) { R._update }
         }
     }
-    
+
     public init<R: StatefulRule>(_ rule: R) where R.Value == Value {
         self = withUnsafePointer(to: rule) { pointer in
             Attribute(body: pointer, value: nil) { R._update }
@@ -304,7 +305,8 @@ func OAGGraphCreateAttribute(index: Int, body: UnsafeRawPointer, value: UnsafeRa
 @_silgen_name("OAGGraphGetValue")
 @inline(__always)
 @inlinable
-func OAGGraphGetValue<Value>(_ attribute: AnyAttribute, options: OAGValueOptions = [], type: Value.Type = Value.self) -> OAGValue
+func OAGGraphGetValue<Value>(_ attribute: AnyAttribute, options: OAGValueOptions = [], type: Value.Type = Value.self)
+    -> OAGValue
 
 @_silgen_name("OAGGraphSetValue")
 @inline(__always)

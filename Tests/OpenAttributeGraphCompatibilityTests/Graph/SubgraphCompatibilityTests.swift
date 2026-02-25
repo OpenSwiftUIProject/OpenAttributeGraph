@@ -12,11 +12,11 @@ struct SubgraphCompatibilityTests {
         let key = compatibilityTestEnabled ? "AG_TREE" : "OAG_TREE"
         setenv(key, "0", 1)
         #expect(Subgraph.shouldRecordTree == false)
-        
+
         Subgraph.setShouldRecordTree()
         #expect(Subgraph.shouldRecordTree == true)
     }
-    
+
     @Test
     func treeElementAPICheck() {
         let graph = Graph()
@@ -38,7 +38,7 @@ struct SubgraphCompatibilityTests {
                 let graph = Graph()
                 do {
                     let subgraph = Subgraph(graph: graph)
-                    let _ = subgraph.addObserver {
+                    _ = subgraph.addObserver {
                         notifiedCount += 1
                     }
                 }
@@ -54,7 +54,7 @@ struct SubgraphCompatibilityTests {
             do {
                 let graph = Graph()
                 let subgraph = Subgraph(graph: graph)
-                let _ = subgraph.addObserver {
+                _ = subgraph.addObserver {
                     notifiedCount += 1
                 }
                 #expect(notifiedCount == 0)

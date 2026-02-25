@@ -9,7 +9,11 @@ public struct GraphEnvironmentTrait: TestTrait, TestScoping, SuiteTrait {
     private static let semaphore = AsyncSemaphore(value: 1)
 
     @MainActor
-    public func provideScope(for test: Test, testCase: Test.Case?, performing function: @Sendable () async throws -> Void) async throws {
+    public func provideScope(
+        for test: Test,
+        testCase: Test.Case?,
+        performing function: @Sendable () async throws -> Void
+    ) async throws {
         await Self.semaphore.wait()
         defer { Self.semaphore.signal() }
         let graph = Graph(shared: Self.sharedGraph)

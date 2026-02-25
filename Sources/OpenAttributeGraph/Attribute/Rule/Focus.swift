@@ -38,7 +38,7 @@
 public struct Focus<Root, Value>: Rule, CustomStringConvertible {
     public var root: Attribute<Root>
     public var keyPath: KeyPath<Root, Value>
-    
+
     public init(root: Attribute<Root>, keyPath: KeyPath<Root, Value>) {
         self.root = root
         self.keyPath = keyPath

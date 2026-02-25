@@ -6,7 +6,5 @@
 import OpenAttributeGraphCxx_Private.Data
 import Testing
 
-struct PageTests {
-
-}
+struct PageTests {}
 #endif

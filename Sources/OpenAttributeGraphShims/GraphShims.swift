@@ -16,5 +16,6 @@ public typealias OAGValueOptions = AGValueOptions
 public let attributeGraphEnabled = true
 #else
 @_exported import OpenAttributeGraph
+
 public let attributeGraphEnabled = false
 #endif

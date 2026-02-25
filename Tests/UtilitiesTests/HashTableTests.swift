@@ -2,8 +2,8 @@
 //  HashTableTests.swift
 //  UtilitiesTests
 
-import Utilities
 import Testing
+import Utilities
 
 // CustomTableTestHelper uses static counters for C function pointer callbacks
 // (C callbacks can't capture per-instance state). @MainActor ensures tests
@@ -12,7 +12,6 @@ import Testing
 @Suite("HashTable tests")
 @MainActor
 struct HashTableTests {
-
     @Test("Initialize empty table")
     @available(iOS 16.4, *)
     func initEmpty() {
@@ -56,7 +55,7 @@ struct HashTableTests {
             }
         }
     }
-    
+
     @Test("Insert multiple entries")
     @available(iOS 16.4, *)
     func insertMultipleEntries() {
@@ -74,15 +73,15 @@ struct HashTableTests {
 
         // Use manually allocated pointers to ensure unique addresses
         let key1Ptr = UnsafeMutablePointer<Int>.allocate(capacity: 1)
-        let key2Ptr = UnsafeMutablePointer<Int>.allocate(capacity: 1)  
+        let key2Ptr = UnsafeMutablePointer<Int>.allocate(capacity: 1)
         let key3Ptr = UnsafeMutablePointer<Int>.allocate(capacity: 1)
-        
+
         defer {
             key1Ptr.deallocate()
             key2Ptr.deallocate()
             key3Ptr.deallocate()
         }
-        
+
         key1Ptr.pointee = 1
         key2Ptr.pointee = 2
         key3Ptr.pointee = 3
@@ -110,7 +109,7 @@ struct HashTableTests {
         #expect(!table.empty())
         #expect(table.count() == 3)
     }
-    
+
     @Test("Remove entry")
     @available(iOS 16.4, *)
     func removeEntry() throws {
@@ -174,10 +173,10 @@ struct HashTableTests {
 
         // We'll insert many items to increase chance of bucket collisions
         // With 16 initial buckets, inserting 32 items guarantees collisions
-        var keys: [Int] = Array(0..<32)
+        var keys: [Int] = Array(0 ..< 32)
 
         // Insert all keys
-        for i in 0..<keys.count {
+        for i in 0 ..< keys.count {
             withUnsafePointer(to: &keys[i]) { keyPointer in
                 let inserted = table.insert(keyPointer, keyPointer)
                 #expect(inserted == true)
@@ -281,7 +280,7 @@ struct HashTableTests {
         withUnsafePointer(to: &key1) { k1 in
             let found = table.__lookupUnsafe(k1, nil)
             #expect(found != nil, "Reinserted key should be found")
-            if let found = found {
+            if let found {
                 #expect(found.assumingMemoryBound(to: Int.self).pointee == 999, "Reinserted key should have new value")
             }
         }
@@ -531,9 +530,9 @@ struct HashTableTests {
         // So growth happens at count > 64 for first growth
         // Insert enough items to trigger multiple growths
         let itemCount = 200
-        var keys: [Int] = Array(0..<itemCount)
+        var keys: [Int] = Array(0 ..< itemCount)
 
-        for i in 0..<keys.count {
+        for i in 0 ..< keys.count {
             withUnsafePointer(to: &keys[i]) { keyPointer in
                 let inserted = table.insert(keyPointer, keyPointer)
                 #expect(inserted == true, "Insert \(i) should succeed")
@@ -543,7 +542,7 @@ struct HashTableTests {
         #expect(table.count() == UInt64(itemCount))
 
         // Verify all items can be found
-        for i in 0..<keys.count {
+        for i in 0 ..< keys.count {
             withUnsafePointer(to: &keys[i]) { keyPointer in
                 let found = table.__lookupUnsafe(keyPointer, nil)
                 #expect(found != nil, "Key \(i) should be found after growth")

@@ -15,7 +15,7 @@ public struct RuleContext<Value>: Equatable {
     public init(attribute: Attribute<Value>) {
         self.attribute = attribute
     }
-    
+
     public subscript<V>(attribute: Attribute<V>) -> V {
         unsafeAddress {
             OAGGraphGetInputValue(self.attribute.identifier, input: attribute.identifier, type: V.self)
@@ -23,7 +23,7 @@ public struct RuleContext<Value>: Equatable {
                 .assumingMemoryBound(to: V.self)
         }
     }
-    
+
     public subscript<V>(weakAttribute: WeakAttribute<V>) -> V? {
         weakAttribute.attribute.map { attribute in
             OAGGraphGetInputValue(self.attribute.identifier, input: attribute.identifier, type: V.self)
@@ -52,20 +52,23 @@ public struct RuleContext<Value>: Equatable {
             }
         }
     }
-    
+
     public var hasValue: Bool {
         let valuePointer: UnsafePointer<Value>? = Graph.outputValue()
         return valuePointer != nil
     }
-        
-    public func valueAndFlags<V>(of input: Attribute<V>, options: OAGValueOptions = []) -> (value: V, flags: OAGChangedValueFlags) {
+
+    public func valueAndFlags<V>(
+        of input: Attribute<V>,
+        options: OAGValueOptions = []
+    ) -> (value: V, flags: OAGChangedValueFlags) {
         let value = OAGGraphGetInputValue(attribute.identifier, input: input.identifier, options: options, type: V.self)
         return (
             value.value.assumingMemoryBound(to: V.self).pointee,
             value.flags
         )
     }
-    
+
     public func changedValue<V>(of input: Attribute<V>, options: OAGValueOptions = []) -> (value: V, changed: Bool) {
         let value = OAGGraphGetInputValue(attribute.identifier, input: input.identifier, options: options, type: V.self)
         return (
@@ -73,7 +76,7 @@ public struct RuleContext<Value>: Equatable {
             value.flags.contains(.changed)
         )
     }
-    
+
     public func update(body: () -> Void) {
         OAGGraphWithUpdate(attribute.identifier, body: body)
     }
@@ -82,7 +85,12 @@ public struct RuleContext<Value>: Equatable {
 @_silgen_name("OAGGraphGetInputValue")
 @inline(__always)
 @inlinable
-func OAGGraphGetInputValue<Value>(_ attribute: AnyAttribute, input: AnyAttribute, options: OAGValueOptions = [], type: Value.Type = Value.self) -> OAGValue
+func OAGGraphGetInputValue<Value>(
+    _ attribute: AnyAttribute,
+    input: AnyAttribute,
+    options: OAGValueOptions = [],
+    type: Value.Type = Value.self
+) -> OAGValue
 
 @_silgen_name("OAGGraphWithUpdate")
 @inline(__always)

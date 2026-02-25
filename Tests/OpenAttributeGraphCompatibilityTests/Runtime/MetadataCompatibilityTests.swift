@@ -75,7 +75,8 @@ struct MetadataCompatibilityTests {
         }
         withUnsafeMutablePointer(to: &double) {
             metadata.projectEnumData($0)
-            #expect(UnsafeMutableRawPointer($0).assumingMemoryBound(to: Double.self).pointee.isApproximatelyEqual(to: 2.0))
+            #expect(UnsafeMutableRawPointer($0).assumingMemoryBound(to: Double.self).pointee
+                .isApproximatelyEqual(to: 2.0))
         }
         withUnsafeMutablePointer(to: &none) {
             #expect($0.pointee == .none)
@@ -194,7 +195,7 @@ struct MetadataCompatibilityTests {
             #expect(result == false)
         }
         for options in [Metadata.ApplyOptions.continueAfterUnknownField, []] {
-            let result = Metadata(T2.self).forEachField(options: options) { name, offset, type in
+            let result = Metadata(T2.self).forEachField(options: options) { _, offset, type in
                 if offset == 0 {
                     #expect(type is Int.Type)
                     return true
@@ -223,7 +224,12 @@ struct MetadataCompatibilityTests {
             }
             #expect(result == false)
         }
-        for options in [Metadata.ApplyOptions.enumerateClassFields, .continueAfterUnknownField, .enumerateEnumCases, []] {
+        for options in [
+            Metadata.ApplyOptions.enumerateClassFields,
+            .continueAfterUnknownField,
+            .enumerateEnumCases,
+            []
+        ] {
             let result = Metadata(T3.self).forEachField(options: options) { _, _, _ in
                 true
             }

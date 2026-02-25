@@ -7,9 +7,11 @@ import Testing
 
 #if canImport(UIKit)
 import UIKit
+
 private typealias PlatformView = UIView
 #elseif canImport(AppKit)
 import AppKit
+
 private typealias PlatformView = NSView
 #endif
 
@@ -32,15 +34,15 @@ struct MetadataDebugTests {
         \#tvar a: Int // offset = 0x0
         \#tvar b: Double // offset = 0x8
         }
-        
+
         """#)
-        
+
         #expect(Metadata(Demo2.self).layoutDescription == #"""
         class Demo2 {
         \#tvar a: Int // offset = 0x10
         \#tvar b: Double // offset = 0x18
         }
-        
+
         """#)
     }
 
@@ -61,7 +63,7 @@ struct MetadataDebugTests {
 }
 
 extension Int {
-    fileprivate var hex: String {
-        "0x\(String(format:"%X", self))"
+    private var hex: String {
+        "0x\(String(format: "%X", self))"
     }
 }

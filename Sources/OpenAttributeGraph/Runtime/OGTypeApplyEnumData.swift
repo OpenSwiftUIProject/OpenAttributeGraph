@@ -9,7 +9,7 @@
 @discardableResult
 public func withUnsafePointerToEnumCase<T>(
     of value: UnsafeMutablePointer<T>,
-    do body: (Int, Any.Type, UnsafeRawPointer) -> ()
+    do body: (Int, Any.Type, UnsafeRawPointer) -> Void
 ) -> Bool {
     // TODO: OAGTypeApplyEnumData
     return true
@@ -18,7 +18,7 @@ public func withUnsafePointerToEnumCase<T>(
 @discardableResult
 public func withUnsafeMutablePointerToEnumCase<T>(
     of value: UnsafeMutablePointer<T>,
-    do body: (Int, Any.Type, UnsafeMutableRawPointer) -> ()
+    do body: (Int, Any.Type, UnsafeMutableRawPointer) -> Void
 ) -> Bool {
     // TODO: OAGTypeApplyMutableEnumData
     return true

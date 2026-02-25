@@ -19,16 +19,16 @@ extension AnyAttribute {
     public init<Value>(_ attribute: Attribute<Value>) {
         self = attribute.identifier
     }
-    
+
     public func unsafeCast<Value>(to _: Value.Type) -> Attribute<Value> {
         Attribute<Value>(identifier: self)
     }
-    
+
     public static var current: AnyAttribute? {
         let current = __OAGGraphGetCurrentAttribute()
         return current == .nil ? nil : current
     }
-    
+
     public func unsafeOffset(at offset: Int) -> AnyAttribute {
         create(offset: offset)
     }
@@ -44,7 +44,7 @@ extension AnyAttribute {
     public func addInput<Value>(_ attribute: Attribute<Value>, options: OAGInputOptions = [], token: Int) {
         addInput(attribute.identifier, options: options, token: token)
     }
-    
+
     // FIXME: Use AttributeType instead
     public func visitBody<Body: AttributeBodyVisitor>(_ visitor: inout Body) {
         let bodyType = info.type.advanced(by: 1).pointee.self_id.type as! _AttributeBody.Type
@@ -60,11 +60,11 @@ extension AnyAttribute {
             body(&value.assumingMemoryBound(to: Value.self).pointee)
         }
     }
-    
+
     public func breadthFirstSearch(options _: SearchOptions = [], _: (AnyAttribute) -> Bool) -> Bool {
         fatalError("TODO")
     }
-    
+
     public var _bodyType: Any.Type {
         info.type.pointee.self_id.type
     }
@@ -85,7 +85,7 @@ extension AnyAttribute {
         nonmutating set {
             _indirectDependency = newValue ?? .nil
         }
-    }    
+    }
 }
 
 // MARK: CustomStringConvertible

@@ -14,7 +14,7 @@ public import OpenAttributeGraphCxx
 ///     struct CounterRule: StatefulRule {
 ///         typealias Value = Int
 ///         private var counter = 0
-///         
+///
 ///         mutating func updateValue() {
 ///             counter += 1
 ///             value = counter
@@ -74,11 +74,11 @@ extension StatefulRule {
     public var context: RuleContext<Value> {
         RuleContext<Value>(attribute: attribute)
     }
-    
+
     public var value: Value {
         unsafeAddress { Graph.outputValue()! }
         nonmutating set { context.value = newValue }
     }
-    
+
     public var hasValue: Bool { context.hasValue }
 }

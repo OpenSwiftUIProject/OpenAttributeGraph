@@ -7,6 +7,7 @@ OpenAttributeGraph is a Swift package that provides attribute graph functionalit
 
 ### 1. Make Changes and Commit
 - Implement your feature or fix
+- Format changed Swift files: `Scripts/format-swift.sh`
 - Test locally
 - Commit changes with descriptive messages
 
@@ -54,6 +55,7 @@ gh pr create --base main --head <current-branch>
 ```
 
 ## Key Scripts
+- `Scripts/format-swift.sh` - Formats changed Swift files (run before committing)
 - `Scripts/gen_ag_template.sh` - Generates AG template for compatibility testing
 - `Scripts/bump_ag_pr.sh` - Creates PR for DarwinPrivateFramework updates
 

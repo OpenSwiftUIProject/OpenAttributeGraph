@@ -1,0 +1,80 @@
+# OpenAttributeGraph SwiftFormat configuration
+
+# Swift version
+--swiftversion 6.1
+
+# Indentation
+--indent 4
+--tabwidth 4
+--indentcase false
+--ifdef no-indent
+--xcodeindentation enabled
+
+# Wrapping
+--maxwidth 120
+--wraparguments before-first
+--wrapparameters before-first
+--wrapcollections before-first
+--wrapreturntype preserve
+--wrapconditions preserve
+--closingparen balanced
+
+# Braces
+--allman false
+
+# Spaces
+--operatorfunc spaced
+--nospaceoperators
+--ranges spaced
+--typeattributes prev-line
+
+# Semicolons
+--semicolons never
+
+# Trailing commas
+--commas inline
+
+# Imports
+--importgrouping testable-last
+
+# Void
+--voidtype void
+
+# Self
+--self remove
+--selfrequired
+
+# Redundancy
+--redundanttype inferred
+
+# Misc
+--trimwhitespace always
+--stripunusedargs closure-only
+--emptybraces no-space
+--elseposition same-line
+--guardelse next-line
+
+# File header (preserve existing headers)
+--header ignore
+
+# Disabled rules - too opinionated or conflict with project conventions
+--disable extensionAccessControl
+--disable docComments
+--disable wrapPropertyBodies
+--disable wrapFunctionBodies
+--disable wrapSingleLineComments
+--disable redundantThrows
+--disable headerFileName
+--disable numberFormatting
+--disable swiftTestingTestCaseNames
+--disable noForceUnwrapInTests
+--disable redundantAsync
+--disable modifierOrder
+--disable todos
+--disable opaqueGenericParameters
+--disable wrapMultilineStatementBraces
+--disable trailingCommas
+--disable redundantReturn
+
+# Exclusions - skip vendored/generated code
+--exclude Sources/SwiftCorelibs,Sources/SwiftHeaders,.build,Package.swift

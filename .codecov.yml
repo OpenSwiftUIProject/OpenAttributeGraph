@@ -1,14 +1,31 @@
 codecov:
   require_ci_to_pass: yes
+
 coverage:
   status:
     project:
       default:
-        target: auto 
-        threshold: 5
-    patch: off
-      # default:
-      #   target: auto 
-      #   threshold: 5
+        target: auto
+        threshold: 1%
+    patch:
+      default:
+        target: 70%
+        threshold: 0%
+
+flag_management:
+  default_rules:
+    carryforward: true
+    statuses:
+      - type: project
+        target: auto
+        threshold: 1%
+      - type: patch
+        target: 70%
+
+comment:
+  layout: "header, diff, flags, files"
+  behavior: default
+  require_changes: false
+
 ignore:
   - Tests

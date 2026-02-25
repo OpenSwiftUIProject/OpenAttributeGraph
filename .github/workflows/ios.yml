@@ -71,3 +71,10 @@ jobs:
             -skipPackagePluginValidation \
             -skipMacroValidation
             # OTHER_SWIFT_FLAGS="-warnings-as-errors" Conflicting options '-warnings-as-errors' and '-suppress-warnings'
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v5
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          flags: ios
+          swift_project: OpenAttributeGraph-Package
+          verbose: true

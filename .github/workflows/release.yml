@@ -35,7 +35,6 @@ jobs:
           echo "xcode_version=$(xcodebuild -version | head -1)" >> $GITHUB_OUTPUT
           echo "swift_version=$(swift --version 2>&1 | head -1)" >> $GITHUB_OUTPUT
       - name: Generate Release Notes
-        id: release_notes
         run: |
           TAG_NAME="${GITHUB_REF#refs/tags/}"
           # Find the previous tag
@@ -44,8 +43,6 @@ jobs:
           DOWNLOAD_URL="https://github.com/${REPO}/releases/download/${TAG_NAME}/OpenAttributeGraph.xcframework.zip"
 
           {
-            echo 'body<<RELEASE_NOTES_EOF'
-
             # Binary Target section first
             echo "## Binary Target"
             echo ""
@@ -77,13 +74,11 @@ jobs:
               git log --pretty=format:"* %s by @%an in ${GITHUB_SERVER_URL}/${REPO}/commit/%H" --no-merges
               echo ""
             fi
-
-            echo 'RELEASE_NOTES_EOF'
-          } >> "$GITHUB_OUTPUT"
+          } > release_notes.md
       - name: Create Release
         run: |
           TAG_NAME="${GITHUB_REF#refs/tags/}"
           gh release create "$TAG_NAME" \
             .build/Xcode/Frameworks/OpenAttributeGraph.xcframework.zip \
             --title "$TAG_NAME" \
-            --notes "${{ steps.release_notes.outputs.body }}"
+            --notes-file release_notes.md

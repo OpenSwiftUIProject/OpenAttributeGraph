@@ -212,7 +212,7 @@ if libraryEvolutionCondition {
     // Either set OPENATTRIBUTEGRAPH_LIBRARY_EVOLUTION=0 or add `-Xswiftc -no-verify-emitted-module-interface` after `swift build`
     sharedSwiftSettings.append(.unsafeFlags(["-enable-library-evolution", "-no-verify-emitted-module-interface"]))
 }
-if !compatibilityTestCondition {
+if !(compatibilityTestCondition && buildForDarwinPlatform) {
     sharedCSettings.append(.define("OPENATTRIBUTEGRAPH"))
     sharedCxxSettings.append(.define("OPENATTRIBUTEGRAPH"))
     sharedSwiftSettings.append(.define("OPENATTRIBUTEGRAPH"))
@@ -358,7 +358,7 @@ let openAttributeGraphCompatibilityTestsTarget = Target.testTarget(
     name: "OpenAttributeGraphCompatibilityTests",
     dependencies: [
         .product(name: "Numerics", package: "swift-numerics"),
-    ] + (compatibilityTestCondition ? [] : [.target(name: openAttributeGraphTarget.name)]),
+    ],
     exclude: ["README.md"],
     cSettings: sharedCSettings,
     cxxSettings: sharedCxxSettings,
@@ -470,6 +470,9 @@ if computeCondition {
         setupDPFDependency()
         openAttributeGraphCompatibilityTestsTarget.addAGSettings()
     } else {
+        openAttributeGraphCompatibilityTestsTarget.dependencies.append(
+            .target(name: openAttributeGraphTarget.name)
+        )
         package.targets += [
             utilitiesTestsTarget,
             openAttributeGraphCxxTestsTarget,

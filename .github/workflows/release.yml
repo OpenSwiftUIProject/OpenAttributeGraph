@@ -76,9 +76,9 @@ jobs:
             fi
           } > release_notes.md
       - name: Create Release
-        run: |
-          TAG_NAME="${GITHUB_REF#refs/tags/}"
-          gh release create "$TAG_NAME" \
-            .build/Xcode/Frameworks/OpenAttributeGraph.xcframework.zip \
-            --title "$TAG_NAME" \
-            --notes-file release_notes.md
+        uses: ncipollo/release-action@v1
+        with:
+          bodyFile: release_notes.md
+          allowUpdates: true
+          artifacts: ".build/Xcode/Frameworks/OpenAttributeGraph.xcframework.zip"
+          token: ${{ secrets.GITHUB_TOKEN }}

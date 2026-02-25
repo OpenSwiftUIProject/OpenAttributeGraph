@@ -7,24 +7,25 @@ on:
     branches: [main]
 
 jobs:
-  compute_ubuntu_build:
-    name: Build with Compute on Ubuntu
-    strategy:
-      fail-fast: false
-      matrix:
-        swift_version: ["6.1.3"]
-    runs-on: ubuntu-22.04
-    env:
-      OPENATTRIBUTEGRAPH_WERROR: 1
-      OPENATTRIBUTEGRAPH_OPENATTRIBUTESHIMS_COMPUTE: 1
-      OPENATTRIBUTEGRAPH_COMPATIBILITY_TEST: 0
-    container: swift:${{ matrix.swift_version }}-jammy
-    steps:
-      - uses: actions/checkout@v4
-      - name: Checkout Swift headers
-        uses: ./.github/actions/checkout-swift-headers
-      - name: Build in debug mode
-        run: swift build -c debug
+  # TODO: Enable once Compute binary is available for Linux or source integration is supported
+  # compute_ubuntu_build:
+  #   name: Build with Compute on Ubuntu
+  #   strategy:
+  #     fail-fast: false
+  #     matrix:
+  #       swift_version: ["6.1.3"]
+  #   runs-on: ubuntu-22.04
+  #   env:
+  #     OPENATTRIBUTEGRAPH_WERROR: 1
+  #     OPENATTRIBUTEGRAPH_OPENATTRIBUTESHIMS_COMPUTE: 1
+  #     OPENATTRIBUTEGRAPH_COMPATIBILITY_TEST: 0
+  #   container: swift:${{ matrix.swift_version }}-jammy
+  #   steps:
+  #     - uses: actions/checkout@v4
+  #     - name: Checkout Swift headers
+  #       uses: ./.github/actions/checkout-swift-headers
+  #     - name: Build in debug mode
+  #       run: swift build -c debug
 
   compute_macos_build:
     name: Build with Compute on macOS

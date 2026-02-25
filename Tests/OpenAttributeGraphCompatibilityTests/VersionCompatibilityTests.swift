@@ -16,7 +16,7 @@ struct VersionTests {
                 #expect(OAGVersion == 0x20014)
                 confirm()
             case OPENATTRIBUTEGRAPH_RELEASE_2024:
-                #expect(OpenAttributeGraphVersionNumber.isApproximatelyEqual(to: 6.0))
+                #expect(OpenAttributeGraphVersionNumber.isApproximatelyEqual(to: 6.5))
                 #expect(OAGVersion == 0x2001e)
                 confirm()
             default:

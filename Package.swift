@@ -386,6 +386,7 @@ private var hasSetupDPFDependency = false
 @MainActor
 func setupDPFDependency() {
     guard !hasSetupDPFDependency else { return }
+    hasSetupDPFDependency = true
     let privateFrameworkRepo: Package.Dependency
     if useLocalDeps {
         privateFrameworkRepo = Package.Dependency.package(path: "../DarwinPrivateFrameworks")

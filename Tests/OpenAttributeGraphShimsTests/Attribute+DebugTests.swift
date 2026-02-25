@@ -8,7 +8,7 @@ import OpenAttributeGraphShims
 import Testing
 
 @MainActor
-@Suite(.disabled(if: !attributeGraphEnabled, "Subgraph is not implemented on OAG"), .graphScope)
+@Suite(.disabled(if: attributeGraphVendor == .oag, "Subgraph is not implemented on OAG"), .graphScope)
 struct Attribute_DebugTests {
     @Test
     func directAttribute() {

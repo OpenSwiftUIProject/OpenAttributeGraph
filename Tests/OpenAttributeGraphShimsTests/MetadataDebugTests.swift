@@ -15,7 +15,7 @@ import AppKit
 private typealias PlatformView = NSView
 #endif
 
-@Suite(.disabled(if: !attributeGraphEnabled, "forEachField is not implemented for OAG"))
+@Suite(.disabled(if: attributeGraphVendor == .oag, "forEachField is not implemented for OAG"))
 struct MetadataDebugTests {
     struct Demo1 {
         var a: Int = .zero

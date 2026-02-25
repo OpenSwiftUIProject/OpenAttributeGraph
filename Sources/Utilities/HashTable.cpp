@@ -70,7 +70,7 @@ UntypedTable::UntypedTable(hasher custom_hash, key_equal custom_compare, key_cal
 }
 
 UntypedTable::~UntypedTable() {
-    if ((_did_remove_key || _did_remove_value) && _count) {
+    if ((_did_remove_key || _did_remove_value) && _count != 0) {
         for (uint32_t bucket = 0; !(bucket >> _bucket_mask_width); bucket++) {
             for (HashNode *node = _buckets[bucket]; node != nullptr; node = node->next) {
                 if (_did_remove_key) {

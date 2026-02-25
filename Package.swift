@@ -145,7 +145,7 @@ let libraryEvolutionCondition = envBoolValue("LIBRARY_EVOLUTION", default: build
 let compatibilityTestCondition = envBoolValue("COMPATIBILITY_TEST", default: false)
 
 let useLocalDeps = envBoolValue("USE_LOCAL_DEPS")
-let computeCondition = envBoolValue("OPENATTRIBUTESHIMS_COMPUTE", default: false)
+let computeCondition = envBoolValue("OPENATTRIBUTESHIMS_COMPUTE", default: true)
 let attributeGraphCondition = envBoolValue("OPENATTRIBUTESHIMS_ATTRIBUTEGRAPH", default: buildForDarwinPlatform && !isSPIBuild)
 
 // MARK: - Shared Settings
@@ -230,13 +230,17 @@ extension Target {
         self.swiftSettings = swiftSettings
     }
 
-    func addComputeBinarySettings() {
+    func addComputeSettings() {
         dependencies.append(
             "Compute",
         )
         var swiftSettings = swiftSettings ?? []
         swiftSettings.append(.define("OPENATTRIBUTEGRAPH_COMPUTE"))
         self.swiftSettings = swiftSettings
+
+        var linkerSettings = linkerSettings ?? []
+        linkerSettings.append(.linkedLibrary("swiftDemangle"))
+        self.linkerSettings = linkerSettings
     }
 }
 
@@ -272,16 +276,20 @@ let swiftClonePlugin = Target.plugin(
 // MARK: - Targets
 
 let platformTarget = Target.target(
-    name: "Platform",
+    // Avoid target collision with Compute package
+    name: "OpenAttributeGraphPlatform",
+    path: "Sources/Platform",
     cSettings: sharedCSettings + [
         .define("_GNU_SOURCE", .when(platforms: [.linux])),
     ]
 )
 let utilitiesTarget = Target.target(
-    name: "Utilities",
+    // Avoid target collision with Compute package
+    name: "OpenAttributeGraphUtilities",
     dependencies: [
         .target(name: platformTarget.name),
     ],
+    path: "Sources/Utilities",
     cxxSettings: sharedCxxSettings
 )
 // FIXME: Merge into one target
@@ -365,7 +373,7 @@ let package = Package(
     name: "OpenAttributeGraph",
     products: [
         .library(name: "OpenAttributeGraph", type: .dynamic, targets: [openAttributeGraphTarget.name, openAttributeGraphCxxTarget.name]),
-        .library(name: "OpenAttributeGraphShims", type: .dynamic, targets: [openAttributeGraphTarget.name, openAttributeGraphCxxTarget.name, openAttributeGraphShimsTarget.name]),
+        .library(name: "OpenAttributeGraphShims", type: .dynamic, targets: [openAttributeGraphShimsTarget.name]),
     ],
     dependencies: [
         .package(url: "https://github.com/apple/swift-numerics", from: "1.0.2"),
@@ -421,9 +429,10 @@ if buildForDarwinPlatform {
 }
 
 if computeCondition {
-    let computeBinary = envBoolValue("OPENATTRIBUTESHIMS_COMPUTE_BINARY", default: true)
+    let computeBinary = envBoolValue("OPENATTRIBUTESHIMS_COMPUTE_BINARY", default: false)
     if computeBinary {
         let computeVersion = envStringValue("OPENATTRIBUTESHIMS_COMPUTE_BINARY_VERSION", default: "0.0.1")
+        // TODO: Use upstream link when avaiable. Tracked on https://github.com/jcmosc/Compute/issues/20
         let computeURL = envStringValue("OPENATTRIBUTESHIMS_COMPUTE_BINARY_URL", default: "https://github.com/Kyle-Ye/Compute/releases/download/\(computeVersion)/Compute.xcframework.zip")
         let computeChecksum = envStringValue("OPENATTRIBUTESHIMS_COMPUTE_BINARY_CHECKSUM", default: "95a256da2055d7c73184aeb9be088ba7019f7ea79b8a31e2dd930526c5ccbe8f")
         package.targets.append(
@@ -431,12 +440,20 @@ if computeCondition {
                 name: "Compute",
                 url: computeURL,
                 checksum: computeChecksum
-            ),
+            )
         )
-        openAttributeGraphShimsTarget.addComputeBinarySettings()
     } else {
-        // TODO
+        let computeRepo: Package.Dependency
+//        if useLocalDeps {
+        // NOTE: Only local Compute dependency is supported as it need extra setup to build
+        computeRepo = Package.Dependency.package(path: "../Compute")
+//        } else {
+//            // TODO: No release tag or branch yet.
+//            computeRepo = Package.Dependency.package(url: "https://github.com/jcmosc/Compute", revision: "34c5af92008a2db18e8b598fb426e3e2872e752c")
+//        }
+        package.dependencies.append(computeRepo)
     }
+    openAttributeGraphShimsTarget.addComputeSettings()
     package.platforms = [.iOS(.v18), .macOS(.v15), .macCatalyst(.v18), .tvOS(.v18), .watchOS(.v10), .visionOS(.v2)]
 } else if attributeGraphCondition {
     setupDPFDependency()

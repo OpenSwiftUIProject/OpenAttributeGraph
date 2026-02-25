@@ -1,6 +1,15 @@
 {
-  "originHash" : "33d7ce05531763737439f2eb0082fad396ce541b04d40d930279ac9528c562db",
+  "originHash" : "d32f9ea321b4c6a7c737bf76fdda48ea4812ceda5b212c6730f14b9a5c3d00a0",
   "pins" : [
+    {
+      "identity" : "darwinprivateframeworks",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/OpenSwiftUIProject/DarwinPrivateFrameworks.git",
+      "state" : {
+        "branch" : "main",
+        "revision" : "18d26f5dcc334468fad0904697233faeb41a1805"
+      }
+    },
     {
       "identity" : "swift-numerics",
       "kind" : "remoteSourceControl",

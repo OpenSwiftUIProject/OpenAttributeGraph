@@ -145,7 +145,7 @@ let libraryEvolutionCondition = envBoolValue("LIBRARY_EVOLUTION", default: build
 let compatibilityTestCondition = envBoolValue("COMPATIBILITY_TEST", default: false)
 
 let useLocalDeps = envBoolValue("USE_LOCAL_DEPS")
-let computeCondition = envBoolValue("OPENATTRIBUTESHIMS_COMPUTE", default: true)
+let computeCondition = envBoolValue("OPENATTRIBUTESHIMS_COMPUTE", default: false)
 let attributeGraphCondition = envBoolValue("OPENATTRIBUTESHIMS_ATTRIBUTEGRAPH", default: buildForDarwinPlatform && !isSPIBuild)
 
 // MARK: - Shared Settings
@@ -444,13 +444,12 @@ if computeCondition {
         )
     } else {
         let computeRepo: Package.Dependency
-//        if useLocalDeps {
-        // NOTE: Only local Compute dependency is supported as it need extra setup to build
-        computeRepo = Package.Dependency.package(path: "../Compute")
-//        } else {
-//            // TODO: No release tag or branch yet.
-//            computeRepo = Package.Dependency.package(url: "https://github.com/jcmosc/Compute", revision: "34c5af92008a2db18e8b598fb426e3e2872e752c")
-//        }
+        if useLocalDeps {
+            computeRepo = Package.Dependency.package(path: "../Compute")
+        } else {
+            // TODO: No release tag or branch yet.
+            computeRepo = Package.Dependency.package(url: "https://github.com/jcmosc/Compute", revision: "34c5af92008a2db18e8b598fb426e3e2872e752c")
+        }
         package.dependencies.append(computeRepo)
     }
     openAttributeGraphShimsTarget.addComputeSettings()

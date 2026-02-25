@@ -73,17 +73,19 @@ jobs:
             # OTHER_SWIFT_FLAGS="-warnings-as-errors" Conflicting options '-warnings-as-errors' and '-suppress-warnings'
       - name: Generate iOS coverage report
         run: |
-          XCRESULT=$(find .build-test-debug/Logs/Test -name "*.xcresult" -maxdepth 1 | head -1)
-          if [ -n "$XCRESULT" ]; then
-            xcrun xccov view --report --json "$XCRESULT" > coverage.json
+          # Extract profdata and binary from xcodebuild's derived data to generate
+          # llvm-cov text output (same format as macOS/Ubuntu workflows).
+          # Note: swift_project param in codecov-action doesn't auto-discover xcodebuild coverage,
+          # and xcrun xccov JSON format isn't recognized by Codecov's parser.
+          PROFDATA=$(find .build-test-debug -name "Coverage.profdata" -type f | head -1)
+          XCTEST=$(find .build-test-debug -name "*.xctest" -type d | head -1)
+          if [ -n "$PROFDATA" ] && [ -n "$XCTEST" ]; then
+            BINARY="$XCTEST/$(basename "$XCTEST" .xctest)"
+            xcrun llvm-cov show -instr-profile="$PROFDATA" "$BINARY" > coverage.txt
           fi
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v5
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
           flags: ios
-          files: coverage.json
-          # swift_project doesn't auto-discover xcodebuild coverage from derived data.
-          # We use xcrun xccov to explicitly extract coverage from the xcresult bundle instead.
-          # swift_project: OpenAttributeGraph-Package
           verbose: true

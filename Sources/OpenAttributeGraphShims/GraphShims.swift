@@ -61,8 +61,6 @@ extension CachedValueOptions {
     public static var _1: CachedValueOptions = .unprefetched
 }
 
-@available(*, deprecated, renamed: "attributeGraphVendor")
-public let attributeGraphEnabled = true
 public let attributeGraphVendor = AttributeGraphVendor.compute
 
 #elseif OPENATTRIBUTEGRAPH_ATTRIBUTEGRAPH
@@ -78,17 +76,10 @@ public typealias OAGInputOptions = AGInputOptions
 public typealias OAGValue = AGValue
 public typealias OAGValueOptions = AGValueOptions
 
-@available(*, deprecated, renamed: "attributeGraphVendor")
-public let attributeGraphEnabled = true
 public let attributeGraphVendor = AttributeGraphVendor.ag
 
 #else
 
 @_exported import OpenAttributeGraph
-@available(*, deprecated, renamed: "attributeGraphVendor")
-public let attributeGraphEnabled = false
 public let attributeGraphVendor = AttributeGraphVendor.oag
 #endif
-
-@available(*, deprecated, message: "swiftToolchainSupported is always true")
-public let swiftToolchainSupported = true

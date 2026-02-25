@@ -49,6 +49,8 @@ jobs:
           swift test \
             -c release \
             --build-path .build-test-release
+      - name: Install Codecov dependencies
+        run: apt-get update && apt-get install -y curl gpg
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v5
         with:

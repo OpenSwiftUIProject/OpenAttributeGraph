@@ -1,0 +1,89 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - '[0-9]+.[0-9]+.[0-9]+'
+
+jobs:
+  release:
+    name: Build and Publish Release
+    runs-on: macos-15
+    permissions:
+      contents: write
+    env:
+      GH_TOKEN: ${{ github.token }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Setup Xcode
+        uses: OpenSwiftUIProject/OpenSwiftUI/.github/actions/setup-xcode@main
+        with:
+          xcode-version: "16.4"
+      - name: Checkout Swift headers
+        uses: ./.github/actions/checkout-swift-headers
+      - name: Build XCFramework
+        run: ./Scripts/build_xcframework.sh
+      - name: Compute Checksum
+        id: checksum
+        run: |
+          echo "checksum=$(swift package compute-checksum .build/Xcode/Frameworks/OpenAttributeGraph.xcframework.zip)" >> $GITHUB_OUTPUT
+      - name: Collect Build Info
+        id: build_info
+        run: |
+          echo "xcode_version=$(xcodebuild -version | head -1)" >> $GITHUB_OUTPUT
+          echo "swift_version=$(swift --version 2>&1 | head -1)" >> $GITHUB_OUTPUT
+      - name: Generate Release Notes
+        id: release_notes
+        run: |
+          TAG_NAME="${GITHUB_REF#refs/tags/}"
+          # Find the previous tag
+          PREV_TAG=$(git tag --sort=-v:refname | grep -E '^[0-9]+\.[0-9]+\.[0-9]+$' | sed -n '2p')
+          REPO="${GITHUB_REPOSITORY}"
+          DOWNLOAD_URL="https://github.com/${REPO}/releases/download/${TAG_NAME}/OpenAttributeGraph.xcframework.zip"
+
+          {
+            echo 'body<<RELEASE_NOTES_EOF'
+
+            # Binary Target section first
+            echo "## Binary Target"
+            echo ""
+            echo '```swift'
+            echo '.binaryTarget('
+            echo '    name: "OpenAttributeGraph",'
+            echo "    url: \"${DOWNLOAD_URL}\","
+            echo "    checksum: \"${{ steps.checksum.outputs.checksum }}\""
+            echo ')'
+            echo '```'
+            echo ""
+
+            # Build info
+            echo "## Build Info"
+            echo ""
+            echo "- ${{ steps.build_info.outputs.xcode_version }}"
+            echo "- ${{ steps.build_info.outputs.swift_version }}"
+            echo ""
+
+            # What's Changed section
+            if [ -n "$PREV_TAG" ]; then
+              echo "## What's Changed"
+              git log "${PREV_TAG}..HEAD" --pretty=format:"* %s by @%an in ${GITHUB_SERVER_URL}/${REPO}/commit/%H" --no-merges
+              echo ""
+              echo ""
+              echo "**Full Changelog**: ${GITHUB_SERVER_URL}/${REPO}/compare/${PREV_TAG}...${TAG_NAME}"
+            else
+              echo "## What's Changed"
+              git log --pretty=format:"* %s by @%an in ${GITHUB_SERVER_URL}/${REPO}/commit/%H" --no-merges
+              echo ""
+            fi
+
+            echo 'RELEASE_NOTES_EOF'
+          } >> "$GITHUB_OUTPUT"
+      - name: Create Release
+        uses: ncipollo/release-action@v1
+        with:
+          body: ${{ steps.release_notes.outputs.body }}
+          allowUpdates: true
+          artifacts: ".build/Xcode/Frameworks/OpenAttributeGraph.xcframework.zip"
+          token: ${{ secrets.GITHUB_TOKEN }}

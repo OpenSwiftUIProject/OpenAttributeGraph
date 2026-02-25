@@ -1,0 +1,343 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 77;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		OAG0000010000000000000001 /* libz.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = OAG0000020000000000000001 /* libz.tbd */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+		OAG0000020000000000000001 /* libz.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libz.tbd; path = usr/lib/libz.tbd; sourceTree = SDKROOT; };
+		OAG0000030000000000000001 /* OpenAttributeGraph.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = OpenAttributeGraph.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		OAG00000C0000000000000001 /* Common.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Common.xcconfig; sourceTree = "<group>"; };
+		OAG00000C0000000000000002 /* OpenAttributeGraph.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = OpenAttributeGraph.xcconfig; sourceTree = "<group>"; };
+		OAG00000C0000000000000003 /* OpenAttributeGraphTests.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = OpenAttributeGraphTests.xcconfig; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
+		277F10582F4EF9460061C27D /* Exceptions for "OpenAttributeGraphCxx" folder in "OpenAttributeGraph" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				include/OpenAttributeGraphCxx/Vector/vector.tpp,
+				include/SwiftBridging/README.md,
+			);
+			target = OAG0000080000000000000001 /* OpenAttributeGraph */;
+		};
+		OAG00000D0000000000000001 /* Exceptions for "Platform" folder in "OpenAttributeGraph" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				README.md,
+			);
+			target = OAG0000080000000000000001 /* OpenAttributeGraph */;
+		};
+		OAG00000D0000000000000002 /* Exceptions for "Utilities" folder in "OpenAttributeGraph" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				include/SwiftBridging/README.md,
+				README.md,
+			);
+			target = OAG0000080000000000000001 /* OpenAttributeGraph */;
+		};
+/* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
+
+/* Begin PBXFileSystemSynchronizedRootGroup section */
+		OAG0000040000000000000001 /* Platform */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				OAG00000D0000000000000001 /* Exceptions for "Platform" folder in "OpenAttributeGraph" target */,
+			);
+			name = Platform;
+			path = Sources/Platform;
+			sourceTree = "<group>";
+		};
+		OAG0000040000000000000002 /* Utilities */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				OAG00000D0000000000000002 /* Exceptions for "Utilities" folder in "OpenAttributeGraph" target */,
+			);
+			name = Utilities;
+			path = Sources/Utilities;
+			sourceTree = "<group>";
+		};
+		OAG0000040000000000000003 /* OpenAttributeGraphCxx */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				277F10582F4EF9460061C27D /* Exceptions for "OpenAttributeGraphCxx" folder in "OpenAttributeGraph" target */,
+			);
+			name = OpenAttributeGraphCxx;
+			path = Sources/OpenAttributeGraphCxx;
+			sourceTree = "<group>";
+		};
+		OAG0000040000000000000004 /* OpenAttributeGraph */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			name = OpenAttributeGraph;
+			path = Sources/OpenAttributeGraph;
+			sourceTree = "<group>";
+		};
+/* End PBXFileSystemSynchronizedRootGroup section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		OAG0000050000000000000001 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				OAG0000010000000000000001 /* libz.tbd in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		OAG0000060000000000000001 = {
+			isa = PBXGroup;
+			children = (
+				OAG0000040000000000000001 /* Platform */,
+				OAG0000040000000000000002 /* Utilities */,
+				OAG0000040000000000000003 /* OpenAttributeGraphCxx */,
+				OAG0000040000000000000004 /* OpenAttributeGraph */,
+				OAG00000B0000000000000001 /* Configs */,
+				OAG0000060000000000000003 /* Frameworks */,
+				OAG0000060000000000000002 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		OAG0000060000000000000002 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				OAG0000030000000000000001 /* OpenAttributeGraph.framework */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		OAG0000060000000000000003 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				OAG0000020000000000000001 /* libz.tbd */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		OAG00000B0000000000000001 /* Configs */ = {
+			isa = PBXGroup;
+			children = (
+				OAG00000C0000000000000001 /* Common.xcconfig */,
+				OAG00000C0000000000000002 /* OpenAttributeGraph.xcconfig */,
+				OAG00000C0000000000000003 /* OpenAttributeGraphTests.xcconfig */,
+			);
+			path = Configs;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXHeadersBuildPhase section */
+		OAG0000070000000000000001 /* Headers */ = {
+			isa = PBXHeadersBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXHeadersBuildPhase section */
+
+/* Begin PBXNativeTarget section */
+		OAG0000080000000000000001 /* OpenAttributeGraph */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = OAG000009000000000000000A /* Build configuration list for PBXNativeTarget "OpenAttributeGraph" */;
+			buildPhases = (
+				OAG0000070000000000000001 /* Headers */,
+				OAG00000A0000000000000001 /* Process Headers */,
+				OAG0000050000000000000002 /* Sources */,
+				OAG0000050000000000000001 /* Frameworks */,
+				OAG0000050000000000000003 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			fileSystemSynchronizedGroups = (
+				OAG0000040000000000000001 /* Platform */,
+				OAG0000040000000000000002 /* Utilities */,
+				OAG0000040000000000000003 /* OpenAttributeGraphCxx */,
+				OAG0000040000000000000004 /* OpenAttributeGraph */,
+			);
+			name = OpenAttributeGraph;
+			packageProductDependencies = (
+			);
+			productName = OpenAttributeGraph;
+			productReference = OAG0000030000000000000001 /* OpenAttributeGraph.framework */;
+			productType = "com.apple.product-type.framework";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		OAG0000060000000000000000 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = 1;
+				LastUpgradeCheck = 1640;
+				TargetAttributes = {
+					OAG0000080000000000000001 = {
+						CreatedOnToolsVersion = 16.4;
+					};
+				};
+			};
+			buildConfigurationList = OAG0000090000000000000001 /* Build configuration list for PBXProject "OpenAttributeGraph" */;
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+			);
+			mainGroup = OAG0000060000000000000001;
+			minimizedProjectReferenceProxies = 1;
+			preferredProjectObjectVersion = 77;
+			productRefGroup = OAG0000060000000000000002 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				OAG0000080000000000000001 /* OpenAttributeGraph */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		OAG0000050000000000000003 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXShellScriptBuildPhase section */
+		OAG00000A0000000000000001 /* Process Headers */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+				"$(SRCROOT)/Scripts/Xcode/process_headers_inputs.xcfilelist",
+			);
+			inputPaths = (
+				"$(SRCROOT)/Scripts/Xcode/process_headers.sh",
+			);
+			name = "Process Headers";
+			outputFileListPaths = (
+				"$(SRCROOT)/Scripts/Xcode/process_headers_outputs.xcfilelist",
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "# Type a script or drag a script file from your workspace to insert its path.\nScripts/Xcode/process_headers.sh\n";
+		};
+/* End PBXShellScriptBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		OAG0000050000000000000002 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin XCBuildConfiguration section */
+		OAG0000090000000000000002 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = OAG00000C0000000000000001 /* Common.xcconfig */;
+			buildSettings = {
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+			};
+			name = Debug;
+		};
+		OAG0000090000000000000003 /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = OAG00000C0000000000000001 /* Common.xcconfig */;
+			buildSettings = {
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_NO_COMMON_BLOCKS = YES;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				SWIFT_COMPILATION_MODE = wholemodule;
+			};
+			name = Release;
+		};
+		OAG0000090000000000000004 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = OAG00000C0000000000000002 /* OpenAttributeGraph.xcconfig */;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				"LD_RUNPATH_SEARCH_PATHS[sdk=macosx*]" = (
+					"@executable_path/../Frameworks",
+					"@loader_path/Frameworks",
+				);
+			};
+			name = Debug;
+		};
+		OAG0000090000000000000005 /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = OAG00000C0000000000000002 /* OpenAttributeGraph.xcconfig */;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				"LD_RUNPATH_SEARCH_PATHS[sdk=macosx*]" = (
+					"@executable_path/../Frameworks",
+					"@loader_path/Frameworks",
+				);
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		OAG0000090000000000000001 /* Build configuration list for PBXProject "OpenAttributeGraph" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				OAG0000090000000000000002 /* Debug */,
+				OAG0000090000000000000003 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		OAG000009000000000000000A /* Build configuration list for PBXNativeTarget "OpenAttributeGraph" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				OAG0000090000000000000004 /* Debug */,
+				OAG0000090000000000000005 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = OAG0000060000000000000000 /* Project object */;
+}

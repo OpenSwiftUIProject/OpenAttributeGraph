@@ -1,0 +1,44 @@
+// Common.xcconfig
+// Shared build settings for OpenAttributeGraph
+
+// MARK: - Deployment Targets
+
+MACOSX_DEPLOYMENT_TARGET = 15.0
+IPHONEOS_DEPLOYMENT_TARGET = 18.0
+XROS_DEPLOYMENT_TARGET = 2.0
+
+// MARK: - Platform
+
+SUPPORTED_PLATFORMS = iphoneos iphonesimulator macosx xros xrsimulator
+ALLOW_TARGET_PLATFORM_SPECIALIZATION = YES
+TARGETED_DEVICE_FAMILY = 1,2,7
+SDKROOT = auto
+
+// MARK: - C/C++ Language
+
+GCC_C_LANGUAGE_STANDARD = gnu17
+CLANG_CXX_LANGUAGE_STANDARD = gnu++20
+CLANG_ENABLE_MODULES = YES
+
+// MARK: - C/C++ Flags
+
+// -ftyped-memory-operations: Rewrite malloc() to malloc_type_malloc() for type-isolated allocation buckets (xzone malloc)
+// -ftyped-cxx-new-delete: Rewrite operator new/delete to typed variants
+OTHER_CFLAGS = $(inherited) -ftyped-memory-operations
+OTHER_CPLUSPLUSFLAGS = $(inherited) -ftyped-memory-operations -ftyped-cxx-new-delete
+
+// MARK: - C/C++ Preprocessor
+
+GCC_PREPROCESSOR_DEFINITIONS = $(inherited) OPENATTRIBUTEGRAPH=1
+GCC_PREPROCESSOR_DEFINITIONS[config=Debug] = $(inherited) OPENATTRIBUTEGRAPH=1 DEBUG=1
+
+// MARK: - Header Search Paths
+
+SYSTEM_HEADER_SEARCH_PATHS = $(inherited) Checkouts/swift/include Checkouts/swift/stdlib/include Checkouts/swift/stdlib/public/SwiftShims
+
+// MARK: - Swift
+
+SWIFT_VERSION = 5.0
+OTHER_SWIFT_FLAGS = $(inherited) -enable-experimental-feature Extern -enable-upcoming-feature InternalImportsByDefault
+SWIFT_ACTIVE_COMPILATION_CONDITIONS = $(inherited) OPENATTRIBUTEGRAPH OPENATTRIBUTEGRAPH_RELEASE_2024 OPENATTRIBUTEGRAPH_SUPPORT_2021_API OPENATTRIBUTEGRAPH_SUPPORT_2022_API OPENATTRIBUTEGRAPH_SUPPORT_2023_API OPENATTRIBUTEGRAPH_SUPPORT_2024_API
+SWIFT_ACTIVE_COMPILATION_CONDITIONS[config=Debug] = $(inherited) DEBUG OPENATTRIBUTEGRAPH OPENATTRIBUTEGRAPH_RELEASE_2024 OPENATTRIBUTEGRAPH_SUPPORT_2021_API OPENATTRIBUTEGRAPH_SUPPORT_2022_API OPENATTRIBUTEGRAPH_SUPPORT_2023_API OPENATTRIBUTEGRAPH_SUPPORT_2024_API

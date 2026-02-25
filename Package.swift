@@ -266,13 +266,6 @@ extension [SwiftSetting] {
     }
 }
 
-// MARK: - Plugin
-
-let swiftClonePlugin = Target.plugin(
-    name: "CloneSwiftPlugin",
-    capability: .buildTool()
-)
-
 // MARK: - Targets
 
 let platformTarget = Target.target(
@@ -304,7 +297,7 @@ let openAttributeGraphCxxTarget = Target.target(
     linkerSettings: [
         .linkedLibrary("z"),
     ],
-    plugins: [.plugin(name: swiftClonePlugin.name)]
+    plugins: []
 )
 let openAttributeGraphTarget = Target.target(
     name: "OpenAttributeGraph",
@@ -447,7 +440,6 @@ if computeCondition {
         package.targets.append(target)
     } else {
         package.targets.append(contentsOf: [
-            swiftClonePlugin,
             platformTarget,
             utilitiesTarget,
             openAttributeGraphTarget,

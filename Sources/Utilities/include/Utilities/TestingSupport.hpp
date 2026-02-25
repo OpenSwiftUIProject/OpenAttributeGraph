@@ -36,19 +36,19 @@ class UInt64ForwardList : public ForwardList<uint64_t> {
 
 } SWIFT_UNSAFE_REFERENCE;
 
-UInt64ForwardList *UInt64ForwardList::create() { return new UInt64ForwardList(); }
+OAG_INLINE UInt64ForwardList *UInt64ForwardList::create() { return new UInt64ForwardList(); }
 
-void UInt64ForwardList::destroy(UInt64ForwardList *value) { delete value; }
+OAG_INLINE void UInt64ForwardList::destroy(UInt64ForwardList *value) { delete value; }
 
-bool UInt64ForwardList::empty() const noexcept { return ForwardList<uint64_t>::empty(); }
+OAG_INLINE bool UInt64ForwardList::empty() const noexcept { return ForwardList<uint64_t>::empty(); }
 
-uint64_t UInt64ForwardList::front() { return ForwardList<uint64_t>::front(); }
+OAG_INLINE uint64_t UInt64ForwardList::front() { return ForwardList<uint64_t>::front(); }
 
-void UInt64ForwardList::push_front(const uint64_t &element) { ForwardList<uint64_t>::push_front(element); }
+OAG_INLINE void UInt64ForwardList::push_front(const uint64_t &element) { ForwardList<uint64_t>::push_front(element); }
 
-void UInt64ForwardList::push_front(uint64_t &&element) { ForwardList<uint64_t>::push_front(element); }
+OAG_INLINE void UInt64ForwardList::push_front(uint64_t &&element) { ForwardList<uint64_t>::push_front(element); }
 
-void UInt64ForwardList::pop_front() { ForwardList<uint64_t>::pop_front(); }
+OAG_INLINE void UInt64ForwardList::pop_front() { ForwardList<uint64_t>::pop_front(); }
 
 // MARK: - Heap
 
@@ -119,8 +119,8 @@ private:
         : _table(custom_hash, custom_compare, on_remove_key, on_remove_value, nullptr) {}
 } SWIFT_UNSAFE_REFERENCE;
 
-int CustomTableTestHelper::_remove_key_count = 0;
-int CustomTableTestHelper::_remove_value_count = 0;
+inline int CustomTableTestHelper::_remove_key_count = 0;
+inline int CustomTableTestHelper::_remove_value_count = 0;
 
 // MARK: - cf_ptr
 
@@ -150,10 +150,12 @@ public:
         return data ? CFDataGetLength(data) : -1;
     }
 
+#if OAG_TARGET_OS_DARWIN
     CFIndex retain_count() const {
         auto data = _ptr.get();
         return data ? CFGetRetainCount(data) : 0;
     }
+#endif
 
     void reset() { _ptr.reset(nullptr); }
 
@@ -241,8 +243,8 @@ public:
 } SWIFT_UNSAFE_REFERENCE;
 
 } /* namespace util */
-#endif
 
 OAG_ASSUME_NONNULL_END
+#endif
 
 #endif /* SWIFT_TESTING */

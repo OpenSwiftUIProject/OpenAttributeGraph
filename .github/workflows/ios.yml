@@ -71,3 +71,21 @@ jobs:
             -skipPackagePluginValidation \
             -skipMacroValidation
             # OTHER_SWIFT_FLAGS="-warnings-as-errors" Conflicting options '-warnings-as-errors' and '-suppress-warnings'
+      - name: Generate iOS coverage report
+        run: |
+          # Extract profdata and binary from xcodebuild's derived data to generate
+          # llvm-cov text output (same format as macOS/Ubuntu workflows).
+          # Note: swift_project param in codecov-action doesn't auto-discover xcodebuild coverage,
+          # and xcrun xccov JSON format isn't recognized by Codecov's parser.
+          PROFDATA=$(find .build-test-debug -name "Coverage.profdata" -type f | head -1)
+          XCTEST=$(find .build-test-debug -name "*.xctest" -type d | head -1)
+          if [ -n "$PROFDATA" ] && [ -n "$XCTEST" ]; then
+            BINARY="$XCTEST/$(basename "$XCTEST" .xctest)"
+            xcrun llvm-cov show -instr-profile="$PROFDATA" "$BINARY" > coverage.txt
+          fi
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v5
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          flags: ios
+          verbose: true

@@ -62,7 +62,9 @@ jobs:
             -c release \
             --enable-code-coverage \
             --build-path .build-test-release
-      - uses: codecov/codecov-action@v5
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v5
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
+          flags: macos
           verbose: true

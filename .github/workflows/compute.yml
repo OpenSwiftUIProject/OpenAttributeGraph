@@ -25,6 +25,9 @@ jobs:
         run: |
           apt-get update
           apt-get install -y libssl-dev
+      # Fix SSH submodule checkout failure for git@github.com:jcmosc/swift-runtime-headers.git
+      - name: Configure git to use HTTPS instead of SSH
+        run: git config --global url."https://github.com/".insteadOf "git@github.com:"
       - uses: actions/checkout@v4
       - name: Checkout Swift headers
         uses: ./.github/actions/checkout-swift-headers

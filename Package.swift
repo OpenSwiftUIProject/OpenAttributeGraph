@@ -142,7 +142,7 @@ let swiftCorelibsPath = envStringValue("LIB_SWIFT_PATH") ?? "\(Context.packageDi
 let releaseVersion = envIntValue("TARGET_RELEASE", default: 2024)
 
 let libraryEvolutionCondition = envBoolValue("LIBRARY_EVOLUTION", default: buildForDarwinPlatform)
-let compatibilityTestCondition = envBoolValue("COMPATIBILITY_TEST", default: false) && buildForDarwinPlatform
+let compatibilityTestCondition = envBoolValue("COMPATIBILITY_TEST", default: false)
 
 let useLocalDeps = envBoolValue("USE_LOCAL_DEPS")
 let computeCondition = envBoolValue("OPENATTRIBUTESHIMS_COMPUTE", default: false)
@@ -430,7 +430,7 @@ if computeCondition {
     }
     openAttributeGraphShimsTarget.addComputeSettings()
     package.platforms = [.iOS(.v18), .macOS(.v15), .macCatalyst(.v18), .tvOS(.v18), .watchOS(.v10), .visionOS(.v2)]
-} else if attributeGraphCondition {
+} else if attributeGraphCondition, buildForDarwinPlatform {
     setupDPFDependency()
     openAttributeGraphShimsTarget.addAGSettings()
 } else {
@@ -463,7 +463,10 @@ if computeCondition {
         )
     }
 
-    if compatibilityTestCondition {
+    package.products.append(
+        .library(name: "OpenAttributeGraph", type: .dynamic, targets: [openAttributeGraphTarget.name, openAttributeGraphCxxTarget.name])
+    )
+    if compatibilityTestCondition, buildForDarwinPlatform {
         setupDPFDependency()
         openAttributeGraphCompatibilityTestsTarget.addAGSettings()
     } else {
@@ -472,10 +475,6 @@ if computeCondition {
             openAttributeGraphCxxTestsTarget,
             openAttributeGraphShimsTestsTarget,
         ]
+        package.platforms = [.iOS(.v13), .macOS(.v10_15), .macCatalyst(.v13), .tvOS(.v13), .watchOS(.v5)]
     }
-
-    package.products.append(
-        .library(name: "OpenAttributeGraph", type: .dynamic, targets: [openAttributeGraphTarget.name, openAttributeGraphCxxTarget.name])
-    )
-    package.platforms = [.iOS(.v13), .macOS(.v10_15), .macCatalyst(.v13), .tvOS(.v13), .watchOS(.v5)]
 }

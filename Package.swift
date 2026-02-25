@@ -239,7 +239,7 @@ extension Target {
         self.swiftSettings = swiftSettings
 
         var linkerSettings = linkerSettings ?? []
-        linkerSettings.append(.linkedLibrary("swiftDemangle"))
+        linkerSettings.append(.linkedLibrary("swiftDemangle", .when(platforms: .darwinPlatforms)))
         self.linkerSettings = linkerSettings
     }
 }
@@ -429,12 +429,12 @@ if buildForDarwinPlatform {
 }
 
 if computeCondition {
-    let computeBinary = envBoolValue("OPENATTRIBUTESHIMS_COMPUTE_BINARY", default: false)
+    let computeBinary = envBoolValue("OPENATTRIBUTESHIMS_COMPUTE_USE_BINARY", default: false)
     if computeBinary {
-        let computeVersion = envStringValue("OPENATTRIBUTESHIMS_COMPUTE_BINARY_VERSION", default: "0.0.1")
+        let computeVersion = envStringValue("OPENATTRIBUTESHIMS_COMPUTE_USE_BINARY_VERSION", default: "0.0.1")
         // TODO: Use upstream link when avaiable. Tracked on https://github.com/jcmosc/Compute/issues/20
-        let computeURL = envStringValue("OPENATTRIBUTESHIMS_COMPUTE_BINARY_URL", default: "https://github.com/Kyle-Ye/Compute/releases/download/\(computeVersion)/Compute.xcframework.zip")
-        let computeChecksum = envStringValue("OPENATTRIBUTESHIMS_COMPUTE_BINARY_CHECKSUM", default: "95a256da2055d7c73184aeb9be088ba7019f7ea79b8a31e2dd930526c5ccbe8f")
+        let computeURL = envStringValue("OPENATTRIBUTESHIMS_COMPUTE_USE_BINARY_URL", default: "https://github.com/Kyle-Ye/Compute/releases/download/\(computeVersion)/Compute.xcframework.zip")
+        let computeChecksum = envStringValue("OPENATTRIBUTESHIMS_COMPUTE_USE_BINARY_CHECKSUM", default: "95a256da2055d7c73184aeb9be088ba7019f7ea79b8a31e2dd930526c5ccbe8f")
         package.targets.append(
             .binaryTarget(
                 name: "Compute",

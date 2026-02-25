@@ -42,6 +42,7 @@ jobs:
       - name: Run tests against Apple's AttributeGraph on macOS via Xcode
         run: |
           xcodebuild test \
+            -workspace .swiftpm/xcode/package.xcworkspace \
             -scheme OpenAttributeGraph-Package \
             -sdk macosx \
             -destination "platform=macOS" \

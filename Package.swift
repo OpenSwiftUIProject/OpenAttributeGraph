@@ -136,7 +136,7 @@ let isXcodeEnv = envStringValue("__CFBundleIdentifier", searchInDomain: false) =
 let development = envBoolValue("DEVELOPMENT", default: false)
 let warningsAsErrorsCondition = envBoolValue("WERROR", default: isXcodeEnv && development)
 
-let swiftCheckoutPath = "\(Context.packageDirectory)/.build/checkouts/swift"
+let swiftCheckoutPath = "\(Context.packageDirectory)/Checkouts/swift"
 let swiftCorelibsPath = envStringValue("LIB_SWIFT_PATH") ?? "\(Context.packageDirectory)/Sources/SwiftCorelibs/include"
 
 let releaseVersion = envIntValue("TARGET_RELEASE", default: 2024)

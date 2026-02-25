@@ -27,7 +27,7 @@
 set -e
 
 # Default values
-CHECKOUT_PATH=".build/checkouts/swift"
+CHECKOUT_PATH="Checkouts/swift"
 SWIFT_VERSION=""
 
 # Parse arguments
@@ -63,8 +63,8 @@ fi
 SWIFT_VERSION_MAJOR=$(echo "$SWIFT_VERSION" | cut -d. -f1)
 SWIFT_VERSION_MINOR=$(echo "$SWIFT_VERSION" | cut -d. -f2)
 
-# Skip if checkout already exists with the expected header
-if [ -f "$CHECKOUT_PATH/include/swift/Runtime/Metadata.h" ]; then
+# Skip if checkout directory already exists and is not empty
+if [ -d "$CHECKOUT_PATH" ] && [ -n "$(ls -A "$CHECKOUT_PATH")" ]; then
     echo "Swift headers already exist at $CHECKOUT_PATH, skipping clone."
     exit 0
 fi

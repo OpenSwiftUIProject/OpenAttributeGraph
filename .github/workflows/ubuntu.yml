@@ -21,19 +21,8 @@ jobs:
     container: swift:${{ matrix.swift_version }}-jammy
     steps:
       - uses: actions/checkout@v4
-      - name: Swift version
-        id: swift-version
-        run: |
-          which swift && swift --version
-          echo "major=$(echo ${{ matrix.swift_version }} | cut -d. -f1)" >> $GITHUB_OUTPUT
-          echo "minor=$(echo ${{ matrix.swift_version }} | cut -d. -f2)" >> $GITHUB_OUTPUT
-        shell: bash
       - name: Checkout Swift headers
         uses: ./.github/actions/checkout-swift-headers
-        with:
-          path: .build/checkouts/swift
-          swift-version-major: ${{ steps.swift-version.outputs.major }}
-          swift-version-minor: ${{ steps.swift-version.outputs.minor }}
       - name: Building and running tests in debug mode with coverage
         run: |
           swift test \

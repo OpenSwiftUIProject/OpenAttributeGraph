@@ -17,12 +17,11 @@ jobs:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
+          submodules: true
       - name: Setup Xcode
         uses: OpenSwiftUIProject/OpenSwiftUI/.github/actions/setup-xcode@main
         with:
           xcode-version: "16.4"
-      - name: Checkout Swift headers
-        uses: ./.github/actions/checkout-swift-headers
       - name: Build XCFramework
         run: ./Scripts/build_xcframework.sh
       - name: Compute Checksum

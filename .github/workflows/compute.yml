@@ -22,11 +22,11 @@ jobs:
     container: swift:${{ matrix.swift_version }}-jammy
     steps:
       - uses: actions/checkout@v4
+        with:
+          submodules: true
       - name: Set up Linux build environment
         run: Scripts/CI/linux_compute_build.sh
         shell: bash
-      - name: Checkout Swift headers
-        uses: ./.github/actions/checkout-swift-headers
       - name: Build in debug mode
         run: swift build -c debug -Xcc -Wno-elaborated-enum-base
 
@@ -44,12 +44,12 @@ jobs:
       OPENATTRIBUTEGRAPH_OPENATTRIBUTESHIMS_COMPUTE_USE_BINARY: 1
     steps:
       - uses: actions/checkout@v4
+        with:
+          submodules: true
       - name: Setup Xcode
         uses: OpenSwiftUIProject/OpenSwiftUI/.github/actions/setup-xcode@main
         with:
           xcode-version: ${{ matrix.xcode-version }}
-      - name: Checkout Swift headers
-        uses: ./.github/actions/checkout-swift-headers
       - name: Build in debug mode
         run: swift build -c debug
 
@@ -71,12 +71,12 @@ jobs:
       OPENATTRIBUTEGRAPH_OPENATTRIBUTESHIMS_COMPUTE_USE_BINARY: 1
     steps:
       - uses: actions/checkout@v4
+        with:
+          submodules: true
       - name: Setup Xcode
         uses: OpenSwiftUIProject/OpenSwiftUI/.github/actions/setup-xcode@main
         with:
           xcode-version: ${{ matrix.xcode-version }}
-      - name: Checkout Swift headers
-        uses: ./.github/actions/checkout-swift-headers
       - name: Build in debug mode on iOS Simulator
         run: |
           xcodebuild build \

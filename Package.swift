@@ -145,7 +145,7 @@ let libraryEvolutionCondition = envBoolValue("LIBRARY_EVOLUTION", default: build
 let compatibilityTestCondition = envBoolValue("COMPATIBILITY_TEST", default: false)
 
 let useLocalDeps = envBoolValue("USE_LOCAL_DEPS")
-let computeCondition = envBoolValue("OPENATTRIBUTESHIMS_COMPUTE", default: true)
+let computeCondition = envBoolValue("OPENATTRIBUTESHIMS_COMPUTE", default: false)
 let attributeGraphCondition = envBoolValue("OPENATTRIBUTESHIMS_ATTRIBUTEGRAPH", default: buildForDarwinPlatform && !isSPIBuild)
 
 // MARK: - Shared Settings
@@ -381,7 +381,31 @@ let package = Package(
     cxxLanguageStandard: .cxx20
 )
 
+private var hasSetupDPFDependency = false
+
+@MainActor
+func setupDPFDependency() {
+    guard !hasSetupDPFDependency else { return }
+    let privateFrameworkRepo: Package.Dependency
+    if useLocalDeps {
+        privateFrameworkRepo = Package.Dependency.package(path: "../DarwinPrivateFrameworks")
+    } else {
+        privateFrameworkRepo = Package.Dependency.package(url: "https://github.com/OpenSwiftUIProject/DarwinPrivateFrameworks.git", branch: "main")
+    }
+    package.dependencies.append(privateFrameworkRepo)
+
+    let agVersion = EnvManager.shared.withDomain("DarwinPrivateFrameworks") {
+        envIntValue("TARGET_RELEASE", default: 2024)
+    }
+    package.platforms = switch agVersion {
+        case 2024: [.iOS(.v18), .macOS(.v15), .macCatalyst(.v18), .tvOS(.v18), .watchOS(.v10), .visionOS(.v2)]
+        case 2021: [.iOS(.v15), .macOS(.v12), .macCatalyst(.v15), .tvOS(.v15), .watchOS(.v7)]
+        default: nil
+    }
+}
+
 if compatibilityTestCondition {
+    setupDPFDependency()
     openAttributeGraphCompatibilityTestsTarget.addAGSettings()
 } else {
     package.targets += [
@@ -414,23 +438,8 @@ if computeCondition {
     }
     package.platforms = [.iOS(.v18), .macOS(.v15), .macCatalyst(.v18), .tvOS(.v18), .watchOS(.v10), .visionOS(.v2)]
 } else if attributeGraphCondition {
-    let privateFrameworkRepo: Package.Dependency
-    if useLocalDeps {
-        privateFrameworkRepo = Package.Dependency.package(path: "../DarwinPrivateFrameworks")
-    } else {
-        privateFrameworkRepo = Package.Dependency.package(url: "https://github.com/OpenSwiftUIProject/DarwinPrivateFrameworks.git", branch: "main")
-    }
-    package.dependencies.append(privateFrameworkRepo)
+    setupDPFDependency()
     openAttributeGraphShimsTarget.addAGSettings()
-
-    let agVersion = EnvManager.shared.withDomain("DarwinPrivateFrameworks") {
-        envIntValue("TARGET_RELEASE", default: 2024)
-    }
-    package.platforms = switch agVersion {
-        case 2024: [.iOS(.v18), .macOS(.v15), .macCatalyst(.v18), .tvOS(.v18), .watchOS(.v10), .visionOS(.v2)]
-        case 2021: [.iOS(.v15), .macOS(.v12), .macCatalyst(.v15), .tvOS(.v15), .watchOS(.v7)]
-        default: nil
-    }
 } else {
     openAttributeGraphShimsTarget.dependencies.append(.target(name: openAttributeGraphTarget.name))
     package.platforms = [.iOS(.v13), .macOS(.v10_15), .macCatalyst(.v13), .tvOS(.v13), .watchOS(.v5)]

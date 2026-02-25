@@ -4,7 +4,6 @@
 
 #if OPENATTRIBUTEGRAPH
 @_exported import OpenAttributeGraph
-
 let compatibilityTestEnabled = false
 #else
 @_exported public import AttributeGraph

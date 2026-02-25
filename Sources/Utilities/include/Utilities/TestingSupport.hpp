@@ -10,6 +10,7 @@
 
 #include <Utilities/ForwardList.hpp>
 #include <Utilities/Heap.hpp>
+#include <Utilities/HashTable.hpp>
 #include <Utilities/cf_ptr.hpp>
 #include <CoreFoundation/CFData.h>
 
@@ -54,6 +55,72 @@ void UInt64ForwardList::pop_front() { ForwardList<uint64_t>::pop_front(); }
 OAG_INLINE uint64_t *_Nonnull heap_alloc_uint64(Heap *heap, size_t count = 1) SWIFT_RETURNS_INDEPENDENT_VALUE {
     return heap->alloc<uint64_t>(count);
 }
+
+// MARK: - HashTable
+
+OAG_INLINE uint64_t test_string_hash(const char *str) {
+    return string_hash(str);
+}
+
+class CustomTableTestHelper {
+    UntypedTable _table;
+
+    static uint64_t custom_hash(void const *key) {
+        return string_hash(static_cast<char const *>(key));
+    }
+
+    static bool custom_compare(void const *a, void const *b) {
+        return strcmp(static_cast<char const *>(a), static_cast<char const *>(b)) == 0;
+    }
+
+    static void on_remove_key(const void *_Nonnull key) {
+        _remove_key_count++;
+    }
+
+    static void on_remove_value(const void *_Nullable value) {
+        _remove_value_count++;
+    }
+
+    static int _remove_key_count;
+    static int _remove_value_count;
+
+public:
+    static CustomTableTestHelper *create() {
+        return new CustomTableTestHelper();
+    }
+
+    static void destroy(CustomTableTestHelper *value) { delete value; }
+
+    static int remove_key_count() { return _remove_key_count; }
+    static int remove_value_count() { return _remove_value_count; }
+    static void reset_counters() { _remove_key_count = 0; _remove_value_count = 0; }
+
+    bool empty() const { return _table.empty(); }
+    uint64_t count() const { return _table.count(); }
+
+    bool insert(const char *key, const void *_Nullable value) {
+        return _table.insert(key, value);
+    }
+
+    const void *_Nullable lookup(const char *key, const char *_Nullable *_Nullable found_key) {
+        return _table.lookup(key, (UntypedTable::nullable_key_type *)found_key);
+    }
+
+    bool remove(const char *key) {
+        return _table.remove(key);
+    }
+
+    void for_each(UntypedTable::entry_callback body, void *_Nullable context) const {
+        _table.for_each(body, context);
+    }
+
+private:
+    CustomTableTestHelper()
+        : _table(custom_hash, custom_compare, on_remove_key, on_remove_value, nullptr) {}
+} SWIFT_UNSAFE_REFERENCE;
+
+int CustomTableTestHelper::_remove_key_count = 0;
+int CustomTableTestHelper::_remove_value_count = 0;
 
 // MARK: - cf_ptr
 

@@ -32,13 +32,13 @@ struct ObjCPtrTests {
 
     @Test("Reset clears value")
     @available(iOS 16.4, *)
-    func resetClears() {
+    func resetClears() throws {
         let helper = util.ObjCPtrTestHelper.create_with_nsobject()
         defer {
             util.ObjCPtrTestHelper.destroy(helper)
         }
 
-        try! #require(helper.has_value() == true)
+        try #require(helper.has_value() == true)
 
         helper.reset()
 
@@ -83,13 +83,13 @@ struct ObjCPtrTests {
 
     @Test("Move transfers ownership")
     @available(iOS 16.4, *)
-    func moveTransfersOwnership() {
+    func moveTransfersOwnership() throws {
         let source = util.ObjCPtrTestHelper.create_with_nsobject()
         defer {
             util.ObjCPtrTestHelper.destroy(source)
         }
 
-        try! #require(source.has_value() == true)
+        try #require(source.has_value() == true)
 
         let dest = source.move_to_new()
         defer {

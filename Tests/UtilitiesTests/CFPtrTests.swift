@@ -39,7 +39,7 @@ struct CFPtrTests {
 
     @Test("Reset clears value")
     @available(iOS 16.4, *)
-    func resetClears() {
+    func resetClears() throws {
         let bytes: [UInt8] = [10, 20]
         let helper = bytes.withUnsafeBufferPointer { buf in
             util.CFPtrTestHelper.create(buf.baseAddress, Int(buf.count))
@@ -48,7 +48,7 @@ struct CFPtrTests {
             util.CFPtrTestHelper.destroy(helper)
         }
 
-        try! #require(helper.has_value() == true)
+        try #require(helper.has_value() == true)
 
         helper.reset()
 
@@ -110,7 +110,7 @@ struct CFPtrTests {
 
     @Test("Move transfers ownership")
     @available(iOS 16.4, *)
-    func moveTransfersOwnership() {
+    func moveTransfersOwnership() throws {
         let bytes: [UInt8] = [1, 2, 3, 4]
         let source = bytes.withUnsafeBufferPointer { buf in
             util.CFPtrTestHelper.create(buf.baseAddress, Int(buf.count))
@@ -119,7 +119,7 @@ struct CFPtrTests {
             util.CFPtrTestHelper.destroy(source)
         }
 
-        try! #require(source.has_value() == true)
+        try #require(source.has_value() == true)
 
         let dest = source.move_to_new()
         defer {

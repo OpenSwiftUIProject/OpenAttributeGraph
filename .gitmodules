@@ -1,0 +1,4 @@
+[submodule "Checkouts/swift"]
+	path = Checkouts/swift
+	url = https://github.com/OpenSwiftUIProject/swift-runtime-headers.git
+	branch = release/6.1

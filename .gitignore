@@ -8,6 +8,7 @@ DerivedData/
 .netrc
 coverage.txt
 TODO.md
+Checkouts/
 .ag_template/
 build/
 .ag_repo/

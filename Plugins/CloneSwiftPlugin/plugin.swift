@@ -5,7 +5,7 @@ import PackagePlugin
 struct CloneSwiftPlugin: BuildToolPlugin {
     func createBuildCommands(context: PluginContext, target: Target) throws -> [Command] {
         let packageDir = context.package.directoryURL
-        let checkoutPath = packageDir.appending(path: ".build/checkouts/swift")
+        let checkoutPath = packageDir.appending(path: "Checkouts/swift")
         let script = packageDir.appending(path: "Scripts/clone-swift.sh")
 
         let env = ProcessInfo.processInfo.environment

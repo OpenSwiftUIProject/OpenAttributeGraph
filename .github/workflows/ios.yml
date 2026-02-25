@@ -47,7 +47,7 @@ jobs:
       - name: Checkout Swift headers
         uses: ./.github/actions/checkout-swift-headers
         with:
-          path: .build/checkouts/swift
+          path: Checkouts/swift
           swift-version-major: ${{ steps.swift-version.outputs.major }}
           swift-version-minor: ${{ steps.swift-version.outputs.minor }}
       - name: Build in debug mode on iOS

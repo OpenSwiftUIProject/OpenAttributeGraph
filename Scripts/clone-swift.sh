@@ -27,7 +27,7 @@
 set -e
 
 # Default values
-CHECKOUT_PATH=".build/checkouts/swift"
+CHECKOUT_PATH="Checkouts/swift"
 SWIFT_VERSION=""
 
 # Parse arguments

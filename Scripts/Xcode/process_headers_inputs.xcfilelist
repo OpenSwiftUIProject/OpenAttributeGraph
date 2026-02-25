@@ -30,3 +30,4 @@ $(SRCROOT)/Sources/OpenAttributeGraphCxx/include/OpenAttributeGraph/OAGVersion.h
 $(SRCROOT)/Sources/OpenAttributeGraphCxx/include/OpenAttributeGraph/OAGWeakAttribute.h
 $(SRCROOT)/Sources/OpenAttributeGraphCxx/include/OpenAttributeGraph/OAGWeakValue.h
 $(SRCROOT)/Sources/OpenAttributeGraphCxx/include/OpenAttributeGraph/OpenAttributeGraph.h
+$(SRCROOT)/Sources/OpenAttributeGraphCxx/include/OpenAttributeGraph/Private/CFRuntime.h

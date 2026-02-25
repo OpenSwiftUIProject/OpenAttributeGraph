@@ -2,6 +2,12 @@
 //  GraphShims.swift
 //  OpenAttributeGraphShims
 
+public enum AttributeGraphVendor: String {
+    case oag = "org.OpenSwiftUIProject.OpenAttributeGraph"
+    case ag = "com.apple.AttributeGraph"
+    case compute = "dev.incrematic.compute"
+}
+
 #if OPENATTRIBUTEGRAPH_COMPUTE
 
 @_exported public import Compute
@@ -55,8 +61,12 @@ extension CachedValueOptions {
     public static var _1: CachedValueOptions = .unprefetched
 }
 
+@available(*, deprecated, renamed: "attributeGraphVendor")
 public let attributeGraphEnabled = true
+public let attributeGraphVendor = AttributeGraphVendor.compute
+
 #elseif OPENATTRIBUTEGRAPH_ATTRIBUTEGRAPH
+
 @_exported public import AttributeGraph
 #if os(iOS) && !targetEnvironment(simulator)
 @_exported public import _AttributeGraphDeviceSwiftShims
@@ -67,11 +77,17 @@ public typealias OAGChangedValueFlags = AGChangedValueFlags
 public typealias OAGInputOptions = AGInputOptions
 public typealias OAGValue = AGValue
 public typealias OAGValueOptions = AGValueOptions
-public let attributeGraphEnabled = true
-#else
-@_exported import OpenAttributeGraph
 
+@available(*, deprecated, renamed: "attributeGraphVendor")
+public let attributeGraphEnabled = true
+public let attributeGraphVendor = AttributeGraphVendor.ag
+
+#else
+
+@_exported import OpenAttributeGraph
+@available(*, deprecated, renamed: "attributeGraphVendor")
 public let attributeGraphEnabled = false
+public let attributeGraphVendor = AttributeGraphVendor.oag
 #endif
 
 @available(*, deprecated, message: "swiftToolchainSupported is always true")

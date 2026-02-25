@@ -63,16 +63,15 @@ jobs:
             echo ""
 
             # What's Changed section
+            echo "## What's Changed"
             if [ -n "$PREV_TAG" ]; then
-              echo "## What's Changed"
-              git log "${PREV_TAG}..HEAD" --pretty=format:"* %s by @%an in ${GITHUB_SERVER_URL}/${REPO}/commit/%H" --no-merges
-              echo ""
+              gh api "repos/${REPO}/compare/${PREV_TAG}...${TAG_NAME}" --paginate \
+                --jq '.commits[] | select(.parents | length == 1) | "* \(.commit.message | split("\n")[0]) by @\(if .author then .author.login else .commit.author.name end) in \(.html_url)"'
               echo ""
               echo "**Full Changelog**: ${GITHUB_SERVER_URL}/${REPO}/compare/${PREV_TAG}...${TAG_NAME}"
             else
-              echo "## What's Changed"
-              git log --pretty=format:"* %s by @%an in ${GITHUB_SERVER_URL}/${REPO}/commit/%H" --no-merges
-              echo ""
+              gh api "repos/${REPO}/commits" --paginate \
+                --jq '.[] | select(.parents | length <= 1) | "* \(.commit.message | split("\n")[0]) by @\(if .author then .author.login else .commit.author.name end) in \(.html_url)"'
             fi
           } > release_notes.md
       - name: Create Release

@@ -81,9 +81,9 @@ jobs:
             echo 'RELEASE_NOTES_EOF'
           } >> "$GITHUB_OUTPUT"
       - name: Create Release
-        uses: ncipollo/release-action@v1
-        with:
-          body: ${{ steps.release_notes.outputs.body }}
-          allowUpdates: true
-          artifacts: ".build/Xcode/Frameworks/OpenAttributeGraph.xcframework.zip"
-          token: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          TAG_NAME="${GITHUB_REF#refs/tags/}"
+          gh release create "$TAG_NAME" \
+            .build/Xcode/Frameworks/OpenAttributeGraph.xcframework.zip \
+            --title "$TAG_NAME" \
+            --notes "${{ steps.release_notes.outputs.body }}"

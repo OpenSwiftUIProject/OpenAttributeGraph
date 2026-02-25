@@ -9,7 +9,7 @@ BUILD_DIR="$PROJECT_ROOT/.build/Xcode"
 SCHEME="OpenAttributeGraph"
 
 # Copy and modify modulemap for framework distribution
-mkdir -p "$BUILD_DIR"
+mkdir -p "$BUILD_DIR/Archives" "$BUILD_DIR/Frameworks"
 cat > "$BUILD_DIR/module.modulemap" << 'EOF'
 framework module OpenAttributeGraph {
   umbrella header "OpenAttributeGraph.h"

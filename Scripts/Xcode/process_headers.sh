@@ -19,8 +19,9 @@ count=0
 
 # Process input and output file lists line by line
 while IFS= read -r input_file <&3 && IFS= read -r output_file <&4; do
-    # Skip empty lines
+    # Skip empty lines (skip both to keep lists in sync)
     [ -z "$input_file" ] && continue
+    [ -z "$output_file" ] && continue
 
     # Create output directory if needed
     mkdir -p "$(dirname "$output_file")"

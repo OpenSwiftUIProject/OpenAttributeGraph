@@ -21,7 +21,6 @@ jobs:
       OPENATTRIBUTEGRAPH_OPENATTRIBUTESHIMS_COMPUTE: 1
       OPENATTRIBUTEGRAPH_OPENATTRIBUTESHIMS_COMPUTE_USE_BINARY: 0
       OPENATTRIBUTEGRAPH_USE_LOCAL_DEPS: 1
-      OPENATTRIBUTEGRAPH_COMPATIBILITY_TEST: 0
     container: swift:${{ matrix.swift_version }}-jammy
     steps:
       - uses: actions/checkout@v4
@@ -45,7 +44,6 @@ jobs:
       OPENATTRIBUTEGRAPH_WERROR: 1
       OPENATTRIBUTEGRAPH_OPENATTRIBUTESHIMS_COMPUTE: 1
       OPENATTRIBUTEGRAPH_OPENATTRIBUTESHIMS_COMPUTE_USE_BINARY: 1
-      OPENATTRIBUTEGRAPH_COMPATIBILITY_TEST: 0
     steps:
       - uses: actions/checkout@v4
       - name: Setup Xcode
@@ -73,7 +71,6 @@ jobs:
       OPENATTRIBUTEGRAPH_WERROR: 1
       OPENATTRIBUTEGRAPH_OPENATTRIBUTESHIMS_COMPUTE: 1
       OPENATTRIBUTEGRAPH_OPENATTRIBUTESHIMS_COMPUTE_USE_BINARY: 1
-      OPENATTRIBUTEGRAPH_COMPATIBILITY_TEST: 0
     steps:
       - uses: actions/checkout@v4
       - name: Setup Xcode
@@ -86,7 +83,7 @@ jobs:
         run: |
           xcodebuild build \
             -workspace .swiftpm/xcode/package.xcworkspace \
-            -scheme OpenAttributeGraph-Package \
+            -scheme OpenAttributeGraph \
             -configuration Debug \
             -destination "platform=iOS Simulator,OS=${{ matrix.ios-version }},name=${{ matrix.ios-simulator-name }}" \
             -derivedDataPath .build-debug \

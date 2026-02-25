@@ -142,7 +142,7 @@ let swiftCorelibsPath = envStringValue("LIB_SWIFT_PATH") ?? "\(Context.packageDi
 let releaseVersion = envIntValue("TARGET_RELEASE", default: 2024)
 
 let libraryEvolutionCondition = envBoolValue("LIBRARY_EVOLUTION", default: buildForDarwinPlatform)
-let compatibilityTestCondition = envBoolValue("COMPATIBILITY_TEST", default: false)
+let compatibilityTestCondition = envBoolValue("COMPATIBILITY_TEST", default: false) && buildForDarwinPlatform
 
 let useLocalDeps = envBoolValue("USE_LOCAL_DEPS")
 let computeCondition = envBoolValue("OPENATTRIBUTESHIMS_COMPUTE", default: false)
@@ -437,7 +437,7 @@ if computeCondition {
     let oagBinary = envBoolValue("OPENATTRIBUTESHIMS_OAG_USE_BINARY", default: false)
     if oagBinary {
         let version = envStringValue("OPENATTRIBUTESHIMS_OAG_BINARY_VERSION", default: "0.4.0")
-        let url = envStringValue("OPENATTRIBUTESHIMS_COMPUTE_USE_BINARY_URL", default: "https://github.com/OpenSwiftUIProject/OpenAttributeGraph/releases/download/\(version)/OpenAttributeGraph.xcframework.zip")
+        let url = envStringValue("OPENATTRIBUTESHIMS_OAG_BINARY_URL", default: "https://github.com/OpenSwiftUIProject/OpenAttributeGraph/releases/download/\(version)/OpenAttributeGraph.xcframework.zip")
         let checksum = envStringValue("OPENATTRIBUTESHIMS_COMPUTE_USE_BINARY_CHECKSUM", default: "a539f876625288d4af7c7d1dccc80fd8e936058791b8071e0d534f5ec1a8a068")
         let target = Target.binaryTarget(
             name: openAttributeGraphTarget.name,

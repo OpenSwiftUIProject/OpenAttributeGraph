@@ -15,6 +15,37 @@ struct AttributeCompatibilityTests {
     }
     
     @Test
+    func initWithRule() {
+        struct TestRule: Rule {
+            var value: Int {
+                return 0
+            }
+        }
+        let attribute1 = Attribute(TestRule())
+        #expect(attribute1.value == 0)
+        
+        let attribute2 = Attribute(TestRule(), initialValue: 1)
+        #expect(attribute2.value == 1)
+    }
+    
+    @Test
+    func initWithStatefulRule() {
+        struct TestStatefuleRule: StatefulRule {
+            typealias Value = Int
+            func updateValue() {
+                withUnsafePointer(to: 0) { ptr in
+                    Graph.setOutputValue(ptr)
+                }
+            }
+        }
+        let attribute1 = Attribute(TestStatefuleRule())
+        #expect(attribute1.value == 0)
+        
+        let attribute2 = Attribute(TestStatefuleRule(), initialValue: 1)
+        #expect(attribute2.value == 1)
+    }
+    
+    @Test
     func hashableAndEquatable() {
         let a = Attribute<Int>(identifier: .nil)
         let b = Attribute<Int>(identifier: .nil)

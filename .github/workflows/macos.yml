@@ -23,6 +23,8 @@ jobs:
       GH_TOKEN: ${{ github.token }}
     steps:
       - uses: actions/checkout@v4
+        with:
+          submodules: true
       - name: Setup Xcode
         uses: OpenSwiftUIProject/OpenSwiftUI/.github/actions/setup-xcode@main
         with:
@@ -30,8 +32,6 @@ jobs:
       - name: Set up build environment
         run: Scripts/CI/darwin_setup_build.sh
         shell: bash
-      - name: Checkout Swift headers
-        uses: ./.github/actions/checkout-swift-headers
       - name: Build and run tests in debug mode with coverage
         run: |
           swift test \

@@ -19,12 +19,12 @@ jobs:
       GH_TOKEN: ${{ github.token }}
     steps:
       - uses: actions/checkout@v4
+        with:
+          submodules: true
       - name: Setup Xcode
         uses: OpenSwiftUIProject/OpenSwiftUI/.github/actions/setup-xcode@main
         with:
           xcode-version: ${{ matrix.xcode-version }}
-      - name: Checkout Swift headers
-        uses: ./.github/actions/checkout-swift-headers
       - name: Build XCFramework
         run: ./Scripts/build_xcframework.sh
       - name: Upload XCFramework

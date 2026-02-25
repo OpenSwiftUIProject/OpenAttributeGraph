@@ -64,14 +64,10 @@ The current suggested toolchain to build the project is Swift 6.1.2 / Xcode 16.4
 
 ### Clone Swift headers
 
-The project requires Swift toolchain headers for compilation. You can either clone them manually or let the build plugin handle it:
+The project requires Swift toolchain headers for compilation. They are included as a git submodule:
 
 ```shell
-# Option 1: Clone headers manually
-./Scripts/clone-swift.sh
-
-# Option 2: Let the build plugin clone headers (requires --disable-sandbox)
-swift build --disable-sandbox
+git submodule update --init
 ```
 
 ## License

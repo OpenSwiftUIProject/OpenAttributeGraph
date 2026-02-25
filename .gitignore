@@ -8,7 +8,8 @@ DerivedData/
 .netrc
 coverage.txt
 TODO.md
-Checkouts/
+Checkouts/*
+!Checkouts/swift
 .ag_template/
 build/
 .ag_repo/

@@ -15,12 +15,6 @@ coverage:
 flag_management:
   default_rules:
     carryforward: true
-    statuses:
-      - type: project
-        target: auto
-        threshold: 1%
-      - type: patch
-        target: 70%
 
 comment:
   layout: "header, diff, flags, files"

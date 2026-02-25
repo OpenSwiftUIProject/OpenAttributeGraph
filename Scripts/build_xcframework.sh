@@ -1,19 +1,16 @@
 #!/bin/bash
-  
-# Script modified from https://docs.emergetools.com/docs/analyzing-a-spm-framework-ios
 
 set -e
 
-SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd -P)"
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" >/dev/null 2>&1 && pwd -P)"
 PROJECT_ROOT="$(dirname "$SCRIPT_DIR")"
 
-PROJECT_BUILD_DIR="${PROJECT_BUILD_DIR:-"${PROJECT_ROOT}/build"}"
-XCODEBUILD_BUILD_DIR="$PROJECT_BUILD_DIR/xcodebuild"
-XCODEBUILD_DERIVED_DATA_PATH="$XCODEBUILD_BUILD_DIR/DerivedData"
+BUILD_DIR="$PROJECT_ROOT/.build/Xcode"
+SCHEME="OpenAttributeGraph"
 
-# Copy and modify modulemap
-mkdir -p "$PROJECT_BUILD_DIR"
-cat > "$PROJECT_BUILD_DIR/module.modulemap" << 'EOF'
+# Copy and modify modulemap for framework distribution
+mkdir -p "$BUILD_DIR"
+cat > "$BUILD_DIR/module.modulemap" << 'EOF'
 framework module OpenAttributeGraph {
   umbrella header "OpenAttributeGraph.h"
   export *
@@ -23,8 +20,6 @@ EOF
 
 # Parse arguments
 DEBUG_INFO=false
-PACKAGE_NAME=""
-
 while [[ $# -gt 0 ]]; do
     case $1 in
         --debug-info)
@@ -32,106 +27,83 @@ while [[ $# -gt 0 ]]; do
             shift
             ;;
         *)
-            if [ -z "$PACKAGE_NAME" ]; then
-                PACKAGE_NAME="$1"
-            fi
             shift
             ;;
     esac
 done
 
-if [ -z "$PACKAGE_NAME" ]; then
-    echo "No package name provided. Using the first scheme found in the Package.swift."
-    PACKAGE_NAME=$(xcodebuild -list | awk 'schemes && NF>0 { print $1; exit } /Schemes:$/ { schemes = 1 }')
-    echo "Using: $PACKAGE_NAME"
-fi
+echo "Building xcframework for $SCHEME (debug info: $DEBUG_INFO)"
 
-echo "Building xcframework for package: $PACKAGE_NAME contains debug info: $DEBUG_INFO"
+# Archive for each platform using the xcodeproj
+xcodebuild archive \
+    -project "$PROJECT_ROOT/OpenAttributeGraph.xcodeproj" \
+    -scheme "$SCHEME" \
+    -destination "generic/platform=macOS" \
+    -archivePath "$BUILD_DIR/Archives/$SCHEME-macOS.xcarchive" \
+    ENABLE_USER_SCRIPT_SANDBOXING=NO
 
-build_framework() {
-    local sdk="$1"
-    local destination="$2"
-    local scheme="$3"
+xcodebuild archive \
+    -project "$PROJECT_ROOT/OpenAttributeGraph.xcodeproj" \
+    -scheme "$SCHEME" \
+    -destination "generic/platform=iOS" \
+    -archivePath "$BUILD_DIR/Archives/$SCHEME-iOS.xcarchive" \
+    ENABLE_USER_SCRIPT_SANDBOXING=NO
 
-    local XCODEBUILD_ARCHIVE_PATH="./build/$scheme-$sdk.xcarchive"
+xcodebuild archive \
+    -project "$PROJECT_ROOT/OpenAttributeGraph.xcodeproj" \
+    -scheme "$SCHEME" \
+    -destination "generic/platform=iOS Simulator" \
+    -archivePath "$BUILD_DIR/Archives/$SCHEME-iOS-Simulator.xcarchive" \
+    ENABLE_USER_SCRIPT_SANDBOXING=NO
 
-    rm -rf "$XCODEBUILD_ARCHIVE_PATH"
+echo "Archives completed successfully."
 
-    xcodebuild archive \
-        -scheme $scheme \
-        -archivePath $XCODEBUILD_ARCHIVE_PATH \
-        -derivedDataPath "$XCODEBUILD_DERIVED_DATA_PATH" \
-        -sdk "$sdk" \
-        -destination "$destination" \
-        BUILD_LIBRARY_FOR_DISTRIBUTION=YES \
-        INSTALL_PATH='Library/Frameworks' \
-        OTHER_SWIFT_FLAGS=-no-verify-emitted-module-interface
-
-    if [ "$sdk" = "macosx" ]; then
-        FRAMEWORK_MODULES_PATH="$XCODEBUILD_ARCHIVE_PATH/Products/Library/Frameworks/$scheme.framework/Versions/Current/Modules"
-        FRAMEWORK_HEADERS_PATH="$XCODEBUILD_ARCHIVE_PATH/Products/Library/Frameworks/$scheme.framework/Versions/Current/Headers"
-        mkdir -p "$FRAMEWORK_MODULES_PATH"
-        mkdir -p "$FRAMEWORK_HEADERS_PATH"
-        cp -r \
-        "$XCODEBUILD_DERIVED_DATA_PATH/Build/Intermediates.noindex/ArchiveIntermediates/$scheme/BuildProductsPath/Release/$scheme.swiftmodule" \
-        "$FRAMEWORK_MODULES_PATH/$scheme.swiftmodule"
-        # Replace OpenAttributeGraphCxx with OpenAttributeGraph in swiftinterface files
-        find "$FRAMEWORK_MODULES_PATH/$scheme.swiftmodule" -name "*.swiftinterface" -exec sed -i '' 's/OpenAttributeGraphCxx/OpenAttributeGraph/g' {} \;
-        cp -r \
-        "$PROJECT_ROOT/Sources/OpenAttributeGraphCxx/include/OpenAttributeGraph"/* \
-        "$FRAMEWORK_HEADERS_PATH/" 2>/dev/null || true
-        cp "$PROJECT_BUILD_DIR/module.modulemap" \
-        "$FRAMEWORK_MODULES_PATH/module.modulemap" 2>/dev/null || true
-        rm -rf "$XCODEBUILD_ARCHIVE_PATH/Products/Library/Frameworks/$scheme.framework/Modules"
-        rm -rf "$XCODEBUILD_ARCHIVE_PATH/Products/Library/Frameworks/$scheme.framework/Headers"
-        ln -s Versions/Current/Modules "$XCODEBUILD_ARCHIVE_PATH/Products/Library/Frameworks/$scheme.framework/Modules"
-        ln -s Versions/Current/Headers "$XCODEBUILD_ARCHIVE_PATH/Products/Library/Frameworks/$scheme.framework/Headers"
-    else
-        FRAMEWORK_MODULES_PATH="$XCODEBUILD_ARCHIVE_PATH/Products/Library/Frameworks/$scheme.framework/Modules"
-        FRAMEWORK_HEADERS_PATH="$XCODEBUILD_ARCHIVE_PATH/Products/Library/Frameworks/$scheme.framework/Headers"
-        mkdir -p "$FRAMEWORK_MODULES_PATH"
-        mkdir -p "$FRAMEWORK_HEADERS_PATH"
-        cp -r \
-        "$XCODEBUILD_DERIVED_DATA_PATH/Build/Intermediates.noindex/ArchiveIntermediates/$scheme/BuildProductsPath/Release-$sdk/$scheme.swiftmodule" \
-        "$FRAMEWORK_MODULES_PATH/$scheme.swiftmodule"
-        # Replace OpenAttributeGraphCxx with OpenAttributeGraph in swiftinterface files
-        find "$FRAMEWORK_MODULES_PATH/$scheme.swiftmodule" -name "*.swiftinterface" -exec sed -i '' 's/OpenAttributeGraphCxx/OpenAttributeGraph/g' {} \;
-        cp -r \
-        "$PROJECT_ROOT/Sources/OpenAttributeGraphCxx/include/OpenAttributeGraph"/* \
-        "$FRAMEWORK_HEADERS_PATH/" 2>/dev/null || true
-        cp "$PROJECT_BUILD_DIR/module.modulemap" \
-        "$FRAMEWORK_MODULES_PATH/module.modulemap" 2>/dev/null || true
-    fi
-    
-    # Delete private and package swiftinterface
-    rm -f "$FRAMEWORK_MODULES_PATH/$scheme.swiftmodule/*.package.swiftinterface"
-    rm -f "$FRAMEWORK_MODULES_PATH/$scheme.swiftmodule/*.private.swiftinterface"
-}
-
-build_framework "iphonesimulator" "generic/platform=iOS Simulator" "$PACKAGE_NAME"
-build_framework "iphoneos" "generic/platform=iOS" "$PACKAGE_NAME"
-build_framework "macosx" "generic/platform=macOS" "$PACKAGE_NAME"
-
-echo "Builds completed successfully."
-
-cd $PROJECT_BUILD_DIR
-
-rm -rf "$PACKAGE_NAME.xcframework"
+# Create xcframework
+rm -rf "$BUILD_DIR/Frameworks/$SCHEME.xcframework"
 
 if [ "$DEBUG_INFO" = true ]; then
     echo "Creating xcframework with debug symbols..."
-    xcodebuild -create-xcframework  \
-        -framework $PACKAGE_NAME-iphonesimulator.xcarchive/Products/Library/Frameworks/$PACKAGE_NAME.framework \
-        -debug-symbols "$(realpath $PACKAGE_NAME-iphonesimulator.xcarchive/dSYMs/$PACKAGE_NAME.framework.dSYM)" \
-        -framework $PACKAGE_NAME-iphoneos.xcarchive/Products/Library/Frameworks/$PACKAGE_NAME.framework \
-        -debug-symbols "$(realpath $PACKAGE_NAME-iphoneos.xcarchive/dSYMs/$PACKAGE_NAME.framework.dSYM)" \
-        -framework $PACKAGE_NAME-macosx.xcarchive/Products/Library/Frameworks/$PACKAGE_NAME.framework \
-        -debug-symbols "$(realpath $PACKAGE_NAME-macosx.xcarchive/dSYMs/$PACKAGE_NAME.framework.dSYM)" \
-        -output $PACKAGE_NAME.xcframework
+    xcodebuild -create-xcframework \
+        -archive "$BUILD_DIR/Archives/$SCHEME-macOS.xcarchive" -framework "$SCHEME.framework" \
+        -debug-symbols "$(realpath "$BUILD_DIR/Archives/$SCHEME-macOS.xcarchive/dSYMs/$SCHEME.framework.dSYM")" \
+        -archive "$BUILD_DIR/Archives/$SCHEME-iOS.xcarchive" -framework "$SCHEME.framework" \
+        -debug-symbols "$(realpath "$BUILD_DIR/Archives/$SCHEME-iOS.xcarchive/dSYMs/$SCHEME.framework.dSYM")" \
+        -archive "$BUILD_DIR/Archives/$SCHEME-iOS-Simulator.xcarchive" -framework "$SCHEME.framework" \
+        -debug-symbols "$(realpath "$BUILD_DIR/Archives/$SCHEME-iOS-Simulator.xcarchive/dSYMs/$SCHEME.framework.dSYM")" \
+        -output "$BUILD_DIR/Frameworks/$SCHEME.xcframework"
 else
-    xcodebuild -create-xcframework  \
-        -framework $PACKAGE_NAME-iphonesimulator.xcarchive/Products/Library/Frameworks/$PACKAGE_NAME.framework \
-        -framework $PACKAGE_NAME-iphoneos.xcarchive/Products/Library/Frameworks/$PACKAGE_NAME.framework \
-        -framework $PACKAGE_NAME-macosx.xcarchive/Products/Library/Frameworks/$PACKAGE_NAME.framework \
-        -output $PACKAGE_NAME.xcframework
+    xcodebuild -create-xcframework \
+        -archive "$BUILD_DIR/Archives/$SCHEME-macOS.xcarchive" -framework "$SCHEME.framework" \
+        -archive "$BUILD_DIR/Archives/$SCHEME-iOS.xcarchive" -framework "$SCHEME.framework" \
+        -archive "$BUILD_DIR/Archives/$SCHEME-iOS-Simulator.xcarchive" -framework "$SCHEME.framework" \
+        -output "$BUILD_DIR/Frameworks/$SCHEME.xcframework"
 fi
+
+# Post-process swiftinterface files to replace OpenAttributeGraphCxx references with OpenAttributeGraph
+find "$BUILD_DIR/Frameworks/$SCHEME.xcframework" -name "*.swiftinterface" | while read -r file; do
+    sed -i '' 's/OpenAttributeGraphCxx/OpenAttributeGraph/g' "$file"
+    echo "Processed: $file"
+done
+
+# Delete private and package swiftinterface files
+find "$BUILD_DIR/Frameworks/$SCHEME.xcframework" -name "*.package.swiftinterface" -delete
+find "$BUILD_DIR/Frameworks/$SCHEME.xcframework" -name "*.private.swiftinterface" -delete
+
+# Copy module.modulemap into each framework's Modules directory
+find "$BUILD_DIR/Frameworks/$SCHEME.xcframework" -type d -name "Modules" | while read -r modules_dir; do
+    cp "$BUILD_DIR/module.modulemap" "$modules_dir/"
+    echo "Copied modulemap to: $modules_dir"
+done
+
+# Fix missing Headers symlink (macOS framework uses Versions/Current layout)
+find "$BUILD_DIR/Frameworks/$SCHEME.xcframework" -type d -name "$SCHEME.framework" | while read -r framework_dir; do
+    if [ -d "$framework_dir/Versions" ] && [ ! -L "$framework_dir/Headers" ]; then
+        ln -s Versions/Current/Headers "$framework_dir/Headers"
+        echo "Added Headers symlink to: $framework_dir"
+    fi
+done
+
+# Zip the framework, preserving symlinks
+cd "$BUILD_DIR/Frameworks"
+zip -r -y "$SCHEME.xcframework.zip" "$SCHEME.xcframework"
+echo "Created $SCHEME.xcframework.zip"

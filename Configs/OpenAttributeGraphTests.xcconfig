@@ -1,0 +1,6 @@
+// OpenAttributeGraphTests.xcconfig
+// Test target build settings
+
+#include "Common.xcconfig"
+
+PRODUCT_BUNDLE_IDENTIFIER = org.OpenSwiftUIProject.OpenAttributeGraphTests

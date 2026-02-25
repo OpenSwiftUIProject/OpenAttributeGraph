@@ -15,9 +15,7 @@ jobs:
         swift_version: ["6.2"]
     runs-on: ubuntu-22.04
     env:
-      # -Wno-elaborated-enum-base is not working for Compute dependency. Disable warnings-as-errors for now to unblock CI. We should fix the underlying issue and re-enable warnings-as-errors in the future.
-      # OPENATTRIBUTEGRAPH_WERROR: 1
-      OPENATTRIBUTEGRAPH_WERROR: 0
+      OPENATTRIBUTEGRAPH_WERROR: 1
       OPENATTRIBUTEGRAPH_OPENATTRIBUTESHIMS_COMPUTE: 1
       OPENATTRIBUTEGRAPH_OPENATTRIBUTESHIMS_COMPUTE_USE_BINARY: 0
       OPENATTRIBUTEGRAPH_USE_LOCAL_DEPS: 1

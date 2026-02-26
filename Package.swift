@@ -437,7 +437,7 @@ if computeCondition {
         )
         package.targets.append(target)
         package.products.append(
-            .library(name: "OpenAttributeGraph", type: .dynamic, targets: [openAttributeGraphTarget.name])
+            .library(name: "OpenAttributeGraph", targets: [openAttributeGraphTarget.name])
         )
     } else {
         package.targets.append(contentsOf: [

@@ -428,7 +428,7 @@ if computeCondition {
     if oagBinary {
         let version = envStringValue("OPENATTRIBUTESHIMS_OAG_BINARY_VERSION", default: "0.5.0")
         let url = envStringValue("OPENATTRIBUTESHIMS_OAG_BINARY_URL", default: "https://github.com/OpenSwiftUIProject/OpenAttributeGraph/releases/download/\(version)/OpenAttributeGraph.xcframework.zip")
-        let checksum = envStringValue("OPENATTRIBUTESHIMS_OAG_BINARY_CHECKSUM", default: "a539f876625288d4af7c7d1dccc80fd8e936058791b8071e0d534f5ec1a8a068")
+        let checksum = envStringValue("OPENATTRIBUTESHIMS_OAG_BINARY_CHECKSUM", default: "ac7d8cb7cfd917b9f1768dc18dfea74b1ed64ce96d2424ba8c557e70736674ff")
         let target = Target.binaryTarget(
             name: openAttributeGraphTarget.name,
             url: url,

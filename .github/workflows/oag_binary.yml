@@ -1,0 +1,30 @@
+name: OAG Binary
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  oag_binary_macos_build:
+    name: Build with OAG binary on macOS
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [macos-15]
+        xcode-version: ["16.4"]
+    runs-on: ${{ matrix.os }}
+    env:
+      OPENATTRIBUTEGRAPH_WERROR: 1
+      OPENATTRIBUTEGRAPH_OPENATTRIBUTESHIMS_OAG_USE_BINARY: 1
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: true
+      - name: Setup Xcode
+        uses: OpenSwiftUIProject/OpenSwiftUI/.github/actions/setup-xcode@main
+        with:
+          xcode-version: ${{ matrix.xcode-version }}
+      - name: Build in debug mode
+        run: swift build -c debug

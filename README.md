@@ -33,7 +33,7 @@ Add OpenAttributeGraph as a dependency in your `Package.swift`:
 
 ```swift
 dependencies: [
-    .package(url: "https://github.com/OpenSwiftUIProject/OpenAttributeGraph.git", from: "0.2.0")
+    .package(url: "https://github.com/OpenSwiftUIProject/OpenAttributeGraph.git", from: "0.5.0")
 ]
 ```
 

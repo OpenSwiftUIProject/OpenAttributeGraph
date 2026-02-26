@@ -116,6 +116,8 @@ public:
     
     const void value_mark_all() const OAG_NOEXCEPT;
     
+    static void trace_assertion_failure(bool, const char *, ...) OAG_NOEXCEPT;
+
     static void all_start_profiling(uint32_t) OAG_NOEXCEPT;
     static void all_stop_profiling() OAG_NOEXCEPT;
     void start_profiling(uint32_t) OAG_NOEXCEPT;

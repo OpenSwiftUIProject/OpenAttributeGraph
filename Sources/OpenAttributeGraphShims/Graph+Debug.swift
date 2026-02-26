@@ -2,7 +2,23 @@
 //  Graph+Debug.swift
 //  OpenAttributeGraphShims
 
-#if canImport(Darwin) && !OPENATTRIBUTEGRAPH_COMPUTE // Compute's descriptionFormatDictionary API is not aligned with OAG yet.
+#if canImport(Darwin)
+
+#if OPENATTRIBUTEGRAPH_COMPUTE
+extension Graph {
+    public static var descriptionFormatDictionary: CFString {
+        "graph/dict" as CFString
+    }
+
+    public static var descriptionFormatDot: CFString {
+        "graph/dot" as CFString
+    }
+
+    public static var descriptionAllGraphs: CFString {
+        "all_graphs" as CFString
+    }
+}
+#endif
 
 import Foundation
 

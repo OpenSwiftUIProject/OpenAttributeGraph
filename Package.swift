@@ -365,7 +365,6 @@ let package = Package(
     products: [
         .library(
             name: "OpenAttributeGraphShims",
-            type: .dynamic,
             targets: [openAttributeGraphShimsTarget.name]
         )
     ],
@@ -447,7 +446,7 @@ if computeCondition {
             openAttributeGraphCxxTarget,
         ])
         package.products.append(
-            .library(name: "OpenAttributeGraph", type: .dynamic, targets: [openAttributeGraphTarget.name, openAttributeGraphCxxTarget.name])
+            .library(name: "OpenAttributeGraph", targets: [openAttributeGraphTarget.name, openAttributeGraphCxxTarget.name])
         )
     }
     openAttributeGraphShimsTarget.dependencies.append(.target(name: openAttributeGraphTarget.name))

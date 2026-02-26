@@ -9,7 +9,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-char* error_message = nullptr;
+static char* error_message = nullptr;
 
 namespace OAG {
 void precondition_failure(const char *format, ...) {

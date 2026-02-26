@@ -8,9 +8,6 @@ filepath() {
 REPO_ROOT="$(dirname $(dirname $(dirname $(filepath $0))))"
 cd $REPO_ROOT
 
-# Fix SSH submodule checkout failure for git@github.com:jcmosc/swift-runtime-headers.git
-git config --global url."https://github.com/".insteadOf "git@github.com:"
-
 # Install Linux dependencies
 apt-get update
 apt-get install -y libssl-dev

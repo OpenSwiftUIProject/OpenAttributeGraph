@@ -12,6 +12,8 @@
 namespace OAG { namespace swift { class metadata; } }
 #include <pthread.h>
 
+OAG_ASSUME_NONNULL_BEGIN
+
 typedef struct OAG_BRIDGED_TYPE(id) OAGSubgraphStorage * OAGSubgraphRef;
 
 namespace OAG {
@@ -19,18 +21,19 @@ class SubgraphObject;
 
 class Subgraph final {
 private:
-    OAGSubgraphRef _cf_subgraph;
-    OAGGraphContextStorage& _context;
+    SubgraphObject *_Nullable _object;
+    Graph& _graph;
+    OAGUniqueID _graph_context_id;
     // TODO
     bool _isInvalid;
     static pthread_key_t _current_subgraph_key;
 public:
     // MARK: - CF related
     
-    static Subgraph *from_cf(OAGSubgraphRef cf_subgraph) OAG_NOEXCEPT;
+    static Subgraph *_Nullable from_cf(OAGSubgraphRef cf_subgraph) OAG_NOEXCEPT;
     
-    OAGSubgraphRef to_cf() const OAG_NOEXCEPT {
-        return _cf_subgraph;
+    _Nullable OAGSubgraphRef to_cf() const OAG_NOEXCEPT {
+        return reinterpret_cast<OAGSubgraphRef>(_object);
     }
     
     // MARK: - pthread related
@@ -46,12 +49,12 @@ public:
     }
     
     OAG_INLINE OAG_CONSTEXPR
-    static Subgraph *get_current() OAG_NOEXCEPT {
+    static Subgraph *_Nullable get_current() OAG_NOEXCEPT {
         return (OAG::Subgraph*)pthread_getspecific(OAG::Subgraph::current_key());
     }
     
     OAG_INLINE OAG_CONSTEXPR
-    static int set_current(Subgraph *subgraph) OAG_NOEXCEPT {
+    static int set_current(Subgraph *_Nullable subgraph) OAG_NOEXCEPT {
         return pthread_setspecific(OAG::Subgraph::current_key(), subgraph);
     }
     
@@ -75,13 +78,13 @@ public:
     // MARK: - Getter and setter
     
     OAG_INLINE OAG_CONSTEXPR
-    const OAGGraphContextRef get_context() const OAG_NOEXCEPT {
-        return &_context;
+    const OAG::Graph &get_graph() const OAG_NOEXCEPT {
+        return _graph;
     }
-    
+
     OAG_INLINE OAG_CONSTEXPR
-    OAGGraphContextRef get_context() OAG_NOEXCEPT {
-        return &_context;
+    OAG::Graph &get_graph() OAG_NOEXCEPT {
+        return _graph;
     }
     
     OAG_INLINE OAG_CONSTEXPR
@@ -98,7 +101,7 @@ public:
 
 struct OAGSubgraphStorage {
     CFRuntimeBase base;
-    OAG::Subgraph *subgraph;
+    OAG::Subgraph *_Nullable subgraph;
 };
 
 namespace OAG {
@@ -108,3 +111,5 @@ class SubgraphObject final {
 }
 
 #endif /* Subgraph_hpp */
+
+OAG_ASSUME_NONNULL_END

@@ -23,9 +23,8 @@ void OAG::Subgraph::apply(OAGAttributeFlags flags, OAG::ClosureFunction<void, OA
     // TODO
 }
 
-OAG::Subgraph::Subgraph(OAG::SubgraphObject* cf_subgraph, OAG::Graph::Context& context, OAG::AttributeID):
-_cf_subgraph((OAGSubgraphRef)cf_subgraph), // FIXME
-_context((OAGGraphContextStorage &)context){
+OAG::Subgraph::Subgraph(OAG::SubgraphObject* object, OAG::Graph::Context& context, OAG::AttributeID):
+_object(object), _graph(context.get_graph()), _graph_context_id(context.get_id()) {
     // TODO
 }
 

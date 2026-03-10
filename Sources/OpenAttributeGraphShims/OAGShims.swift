@@ -1,5 +1,5 @@
 //
-//  GraphShims.swift
+//  AGShims.swift
 //  OpenAttributeGraphShims
 
 /// A type that identifies the underlying attribute graph implementation vendor.

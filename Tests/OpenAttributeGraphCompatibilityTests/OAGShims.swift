@@ -1,5 +1,5 @@
 //
-//  GraphShims.swift
+//  OAGShims.swift
 //  OpenAttributeGraphCompatibilityTests
 
 #if OPENATTRIBUTEGRAPH

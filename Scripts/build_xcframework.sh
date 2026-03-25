@@ -8,6 +8,13 @@ PROJECT_ROOT="$(dirname "$SCRIPT_DIR")"
 BUILD_DIR="$PROJECT_ROOT/.build/Xcode"
 SCHEME="OpenAttributeGraph"
 
+# Generate Xcode project via Tuist
+pushd "$PROJECT_ROOT" > /dev/null
+tuist generate --no-open
+popd > /dev/null
+
+XCODEPROJ="$PROJECT_ROOT/OpenAttributeGraph.xcodeproj"
+
 # Copy and modify modulemap for framework distribution
 mkdir -p "$BUILD_DIR/Archives" "$BUILD_DIR/Frameworks"
 cat > "$BUILD_DIR/module.modulemap" << 'EOF'
@@ -34,23 +41,23 @@ done
 
 echo "Building xcframework for $SCHEME (debug info: $DEBUG_INFO)"
 
-# Archive for each platform using the xcodeproj
+# Archive for each platform using the Tuist-generated xcodeproj
 xcodebuild archive \
-    -project "$PROJECT_ROOT/OpenAttributeGraph.xcodeproj" \
+    -project "$XCODEPROJ" \
     -scheme "$SCHEME" \
     -destination "generic/platform=macOS" \
     -archivePath "$BUILD_DIR/Archives/$SCHEME-macOS.xcarchive" \
     ENABLE_USER_SCRIPT_SANDBOXING=NO
 
 xcodebuild archive \
-    -project "$PROJECT_ROOT/OpenAttributeGraph.xcodeproj" \
+    -project "$XCODEPROJ" \
     -scheme "$SCHEME" \
     -destination "generic/platform=iOS" \
     -archivePath "$BUILD_DIR/Archives/$SCHEME-iOS.xcarchive" \
     ENABLE_USER_SCRIPT_SANDBOXING=NO
 
 xcodebuild archive \
-    -project "$PROJECT_ROOT/OpenAttributeGraph.xcodeproj" \
+    -project "$XCODEPROJ" \
     -scheme "$SCHEME" \
     -destination "generic/platform=iOS Simulator" \
     -archivePath "$BUILD_DIR/Archives/$SCHEME-iOS-Simulator.xcarchive" \

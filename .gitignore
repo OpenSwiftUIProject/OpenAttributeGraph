@@ -15,3 +15,10 @@ build/
 .ag_repo/
 .oag_repo/
 .claude
+
+# Tuist
+Derived/
+Tuist/.build/
+*.xcodeproj
+*.xcworkspace
+*.xcframework

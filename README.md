@@ -70,6 +70,28 @@ The project requires Swift toolchain headers for compilation. They are included 
 git submodule update --init
 ```
 
+### Xcode (via Tuist)
+
+This project uses [Tuist](https://tuist.dev) to generate the Xcode project for framework builds.
+
+1. Install Tuist (if not already installed):
+   ```shell
+   # via mise
+   mise install tuist
+   # or via Homebrew
+   brew install tuist
+   ```
+
+2. Generate the Xcode project:
+   ```shell
+   tuist generate
+   ```
+
+3. Build using the generated workspace:
+   ```shell
+   xcodebuild build -workspace OpenAttributeGraph.xcworkspace -scheme OpenAttributeGraph -destination 'generic/platform=iOS Simulator'
+   ```
+
 ## License
 
 See LICENSE file - MIT

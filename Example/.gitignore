@@ -1,0 +1,6 @@
+## Tuist generated files
+*.xcodeproj
+*.xcworkspace
+Derived/
+build/
+.build

@@ -14,4 +14,8 @@ Checkouts/*
 build/
 .ag_repo/
 .oag_repo/
+## Tuist generated files
+*.xcodeproj
+*.xcworkspace
+Derived/
 .claude

@@ -1,78 +1,67 @@
 import ProjectDescription
 
-// MARK: - Process Headers Script
+// MARK: - Constants
 
-let processHeadersScript: TargetScript = .pre(
-    script: """
-    Scripts/Xcode/process_headers.sh
-    """,
-    name: "Process Headers",
-    inputFileListPaths: [
-        "Scripts/Xcode/process_headers_inputs.xcfilelist",
-    ],
-    outputFileListPaths: [
-        "Scripts/Xcode/process_headers_outputs.xcfilelist",
-    ]
-)
+let destinations: Destinations = [.iPhone, .iPad, .mac, .appleVision]
 
 // MARK: - Project
 
 let project = Project(
     name: "OpenAttributeGraph",
     settings: .settings(
-        base: [
-            "GCC_TREAT_WARNINGS_AS_ERRORS": "NO",
-        ],
         configurations: [
-            .debug(name: .debug, xcconfig: "Configs/Common.xcconfig"),
-            .release(name: .release, xcconfig: "Configs/Common.xcconfig"),
-        ]
+            .debug(name: "Debug", xcconfig: "Configs/Common.xcconfig"),
+            .release(name: "Release", xcconfig: "Configs/Common.xcconfig"),
+        ],
+        defaultSettings: .none
     ),
     targets: [
         .target(
             name: "OpenAttributeGraph",
-            destinations: [.iPhone, .iPad, .mac, .appleVision],
+            destinations: destinations,
             product: .framework,
             bundleId: "org.OpenSwiftUIProject.OpenAttributeGraph",
-            deploymentTargets: .multiplatform(
-                iOS: "18.0",
-                macOS: "15.0",
-                visionOS: "2.0"
-            ),
-            sources: .sourceFilesList(globs: [
-                .glob(
-                    "Sources/Platform/**",
-                    excluding: ["Sources/Platform/README.md"]
-                ),
-                .glob(
-                    "Sources/Utilities/**",
-                    excluding: [
-                        "Sources/Utilities/README.md",
-                        "Sources/Utilities/include/SwiftBridging/README.md",
-                    ]
-                ),
-                .glob(
-                    "Sources/OpenAttributeGraphCxx/**",
-                    excluding: [
-                        "Sources/OpenAttributeGraphCxx/include/OpenAttributeGraphCxx/Vector/vector.tpp",
-                        "Sources/OpenAttributeGraphCxx/include/SwiftBridging/README.md",
-                    ]
-                ),
+            sources: [
+                "Sources/Platform/**",
+                "Sources/Utilities/**",
+                "Sources/OpenAttributeGraphCxx/**",
                 "Sources/OpenAttributeGraph/**",
-            ]),
-            scripts: [processHeadersScript],
+            ],
+            headers: .headers(
+                project: [
+                    "Sources/OpenAttributeGraphCxx/include/**",
+                    "Sources/Platform/include/**",
+                    "Sources/Utilities/include/**",
+                ]
+            ),
+            scripts: [
+                .pre(
+                    path: "Scripts/Xcode/process_headers.sh",
+                    name: "Process Headers",
+                    inputPaths: [
+                        "$(SRCROOT)/Scripts/Xcode/process_headers.sh",
+                    ],
+                    inputFileListPaths: [
+                        "Scripts/Xcode/process_headers_inputs.xcfilelist",
+                    ],
+                    outputPaths: [],
+                    outputFileListPaths: [
+                        "Scripts/Xcode/process_headers_outputs.xcfilelist",
+                    ]
+                ),
+            ],
             dependencies: [
                 .sdk(name: "z", type: .library),
             ],
             settings: .settings(
                 base: [
-                    "GCC_TREAT_WARNINGS_AS_ERRORS": "NO",
                     "DEFINES_MODULE": "NO",
                 ],
                 configurations: [
-                    .debug(name: .debug, xcconfig: "Configs/OpenAttributeGraph.xcconfig"),
-                    .release(name: .release, xcconfig: "Configs/OpenAttributeGraph.xcconfig"),
-                ]
+                    .debug(name: "Debug", xcconfig: "Configs/OpenAttributeGraph.xcconfig"),
+                    .release(name: "Release", xcconfig: "Configs/OpenAttributeGraph.xcconfig"),
+                ],
+                defaultSettings: .none
             )
         ),
     ]

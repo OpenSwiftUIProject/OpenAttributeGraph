@@ -22,7 +22,7 @@ jobs:
         with:
           submodules: true
       - name: Setup Xcode
-        uses: OpenSwiftUIProject/OpenSwiftUI/.github/actions/setup-xcode@main
+        uses: OpenSwiftUIProject/setup-xcode@v2
         with:
           xcode-version: ${{ matrix.xcode-version }}
       - name: Build XCFramework

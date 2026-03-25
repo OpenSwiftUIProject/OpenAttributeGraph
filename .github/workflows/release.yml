@@ -19,7 +19,7 @@ jobs:
           fetch-depth: 0
           submodules: true
       - name: Setup Xcode
-        uses: OpenSwiftUIProject/OpenSwiftUI/.github/actions/setup-xcode@main
+        uses: OpenSwiftUIProject/setup-xcode@v2
         with:
           xcode-version: "16.4"
       - name: Build XCFramework

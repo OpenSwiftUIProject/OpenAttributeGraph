@@ -20,6 +20,9 @@ let processHeadersScript: TargetScript = .pre(
 let project = Project(
     name: "OpenAttributeGraph",
     settings: .settings(
+        base: [
+            "GCC_TREAT_WARNINGS_AS_ERRORS": "NO",
+        ],
         configurations: [
             .debug(name: .debug, xcconfig: "Configs/Common.xcconfig"),
             .release(name: .release, xcconfig: "Configs/Common.xcconfig"),
@@ -59,9 +62,13 @@ let project = Project(
             ]),
             scripts: [processHeadersScript],
             dependencies: [
-                .sdk(name: "libz", type: .library),
+                .sdk(name: "z", type: .library),
             ],
             settings: .settings(
+                base: [
+                    "GCC_TREAT_WARNINGS_AS_ERRORS": "NO",
+                    "DEFINES_MODULE": "NO",
+                ],
                 configurations: [
                     .debug(name: .debug, xcconfig: "Configs/OpenAttributeGraph.xcconfig"),
                     .release(name: .release, xcconfig: "Configs/OpenAttributeGraph.xcconfig"),

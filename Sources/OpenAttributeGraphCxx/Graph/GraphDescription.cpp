@@ -16,6 +16,8 @@ CFTypeRef OAGGraphDescription(OAGGraphRef graph, CFDictionaryRef options) {
         OAG::precondition_failure("invalidated graph");
     }
     return OAG::Graph::description(&graph->context.get_graph(), (__bridge NSDictionary*)options);
+    #else
+    return nullptr;
     #endif
 }
 

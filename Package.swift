@@ -145,6 +145,7 @@ let libraryEvolutionCondition = envBoolValue("LIBRARY_EVOLUTION", default: build
 let compatibilityTestCondition = envBoolValue("COMPATIBILITY_TEST", default: false)
 
 let useLocalDeps = envBoolValue("USE_LOCAL_DEPS")
+let danceUIGraphCondition = envBoolValue("OPENATTRIBUTESHIMS_DANCEUIGRAPH", default: false)
 let computeCondition = envBoolValue("OPENATTRIBUTESHIMS_COMPUTE", default: false)
 let attributeGraphCondition = envBoolValue("OPENATTRIBUTESHIMS_ATTRIBUTEGRAPH", default: false)
 
@@ -221,6 +222,20 @@ if !(compatibilityTestCondition && buildForDarwinPlatform) {
 // MARK: - Extension
 
 extension Target {
+    func addDanceUIGraphSettings() {
+        dependencies.append(
+            .product(name: "DanceUIGraph", package: "DanceUIGraph-spm")
+        )
+        var swiftSettings = swiftSettings ?? []
+        swiftSettings.append(.define("OPENATTRIBUTEGRAPH_DANCEUIGRAPH"))
+        self.swiftSettings = swiftSettings
+
+        var linkerSettings = linkerSettings ?? []
+        linkerSettings.append(.linkedLibrary("c++", .when(platforms: [.iOS])))
+        linkerSettings.append(.linkedLibrary("z", .when(platforms: [.iOS])))
+        self.linkerSettings = linkerSettings
+    }
+
     func addAGSettings() {
         dependencies.append(
             .product(name: "AttributeGraph", package: "DarwinPrivateFrameworks")
@@ -396,7 +411,21 @@ func setupDPFDependency() {
     }
 }
 
-if computeCondition {
+if danceUIGraphCondition {
+    let version = envStringValue("OPENATTRIBUTESHIMS_DANCEUIGRAPH_VERSION", default: "0.1.0")
+    let danceUIGraphRepo: Package.Dependency
+    if useLocalDeps {
+        danceUIGraphRepo = Package.Dependency.package(path: "../DanceUIGraph-spm")
+    } else {
+        danceUIGraphRepo = Package.Dependency.package(
+            url: "https://github.com/OpenSwiftUIProject/DanceUIGraph-spm.git",
+            exact: Version(version)!
+        )
+    }
+    package.dependencies.append(danceUIGraphRepo)
+    openAttributeGraphShimsTarget.addDanceUIGraphSettings()
+    package.platforms = [.iOS(.v13)]
+} else if computeCondition {
     let computeBinary = envBoolValue("OPENATTRIBUTESHIMS_COMPUTE_USE_BINARY", default: false)
     if computeBinary {
         let version = envStringValue("OPENATTRIBUTESHIMS_COMPUTE_BINARY_VERSION", default: "0.1.0")

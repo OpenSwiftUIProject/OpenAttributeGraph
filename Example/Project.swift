@@ -11,6 +11,7 @@ let project = Project(
             deploymentTargets: .macOS("15.0"),
             sources: ["Sources/**"],
             dependencies: [
+                .sdk(name: "c++", type: .library),
                 .external(name: "OpenAttributeGraph"),
             ]
         ),

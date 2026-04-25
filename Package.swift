@@ -412,7 +412,7 @@ func setupDPFDependency() {
 }
 
 if danceUIGraphCondition {
-    let version = envStringValue("OPENATTRIBUTESHIMS_DANCEUIGRAPH_VERSION", default: "0.1.0")
+    let version = envStringValue("OPENATTRIBUTESHIMS_DANCEUIGRAPH_VERSION", default: "0.0.1")
     let danceUIGraphRepo: Package.Dependency
     if useLocalDeps {
         danceUIGraphRepo = Package.Dependency.package(path: "../DanceUIGraph-spm")

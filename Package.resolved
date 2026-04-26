@@ -1,13 +1,13 @@
 {
-  "originHash" : "04b6edb35915a23279d904347c869df8edbee1e1773569e49acfaedb7d8a6f1b",
+  "originHash" : "2f39e651a0cb4fde3ebe01ff1f4c24b6fdca8e340f73bc84f4aa95788eb86a34",
   "pins" : [
     {
-      "identity" : "danceuigraph-spm",
+      "identity" : "swift-numerics",
       "kind" : "remoteSourceControl",
-      "location" : "https://github.com/OpenSwiftUIProject/DanceUIGraph-spm.git",
+      "location" : "https://github.com/apple/swift-numerics",
       "state" : {
-        "revision" : "bda6c5a83d93abf18d07d2e586e6caaf7e034e2b",
-        "version" : "0.0.3"
+        "revision" : "0c0290ff6b24942dadb83a929ffaaa1481df04a2",
+        "version" : "1.1.1"
       }
     }
   ],

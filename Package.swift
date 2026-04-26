@@ -226,6 +226,9 @@ extension Target {
         dependencies.append(
             .product(name: "DanceUIGraph", package: "DanceUIGraph-spm")
         )
+        dependencies.append(
+            .target(name: "OpenAttributeGraphDanceUIGraphShims")
+        )
         addDanceUIGraphSwiftSettings()
 
         var linkerSettings = linkerSettings ?? []
@@ -332,6 +335,15 @@ let openAttributeGraphShimsTarget = Target.target(
     cSettings: sharedCSettings,
     cxxSettings: sharedCxxSettings,
     swiftSettings: sharedSwiftSettings
+)
+let openAttributeGraphDanceUIGraphShimsTarget = Target.target(
+    name: "OpenAttributeGraphDanceUIGraphShims",
+    dependencies: [
+        .product(name: "DanceUIGraph", package: "DanceUIGraph-spm"),
+    ],
+    path: "Sources/OpenAttributeGraphDanceUIGraphShims",
+    publicHeadersPath: "include",
+    cSettings: sharedCSettings
 )
 
 // MARK: - Test Targets
@@ -453,6 +465,7 @@ if computeCondition {
         )
     }
     package.dependencies.append(danceUIGraphBinaryRepo)
+    package.targets.append(openAttributeGraphDanceUIGraphShimsTarget)
     openAttributeGraphShimsTarget.addDanceUIGraphSettings()
     openAttributeGraphShimsTestsTarget.addDanceUIGraphSwiftSettings()
     package.targets.append(openAttributeGraphShimsTestsTarget)

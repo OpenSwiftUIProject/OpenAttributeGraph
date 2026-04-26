@@ -234,12 +234,6 @@ extension Target {
         self.linkerSettings = linkerSettings
     }
 
-    func addDanceUIGraphSwiftSettings() {
-        var swiftSettings = swiftSettings ?? []
-        swiftSettings.append(.define("OPENATTRIBUTEGRAPH_DANCEUIGRAPH"))
-        self.swiftSettings = swiftSettings
-    }
-
     func addAGSettings() {
         dependencies.append(
             .product(name: "AttributeGraph", package: "DarwinPrivateFrameworks")
@@ -260,6 +254,12 @@ extension Target {
         var linkerSettings = linkerSettings ?? []
         linkerSettings.append(.linkedLibrary("swiftDemangle", .when(platforms: .darwinPlatforms)))
         self.linkerSettings = linkerSettings
+    }
+
+    func addDanceUIGraphSwiftSettings() {
+        var swiftSettings = swiftSettings ?? []
+        swiftSettings.append(.define("OPENATTRIBUTEGRAPH_DANCEUIGRAPH"))
+        self.swiftSettings = swiftSettings
     }
 }
 

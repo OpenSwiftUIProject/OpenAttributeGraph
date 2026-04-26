@@ -2,8 +2,6 @@
 //  MetadataDebugTests.swift
 //  OpenAttributeGraphShimsTests
 
-#if !OPENATTRIBUTEGRAPH_DANCEUIGRAPH
-
 @_spi(Debug) import OpenAttributeGraphShims
 import Testing
 
@@ -69,5 +67,3 @@ extension Int {
         "0x\(String(format: "%X", self))"
     }
 }
-
-#endif

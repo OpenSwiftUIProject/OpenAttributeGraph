@@ -4,8 +4,6 @@
 
 import Foundation
 
-#if !OPENATTRIBUTEGRAPH_DANCEUIGRAPH
-
 @_spi(Debug)
 extension Metadata {
     public struct Option {
@@ -97,5 +95,3 @@ extension Int {
         "0x\(String(format: "%X", self))"
     }
 }
-
-#endif

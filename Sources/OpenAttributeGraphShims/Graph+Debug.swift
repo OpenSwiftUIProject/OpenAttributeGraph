@@ -2,7 +2,7 @@
 //  Graph+Debug.swift
 //  OpenAttributeGraphShims
 
-#if canImport(Darwin) && !OPENATTRIBUTEGRAPH_DANCEUIGRAPH
+#if canImport(Darwin)
 
 #if OPENATTRIBUTEGRAPH_COMPUTE
 extension Graph {

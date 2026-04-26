@@ -4,10 +4,10 @@
 
 #if OPENATTRIBUTEGRAPH_DANCEUIGRAPH
 
+// FIXME: Runtime crash to be fixed in OpenSwiftUI
+
 @_exported public import DanceUIRuntime
 @_exported public import DanceUIGraph
-@_exported public import Foundation
-import Darwin
 
 public typealias AttributeBodyVisitor = DanceUIGraph.AttributeBodyVisitor
 public typealias ComparisonMode = DGComparisonMode
@@ -220,9 +220,8 @@ private func OAGDGSubgraphIntersects(_ subgraph: DGSubgraphRef, _ flags: DGAttri
 
 // MARK: - Graph
 
-@frozen
-public struct Graph: Hashable {
-    public var base: DGGraphRef
+public final class Graph: Hashable {
+    let base: DGGraphRef
 
     public init() {
         base = DGGraphCreate()
@@ -232,7 +231,7 @@ public struct Graph: Hashable {
         base = DGGraphCreateShared(graph.base)
     }
 
-    public init(_ base: DGGraphRef) {
+    init(_ base: DGGraphRef) {
         self.base = base
     }
 
@@ -260,7 +259,7 @@ public struct Graph: Hashable {
 
     public var context: UnsafeRawPointer? {
         get { OAGDGGraphGetContext(base).map(UnsafeRawPointer.init) }
-        nonmutating set { OAGDGGraphSetContext(base, newValue.map(UnsafeMutableRawPointer.init(mutating:))) }
+        set { OAGDGGraphSetContext(base, newValue.map(UnsafeMutableRawPointer.init(mutating:))) }
     }
 
     public static func typeIndex(
@@ -436,11 +435,11 @@ public struct Graph: Hashable {
 }
 
 public func === (lhs: Graph, rhs: Graph) -> Bool {
-    lhs == rhs
+    lhs.base === rhs.base
 }
 
 public func !== (lhs: Graph, rhs: Graph) -> Bool {
-    !(lhs == rhs)
+    lhs.base !== rhs.base
 }
 
 extension Graph.CounterQueryType {

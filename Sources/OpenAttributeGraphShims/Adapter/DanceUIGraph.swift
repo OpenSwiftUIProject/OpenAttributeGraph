@@ -36,26 +36,7 @@ public typealias DescriptionOption = DanceUIGraphDescriptionOption
 public typealias Signature = UnsafePointer<DanceUIGraphTypeSignature>
 public typealias AttributeUpdateBlock = () -> (UnsafeMutableRawPointer, AnyAttribute) -> Void
 
-@frozen
-public struct OAGAttributeFlags: OptionSet, Hashable, Sendable {
-    public let rawValue: UInt32
-
-    public init(rawValue: UInt32) {
-        self.rawValue = rawValue
-    }
-}
-
-private extension DGAttributeFlags {
-    init(_ flags: OAGAttributeFlags) {
-        self.init(rawValue: flags.rawValue)
-    }
-}
-
-private extension OAGAttributeFlags {
-    init(_ flags: DGAttributeFlags) {
-        self.init(rawValue: flags.rawValue)
-    }
-}
+public typealias OAGAttributeFlags = DGAttributeFlags
 
 @_silgen_name("OAGDanceUIGraphGetContext")
 private func OAGDGGraphGetContext(_ graph: DGGraphRef) -> UnsafeMutableRawPointer?
@@ -528,7 +509,7 @@ public final class Subgraph: Hashable {
     }
 
     public func forEach(_ flags: Flags, _ callback: (AnyAttribute) -> Void) {
-        OAGDGSubgraphApply(base, DGAttributeFlags(flags)) { callback(AnyAttribute($0)) }
+        OAGDGSubgraphApply(base, flags) { callback(AnyAttribute($0)) }
     }
 
     public func addChild(_ child: Subgraph) {
@@ -561,11 +542,11 @@ public final class Subgraph: Hashable {
     }
 
     public func update(flags: Flags) {
-        base.update(DGAttributeFlags(flags))
+        base.update(flags)
     }
 
     public func intersects(flags: Flags) -> Bool {
-        OAGDGSubgraphIntersects(base, DGAttributeFlags(flags))
+        OAGDGSubgraphIntersects(base, flags)
     }
 
     public func invalidate() {
@@ -677,8 +658,8 @@ public struct AnyAttribute: RawRepresentable, Hashable, CustomStringConvertible,
     }
 
     public var flags: Flags {
-        get { OAGAttributeFlags(OAGDGGraphGetFlags(base)) }
-        nonmutating set { OAGDGGraphSetFlags(base, DGAttributeFlags(newValue)) }
+        get { OAGDGGraphGetFlags(base) }
+        nonmutating set { OAGDGGraphSetFlags(base, newValue) }
     }
 
     public var hasValue: Bool {

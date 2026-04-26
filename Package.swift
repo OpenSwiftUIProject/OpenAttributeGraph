@@ -446,7 +446,7 @@ if computeCondition {
     } else {
         let version: Version = envStringValue("OPENATTRIBUTESHIMS_DANCEUIGRAPH_BINARY_VERSION").flatMap {
             Version($0)
-        } ?? "0.0.2"
+        } ?? "0.0.3"
         danceUIGraphBinaryRepo = Package.Dependency.package(
             url: "https://github.com/OpenSwiftUIProject/DanceUIGraph-spm.git",
             exact: version

@@ -22,6 +22,13 @@ extension Attribute: Swift.CustomDebugStringConvertible {
     }
 }
 
+#if OPENATTRIBUTEGRAPH_DANCEUIGRAPH
+extension AnyAttribute {
+    func _debugDescription(indent: Int) -> String {
+        "\(String(repeating: tab, count: indent))\(debugDescription)"
+    }
+}
+#else
 extension AnyAttribute: Swift.CustomDebugStringConvertible {
     public var debugDescription: String {
         _debugDescription(indent: 0)
@@ -88,4 +95,6 @@ extension AnyAttribute: Swift.CustomDebugStringConvertible {
         return "\(nextTabs)\(bodyValueString)"
     }
 }
+#endif
+
 #endif

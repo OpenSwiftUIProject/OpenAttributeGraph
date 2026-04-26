@@ -226,14 +226,18 @@ extension Target {
         dependencies.append(
             .product(name: "DanceUIGraph", package: "DanceUIGraph-spm")
         )
+        addDanceUIGraphSwiftSettings()
+
+        var linkerSettings = linkerSettings ?? []
+        linkerSettings.append(.linkedLibrary("c++", .when(platforms: [.iOS, .macOS])))
+        linkerSettings.append(.linkedLibrary("z", .when(platforms: [.iOS, .macOS])))
+        self.linkerSettings = linkerSettings
+    }
+
+    func addDanceUIGraphSwiftSettings() {
         var swiftSettings = swiftSettings ?? []
         swiftSettings.append(.define("OPENATTRIBUTEGRAPH_DANCEUIGRAPH"))
         self.swiftSettings = swiftSettings
-
-        var linkerSettings = linkerSettings ?? []
-        linkerSettings.append(.linkedLibrary("c++", .when(platforms: [.iOS])))
-        linkerSettings.append(.linkedLibrary("z", .when(platforms: [.iOS])))
-        self.linkerSettings = linkerSettings
     }
 
     func addAGSettings() {
@@ -411,21 +415,7 @@ func setupDPFDependency() {
     }
 }
 
-if danceUIGraphCondition {
-    let version = envStringValue("OPENATTRIBUTESHIMS_DANCEUIGRAPH_VERSION", default: "0.0.1")
-    let danceUIGraphRepo: Package.Dependency
-    if useLocalDeps {
-        danceUIGraphRepo = Package.Dependency.package(path: "../DanceUIGraph-spm")
-    } else {
-        danceUIGraphRepo = Package.Dependency.package(
-            url: "https://github.com/OpenSwiftUIProject/DanceUIGraph-spm.git",
-            exact: Version(version)!
-        )
-    }
-    package.dependencies.append(danceUIGraphRepo)
-    openAttributeGraphShimsTarget.addDanceUIGraphSettings()
-    package.platforms = [.iOS(.v13)]
-} else if computeCondition {
+if computeCondition {
     let computeBinary = envBoolValue("OPENATTRIBUTESHIMS_COMPUTE_USE_BINARY", default: false)
     if computeBinary {
         let version = envStringValue("OPENATTRIBUTESHIMS_COMPUTE_BINARY_VERSION", default: "0.1.0")
@@ -449,6 +439,24 @@ if danceUIGraphCondition {
     }
     openAttributeGraphShimsTarget.addComputeSettings()
     package.platforms = [.iOS(.v18), .macOS(.v15), .macCatalyst(.v18), .tvOS(.v18), .watchOS(.v10), .visionOS(.v2)]
+} else if danceUIGraphCondition {
+    let danceUIGraphBinaryRepo: Package.Dependency
+    if useLocalDeps {
+        danceUIGraphBinaryRepo = Package.Dependency.package(path: "../DanceUIGraph-spm")
+    } else {
+        let version: Version = envStringValue("OPENATTRIBUTESHIMS_DANCEUIGRAPH_BINARY_VERSION").flatMap {
+            Version($0)
+        } ?? "0.0.2"
+        danceUIGraphBinaryRepo = Package.Dependency.package(
+            url: "https://github.com/OpenSwiftUIProject/DanceUIGraph-spm.git",
+            exact: version
+        )
+    }
+    package.dependencies.append(danceUIGraphBinaryRepo)
+    openAttributeGraphShimsTarget.addDanceUIGraphSettings()
+    openAttributeGraphShimsTestsTarget.addDanceUIGraphSwiftSettings()
+    package.targets.append(openAttributeGraphShimsTestsTarget)
+    package.platforms = [.iOS(.v13), .macOS(.v10_15)]
 } else if attributeGraphCondition, buildForDarwinPlatform {
     setupDPFDependency()
     openAttributeGraphShimsTarget.addAGSettings()

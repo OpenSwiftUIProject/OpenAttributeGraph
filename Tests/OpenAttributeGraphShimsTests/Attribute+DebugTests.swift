@@ -2,7 +2,7 @@
 //  Attribute+DebugTests.swift
 //  OpenAttributeGraphShimsTests
 
-#if canImport(Darwin) && DEBUG
+#if canImport(Darwin) && DEBUG && !OPENATTRIBUTEGRAPH_DANCEUIGRAPH
 
 import OpenAttributeGraphShims
 import Testing

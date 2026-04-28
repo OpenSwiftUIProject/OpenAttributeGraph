@@ -9,7 +9,6 @@
 @_exported public import DanceUIRuntime
 @_exported public import DanceUIGraph
 
-public typealias AttributeBodyVisitor = DanceUIGraph.AttributeBodyVisitor
 public typealias ComparisonMode = DGComparisonMode
 public typealias GraphContext = DGGraphContextRef
 public typealias Metadata = DGTypeID

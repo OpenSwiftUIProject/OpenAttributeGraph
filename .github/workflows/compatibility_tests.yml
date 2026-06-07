@@ -14,7 +14,7 @@ jobs:
       matrix:
         include:
           - os: macos-15
-            xcode-version: "16.4"   # Swift 6.1.2
+            xcode-version: "26.3"   # Swift 6.2.4
     runs-on: ${{ matrix.os }}
     env:
       OPENATTRIBUTEGRAPH_WERROR: 1
@@ -36,7 +36,9 @@ jobs:
         shell: bash
       - name: Run tests against Apple's AttributeGraph on macOS via SwiftPM
         run: |
+          # Swift 6.2.4 crashes while indexing C++ interop test targets.
           swift test \
+            --disable-index-store \
             --build-path .build-compatibility-test-debug
       - name: Run tests against Apple's AttributeGraph on macOS via Xcode
         run: |

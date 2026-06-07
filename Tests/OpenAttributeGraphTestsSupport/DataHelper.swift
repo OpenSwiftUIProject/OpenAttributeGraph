@@ -12,6 +12,8 @@ public struct Tuple<A, B> {
     }
 }
 
+extension Tuple: Sendable where A: Sendable, B: Sendable {}
+
 public struct Triple<A, B, C> {
     public var first: A
     public var second: B
@@ -23,3 +25,5 @@ public struct Triple<A, B, C> {
         self.third = third
     }
 }
+
+extension Triple: Sendable where A: Sendable, B: Sendable, C: Sendable {}

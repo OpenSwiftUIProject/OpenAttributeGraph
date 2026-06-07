@@ -1,4 +1,4 @@
-// swift-tools-version: 6.1
+// swift-tools-version: 6.2
 
 import Foundation
 import PackageDescription
@@ -430,9 +430,9 @@ func setupDPFDependency() {
 if computeCondition {
     let computeBinary = envBoolValue("OPENATTRIBUTESHIMS_COMPUTE_USE_BINARY", default: false)
     if computeBinary {
-        let version = envStringValue("OPENATTRIBUTESHIMS_COMPUTE_BINARY_VERSION", default: "0.1.0")
+        let version = envStringValue("OPENATTRIBUTESHIMS_COMPUTE_BINARY_VERSION", default: "0.2.1")
         let url = envStringValue("OPENATTRIBUTESHIMS_COMPUTE_BINARY_URL", default: "https://github.com/jcmosc/Compute/releases/download/\(version)/Compute.xcframework.zip")
-        let checksum = envStringValue("OPENATTRIBUTESHIMS_COMPUTE_USE_BINARY_CHECKSUM", default: "e32dd27fa4df4928be69d4171bcb3d47192bebb467f70bfd728cca56d44682d6")
+        let checksum = envStringValue("OPENATTRIBUTESHIMS_COMPUTE_USE_BINARY_CHECKSUM", default: "44eb3f08b9da4e7e308bfb2654b36e6752547e8ba5ec33e19e0648c686990153")
         package.targets.append(
             .binaryTarget(
                 name: "Compute",
@@ -445,7 +445,7 @@ if computeCondition {
         if useLocalDeps {
             computeRepo = Package.Dependency.package(path: "../Compute")
         } else {
-            computeRepo = Package.Dependency.package(url: "https://github.com/jcmosc/Compute", exact: "0.1.0")
+            computeRepo = Package.Dependency.package(url: "https://github.com/jcmosc/Compute", exact: "0.2.1")
         }
         package.dependencies.append(computeRepo)
     }

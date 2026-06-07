@@ -1,7 +1,7 @@
 # OpenAttributeGraph SwiftFormat configuration
 
 # Swift version
---swiftversion 6.1
+--swiftversion 6.2
 
 # Indentation
 --indent 4

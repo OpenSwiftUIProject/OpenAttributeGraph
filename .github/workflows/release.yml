@@ -21,7 +21,7 @@ jobs:
       - name: Setup Xcode
         uses: OpenSwiftUIProject/setup-xcode@v2
         with:
-          xcode-version: "16.4"
+          xcode-version: "26.3"
       - name: Build XCFramework
         run: ./Scripts/build_xcframework.sh
       - name: Compute Checksum

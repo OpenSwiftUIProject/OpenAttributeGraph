@@ -60,7 +60,7 @@ For a simpler setup, you can use the prebuilt XCFramework available on the [rele
 
 ## Build
 
-The current suggested toolchain to build the project is Swift 6.1.2 / Xcode 16.4.
+The current suggested toolchain to build the project is Swift 6.2.4 / Xcode 26.3.
 
 ### Clone Swift headers
 

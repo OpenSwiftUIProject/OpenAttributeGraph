@@ -13,7 +13,7 @@ jobs:
       fail-fast: false
       matrix:
         os: [macos-15]
-        xcode-version: ["16.4"]
+        xcode-version: ["26.3"]
     runs-on: ${{ matrix.os }}
     env:
       OPENATTRIBUTEGRAPH_WERROR: 1

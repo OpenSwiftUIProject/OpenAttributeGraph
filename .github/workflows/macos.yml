@@ -34,7 +34,9 @@ jobs:
         shell: bash
       - name: Build and run tests in debug mode with coverage
         run: |
+          # Swift 6.2.4 crashes while indexing C++ interop test targets.
           swift test \
+            --disable-index-store \
             -c debug \
             --enable-code-coverage \
             --build-path .build-test-debug
@@ -44,7 +46,9 @@ jobs:
             > coverage.txt
       - name: Build and run tests in release mode
         run: |
+          # Swift 6.2.4 crashes while indexing C++ interop test targets.
           swift test \
+            --disable-index-store \
             -c release \
             --enable-code-coverage \
             --build-path .build-test-release

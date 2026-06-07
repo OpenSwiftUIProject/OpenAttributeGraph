@@ -6,10 +6,14 @@ filepath() {
 }
 
 REPO_ROOT="$(dirname $(dirname $(dirname $(filepath $0))))"
+DARWINPRIVATEFRAMEWORKS_FALLBACK_REVISION="b0c3d94ff6b7200754ad2adf948fd3c6ebaef956"
 
 clone_checkout_ag() {
   cd $REPO_ROOT
-  revision=$(Scripts/CI/get_revision.sh darwinprivateframeworks)
+  if ! revision=$(Scripts/CI/get_revision.sh darwinprivateframeworks 2>/dev/null); then
+    revision="$DARWINPRIVATEFRAMEWORKS_FALLBACK_REVISION"
+    echo "No pinned revision for DarwinPrivateFrameworks, using fallback revision: $revision"
+  fi
   cd ..
   if [ ! -d DarwinPrivateFrameworks ]; then
     gh repo clone OpenSwiftUIProject/DarwinPrivateFrameworks
@@ -23,8 +27,6 @@ clone_checkout_ag() {
   fi
   if [ -n "$revision" ]; then
     git checkout --quiet "$revision"
-  else
-    echo "No pinned revision for DarwinPrivateFrameworks, using default branch."
   fi
 }
 

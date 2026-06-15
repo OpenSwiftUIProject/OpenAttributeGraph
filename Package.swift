@@ -428,11 +428,13 @@ func setupDPFDependency() {
 }
 
 if computeCondition {
-    let computeBinary = envBoolValue("OPENATTRIBUTESHIMS_COMPUTE_USE_BINARY", default: false)
-    if computeBinary {
+    let binary = envBoolValue("OPENATTRIBUTESHIMS_COMPUTE_BINARY", default: false)
+    if binary {
+        // FIXME: This version is broken and will have runtime crash
         let version = envStringValue("OPENATTRIBUTESHIMS_COMPUTE_BINARY_VERSION", default: "0.2.1")
-        let url = envStringValue("OPENATTRIBUTESHIMS_COMPUTE_BINARY_URL", default: "https://github.com/jcmosc/Compute/releases/download/\(version)/Compute.xcframework.zip")
-        let checksum = envStringValue("OPENATTRIBUTESHIMS_COMPUTE_USE_BINARY_CHECKSUM", default: "44eb3f08b9da4e7e308bfb2654b36e6752547e8ba5ec33e19e0648c686990153")
+        let repo = envStringValue("OPENATTRIBUTESHIMS_COMPUTE_BINARY_REPO", default: "jcmosc/Compute")
+        let url = envStringValue("OPENATTRIBUTESHIMS_COMPUTE_BINARY_URL", default: "https://github.com/\(repo)/releases/download/\(version)/Compute.xcframework.zip")
+        let checksum = envStringValue("OPENATTRIBUTESHIMS_COMPUTE_BINARY_CHECKSUM", default: "44eb3f08b9da4e7e308bfb2654b36e6752547e8ba5ec33e19e0648c686990153")
         package.targets.append(
             .binaryTarget(
                 name: "Compute",
@@ -441,11 +443,16 @@ if computeCondition {
             )
         )
     } else {
+        let repo = envStringValue("OPENATTRIBUTESHIMS_COMPUTE_SOURCE_REPO", default: "OpenSwiftUIProject/Compute")
+        let version = envStringValue("OPENATTRIBUTESHIMS_COMPUTE_SOURCE_VERSION")
+        let branch = envStringValue("OPENATTRIBUTESHIMS_COMPUTE_SOURCE_BRANCH", default: "main")
         let computeRepo: Package.Dependency
         if useLocalDeps {
             computeRepo = Package.Dependency.package(path: "../Compute")
+        } else if let version {
+            computeRepo = Package.Dependency.package(url: "https://github.com/\(repo)", exact: .init(stringLiteral: version))
         } else {
-            computeRepo = Package.Dependency.package(url: "https://github.com/jcmosc/Compute", exact: "0.2.1")
+            computeRepo = Package.Dependency.package(url: "https://github.com/\(repo)", branch: branch)
         }
         package.dependencies.append(computeRepo)
     }

@@ -6,12 +6,12 @@
 
 @_exported public import Compute
 
-public typealias OAGAttributeInfo = AGAttributeInfo
+public typealias OAGAttributeInfo = IAGAttributeInfo
 public typealias OAGCachedValueOptions = CachedValueOptions
-public typealias OAGChangedValueFlags = AGChangedValueFlags
-public typealias OAGInputOptions = AGInputOptions
-public typealias OAGValue = AGChangedValue
-public typealias OAGValueOptions = AGValueOptions
+public typealias OAGChangedValueFlags = IAGChangedValueFlags
+public typealias OAGInputOptions = IAGInputOptions
+public typealias OAGValue = IAGChangedValue
+public typealias OAGValueOptions = IAGValueOptions
 
 extension AnyAttribute {
     public typealias Flags = Subgraph.Flags

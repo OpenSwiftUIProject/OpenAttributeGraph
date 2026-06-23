@@ -430,11 +430,10 @@ func setupDPFDependency() {
 if computeCondition {
     let binary = envBoolValue("OPENATTRIBUTESHIMS_COMPUTE_BINARY", default: false)
     if binary {
-        // FIXME: This version is broken and will have runtime crash
-        let version = envStringValue("OPENATTRIBUTESHIMS_COMPUTE_BINARY_VERSION", default: "0.2.1")
+        let version = envStringValue("OPENATTRIBUTESHIMS_COMPUTE_BINARY_VERSION", default: "0.3.0")
         let repo = envStringValue("OPENATTRIBUTESHIMS_COMPUTE_BINARY_REPO", default: "jcmosc/Compute")
         let url = envStringValue("OPENATTRIBUTESHIMS_COMPUTE_BINARY_URL", default: "https://github.com/\(repo)/releases/download/\(version)/Compute.xcframework.zip")
-        let checksum = envStringValue("OPENATTRIBUTESHIMS_COMPUTE_BINARY_CHECKSUM", default: "44eb3f08b9da4e7e308bfb2654b36e6752547e8ba5ec33e19e0648c686990153")
+        let checksum = envStringValue("OPENATTRIBUTESHIMS_COMPUTE_BINARY_CHECKSUM", default: "d1e76d9fee3b2995c2b21e3cc95cf6157e827408f701439b3dd34795dd95dee1")
         package.targets.append(
             .binaryTarget(
                 name: "Compute",

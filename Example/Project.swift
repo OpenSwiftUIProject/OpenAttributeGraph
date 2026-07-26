@@ -7,6 +7,9 @@ let indexStoreDisabledSettings: SettingsDictionary = [
 
 let project = Project(
     name: "Example",
+    packages: [
+        .package(path: ".."),
+    ],
     settings: .settings(base: indexStoreDisabledSettings),
     targets: [
         .target(
@@ -18,7 +21,7 @@ let project = Project(
             sources: ["Sources/**"],
             dependencies: [
                 .sdk(name: "c++", type: .library),
-                .external(name: "OpenAttributeGraph"),
+                .package(product: "OpenAttributeGraph"),
             ],
             settings: .settings(base: indexStoreDisabledSettings)
         ),

@@ -11,6 +11,7 @@ jobs:
     runs-on: macos-15
     permissions:
       contents: write
+      id-token: write
     env:
       GH_TOKEN: ${{ github.token }}
     steps:
@@ -22,17 +23,31 @@ jobs:
         uses: OpenSwiftUIProject/setup-xcode@v2
         with:
           xcode-version: "26.3"
+      - name: Set up mise
+        uses: jdx/mise-action@v2
+        with:
+          install: false
+          cache: false
+      - name: Set up Tuist cache
+        run: |
+          mise trust mise.toml
+          mise install
+          mise exec -- tuist auth login
+          mise exec -- tuist setup cache
+        shell: bash
       - name: Build XCFramework
         run: ./Scripts/build_xcframework.sh
       - name: Compute Checksum
         id: checksum
         run: |
-          echo "checksum=$(swift package compute-checksum .build/Xcode/Frameworks/OpenAttributeGraph.xcframework.zip)" >> $GITHUB_OUTPUT
+          echo "checksum=$(swift package compute-checksum .build/Xcode/Frameworks/OpenAttributeGraph.xcframework.zip)" >> "$GITHUB_OUTPUT"
       - name: Collect Build Info
         id: build_info
         run: |
-          echo "xcode_version=$(xcodebuild -version | head -1)" >> $GITHUB_OUTPUT
-          echo "swift_version=$(swift --version 2>&1 | head -1)" >> $GITHUB_OUTPUT
+          {
+            echo "xcode_version=$(xcodebuild -version | head -1)"
+            echo "swift_version=$(swift --version 2>&1 | head -1)"
+          } >> "$GITHUB_OUTPUT"
       - name: Generate Release Notes
         run: |
           TAG_NAME="${GITHUB_REF#refs/tags/}"

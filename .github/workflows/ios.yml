@@ -9,6 +9,9 @@ on:
 jobs:
   ios_test:
     name: Execute tests on iOS
+    permissions:
+      contents: read
+      id-token: write
     strategy:
       fail-fast: false
       matrix:
@@ -33,35 +36,63 @@ jobs:
         uses: OpenSwiftUIProject/setup-xcode@v2
         with:
           xcode-version: ${{ matrix.xcode-version }}
+      - name: Set up mise
+        uses: jdx/mise-action@v2
+        with:
+          install: false
+          cache: false
+      - name: Set up Tuist cache
+        run: |
+          mise trust mise.toml
+          mise install
+          mise exec -- tuist auth login
+          mise exec -- tuist setup cache
+        shell: bash
       - name: Set up build environment
         run: Scripts/CI/darwin_setup_build.sh
         shell: bash
       - name: Build in debug mode on iOS
         run: |
+          result_bundle="${RUNNER_TEMP:-/tmp}/openattributegraph-ios-build-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT:-0}.xcresult"
+          rm -rf "$result_bundle"
+          trap 'rm -rf "$result_bundle"' EXIT
           # Swift 6.2.4 crashes while indexing C++ interop test targets.
-          xcodebuild build \
+          mise exec -- tuist xcodebuild build \
             -workspace .swiftpm/xcode/package.xcworkspace \
             -scheme OpenAttributeGraph-Package \
             -configuration Debug \
             -destination "platform=iOS Simulator,OS=${{ matrix.ios-version }},name=${{ matrix.ios-simulator-name }}" \
             -derivedDataPath .build-debug \
+            -resultBundlePath "$result_bundle" \
             -skipMacroValidation \
             -skipPackagePluginValidation \
             COMPILER_INDEX_STORE_ENABLE=NO \
-            OTHER_SWIFT_FLAGS="-warnings-as-errors"
+            OTHER_SWIFT_FLAGS="-warnings-as-errors" \
+            COMPILATION_CACHE_ENABLE_CACHING=YES \
+            COMPILATION_CACHE_REMOTE_SERVICE_PATH="$HOME/.local/state/tuist/OpenSwiftUIProject_openattributegraph.sock" \
+            COMPILATION_CACHE_ENABLE_PLUGIN=YES \
+            COMPILATION_CACHE_ENABLE_DIAGNOSTIC_REMARKS=YES
       - name: Build and run tests in debug mode with coverage on iOS Simulator
         run: |
+          result_bundle="${RUNNER_TEMP:-/tmp}/openattributegraph-ios-test-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT:-0}.xcresult"
+          rm -rf "$result_bundle"
+          trap 'rm -rf "$result_bundle"' EXIT
           # Swift 6.2.4 crashes while indexing C++ interop test targets.
-          xcodebuild test \
+          mise exec -- tuist xcodebuild test \
             -workspace .swiftpm/xcode/package.xcworkspace \
             -scheme OpenAttributeGraph-Package \
             -configuration Debug \
             -destination "platform=iOS Simulator,OS=${{ matrix.ios-version }},name=${{ matrix.ios-simulator-name }}" \
             -enableCodeCoverage=YES \
             -derivedDataPath .build-test-debug \
+            -resultBundlePath "$result_bundle" \
             -skipPackagePluginValidation \
             -skipMacroValidation \
-            COMPILER_INDEX_STORE_ENABLE=NO
+            COMPILER_INDEX_STORE_ENABLE=NO \
+            COMPILATION_CACHE_ENABLE_CACHING=YES \
+            COMPILATION_CACHE_REMOTE_SERVICE_PATH="$HOME/.local/state/tuist/OpenSwiftUIProject_openattributegraph.sock" \
+            COMPILATION_CACHE_ENABLE_PLUGIN=YES \
+            COMPILATION_CACHE_ENABLE_DIAGNOSTIC_REMARKS=YES
             # OTHER_SWIFT_FLAGS="-warnings-as-errors" Conflicting options '-warnings-as-errors' and '-suppress-warnings'
       - name: Generate iOS coverage report
         run: |

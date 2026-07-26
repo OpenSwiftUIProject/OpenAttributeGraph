@@ -42,25 +42,36 @@ done
 echo "Building xcframework for $SCHEME (debug info: $DEBUG_INFO)"
 
 # Archive for each platform using the Tuist-generated xcodeproj
-xcodebuild archive \
+rm -rf \
+    "$BUILD_DIR/Archives/$SCHEME-macOS.xcarchive" \
+    "$BUILD_DIR/Archives/$SCHEME-macOS.xcresult" \
+    "$BUILD_DIR/Archives/$SCHEME-iOS.xcarchive" \
+    "$BUILD_DIR/Archives/$SCHEME-iOS.xcresult" \
+    "$BUILD_DIR/Archives/$SCHEME-iOS-Simulator.xcarchive" \
+    "$BUILD_DIR/Archives/$SCHEME-iOS-Simulator.xcresult"
+
+tuist xcodebuild archive \
     -project "$XCODEPROJ" \
     -scheme "$SCHEME" \
     -destination "generic/platform=macOS" \
     -archivePath "$BUILD_DIR/Archives/$SCHEME-macOS.xcarchive" \
+    -resultBundlePath "$BUILD_DIR/Archives/$SCHEME-macOS.xcresult" \
     ENABLE_USER_SCRIPT_SANDBOXING=NO
 
-xcodebuild archive \
+tuist xcodebuild archive \
     -project "$XCODEPROJ" \
     -scheme "$SCHEME" \
     -destination "generic/platform=iOS" \
     -archivePath "$BUILD_DIR/Archives/$SCHEME-iOS.xcarchive" \
+    -resultBundlePath "$BUILD_DIR/Archives/$SCHEME-iOS.xcresult" \
     ENABLE_USER_SCRIPT_SANDBOXING=NO
 
-xcodebuild archive \
+tuist xcodebuild archive \
     -project "$XCODEPROJ" \
     -scheme "$SCHEME" \
     -destination "generic/platform=iOS Simulator" \
     -archivePath "$BUILD_DIR/Archives/$SCHEME-iOS-Simulator.xcarchive" \
+    -resultBundlePath "$BUILD_DIR/Archives/$SCHEME-iOS-Simulator.xcresult" \
     ENABLE_USER_SCRIPT_SANDBOXING=NO
 
 echo "Archives completed successfully."

@@ -57,6 +57,9 @@ jobs:
 
   compute_ios_build:
     name: Build with Compute (binary) on iOS
+    permissions:
+      contents: read
+      id-token: write
     strategy:
       fail-fast: false
       matrix:
@@ -79,14 +82,34 @@ jobs:
         uses: OpenSwiftUIProject/setup-xcode@v2
         with:
           xcode-version: ${{ matrix.xcode-version }}
+      - name: Set up mise
+        uses: jdx/mise-action@v2
+        with:
+          install: false
+          cache: false
+      - name: Set up Tuist cache
+        run: |
+          mise trust mise.toml
+          mise install
+          mise exec -- tuist auth login
+          mise exec -- tuist setup cache
+        shell: bash
       - name: Build in debug mode on iOS Simulator
         run: |
-          xcodebuild build \
+          result_bundle="${RUNNER_TEMP:-/tmp}/openattributegraph-compute-ios-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT:-0}.xcresult"
+          rm -rf "$result_bundle"
+          trap 'rm -rf "$result_bundle"' EXIT
+          mise exec -- tuist xcodebuild build \
             -workspace .swiftpm/xcode/package.xcworkspace \
             -scheme OpenAttributeGraph \
             -configuration Debug \
             -destination "platform=iOS Simulator,OS=${{ matrix.ios-version }},name=${{ matrix.ios-simulator-name }}" \
             -derivedDataPath .build-debug \
+            -resultBundlePath "$result_bundle" \
             -skipMacroValidation \
             -skipPackagePluginValidation \
-            OTHER_SWIFT_FLAGS="-warnings-as-errors"
+            OTHER_SWIFT_FLAGS="-warnings-as-errors" \
+            COMPILATION_CACHE_ENABLE_CACHING=YES \
+            COMPILATION_CACHE_REMOTE_SERVICE_PATH="$HOME/.local/state/tuist/OpenSwiftUIProject_openattributegraph.sock" \
+            COMPILATION_CACHE_ENABLE_PLUGIN=YES \
+            COMPILATION_CACHE_ENABLE_DIAGNOSTIC_REMARKS=YES

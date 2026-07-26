@@ -9,11 +9,6 @@ let project = Project(
     name: "Example",
     packages: [
         .package(path: ".."),
-        // Preserve the revision pinned by the former Tuist-managed dependency lock.
-        .package(
-            url: "https://github.com/apple/swift-numerics",
-            .revision("0c0290ff6b24942dadb83a929ffaaa1481df04a2")
-        ),
     ],
     settings: .settings(base: indexStoreDisabledSettings),
     targets: [

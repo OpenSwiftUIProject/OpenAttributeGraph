@@ -9,6 +9,9 @@ on:
 jobs:
   compatibility_tests_macos:
     name: Execute compatibility tests
+    permissions:
+      contents: read
+      id-token: write
     strategy:
       fail-fast: false
       matrix:
@@ -31,6 +34,18 @@ jobs:
         uses: OpenSwiftUIProject/setup-xcode@v2
         with:
           xcode-version: ${{ matrix.xcode-version }}
+      - name: Set up mise
+        uses: jdx/mise-action@v2
+        with:
+          install: false
+          cache: false
+      - name: Set up Tuist cache
+        run: |
+          mise trust mise.toml
+          mise install
+          mise exec -- tuist auth login
+          mise exec -- tuist setup cache
+        shell: bash
       - name: Set up build environment
         run: Scripts/CI/darwin_setup_build.sh
         shell: bash
@@ -42,10 +57,18 @@ jobs:
             --build-path .build-compatibility-test-debug
       - name: Run tests against Apple's AttributeGraph on macOS via Xcode
         run: |
-          xcodebuild test \
+          result_bundle="${RUNNER_TEMP:-/tmp}/openattributegraph-compatibility-macos-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT:-0}.xcresult"
+          rm -rf "$result_bundle"
+          trap 'rm -rf "$result_bundle"' EXIT
+          mise exec -- tuist xcodebuild test \
             -workspace .swiftpm/xcode/package.xcworkspace \
             -scheme OpenAttributeGraph-Package \
             -sdk macosx \
             -destination "platform=macOS" \
+            -resultBundlePath "$result_bundle" \
             -skipPackagePluginValidation \
-            -skipMacroValidation
+            -skipMacroValidation \
+            COMPILATION_CACHE_ENABLE_CACHING=YES \
+            COMPILATION_CACHE_REMOTE_SERVICE_PATH="$HOME/.local/state/tuist/OpenSwiftUIProject_openattributegraph.sock" \
+            COMPILATION_CACHE_ENABLE_PLUGIN=YES \
+            COMPILATION_CACHE_ENABLE_DIAGNOSTIC_REMARKS=YES

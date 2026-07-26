@@ -17,5 +17,8 @@ let packageSettings = PackageSettings(
 
 let package = Package(
     name: "ExampleDependencies",
-    dependencies: []
+    dependencies: [
+        .package(path: "../../"),
+        .package(url: "https://github.com/apple/swift-numerics", from: "1.1.1"),
+    ]
 )

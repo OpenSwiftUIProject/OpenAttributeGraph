@@ -22,7 +22,7 @@ jobs:
       - name: Setup Xcode
         uses: OpenSwiftUIProject/setup-xcode@v2
         with:
-          xcode-version: "26.3"
+          xcode-version: "26.6"
       - name: Set up mise
         uses: jdx/mise-action@v2
         with:

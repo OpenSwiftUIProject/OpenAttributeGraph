@@ -428,13 +428,13 @@ func setupDPFDependency() {
 }
 
 if computeCondition {
+    let defaultVersion = "0.4.1"
     let binary = envBoolValue("OPENATTRIBUTESHIMS_COMPUTE_BINARY", default: false)
     if binary {
-        // FIXME: This version is broken and will have runtime crash
-        let version = envStringValue("OPENATTRIBUTESHIMS_COMPUTE_BINARY_VERSION", default: "0.3.0")
+        let version = envStringValue("OPENATTRIBUTESHIMS_COMPUTE_BINARY_VERSION", default: defaultVersion)
         let repo = envStringValue("OPENATTRIBUTESHIMS_COMPUTE_BINARY_REPO", default: "jcmosc/Compute")
         let url = envStringValue("OPENATTRIBUTESHIMS_COMPUTE_BINARY_URL", default: "https://github.com/\(repo)/releases/download/\(version)/Compute.xcframework.zip")
-        let checksum = envStringValue("OPENATTRIBUTESHIMS_COMPUTE_BINARY_CHECKSUM", default: "d1e76d9fee3b2995c2b21e3cc95cf6157e827408f701439b3dd34795dd95dee1")
+        let checksum = envStringValue("OPENATTRIBUTESHIMS_COMPUTE_BINARY_CHECKSUM", default: "322c72be5db233d723564a98c45150a45d3d5e9c0a4d4941d43edd1e2ea20bc4")
         package.targets.append(
             .binaryTarget(
                 name: "Compute",
@@ -444,15 +444,15 @@ if computeCondition {
         )
     } else {
         let repo = envStringValue("OPENATTRIBUTESHIMS_COMPUTE_SOURCE_REPO", default: "OpenSwiftUIProject/Compute")
-        let version = envStringValue("OPENATTRIBUTESHIMS_COMPUTE_SOURCE_VERSION")
-        let branch = envStringValue("OPENATTRIBUTESHIMS_COMPUTE_SOURCE_BRANCH", default: "main")
+        let version = envStringValue("OPENATTRIBUTESHIMS_COMPUTE_SOURCE_VERSION", default: defaultVersion)
+        let branch = envStringValue("OPENATTRIBUTESHIMS_COMPUTE_SOURCE_BRANCH")
         let computeRepo: Package.Dependency
         if useLocalDeps {
             computeRepo = Package.Dependency.package(path: "../Compute")
-        } else if let version {
-            computeRepo = Package.Dependency.package(url: "https://github.com/\(repo)", exact: .init(stringLiteral: version))
-        } else {
+        } else if let branch {
             computeRepo = Package.Dependency.package(url: "https://github.com/\(repo)", branch: branch)
+        } else {
+            computeRepo = Package.Dependency.package(url: "https://github.com/\(repo)", exact: .init(stringLiteral: version))
         }
         package.dependencies.append(computeRepo)
     }

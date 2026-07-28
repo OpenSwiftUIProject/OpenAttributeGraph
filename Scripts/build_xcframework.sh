@@ -5,12 +5,15 @@ set -e
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" >/dev/null 2>&1 && pwd -P)"
 PROJECT_ROOT="$(dirname "$SCRIPT_DIR")"
 
+# shellcheck source=Scripts/Tuist/common.sh
+source "$SCRIPT_DIR/Tuist/common.sh"
+
 BUILD_DIR="$PROJECT_ROOT/.build/Xcode"
 SCHEME="OpenAttributeGraph"
 
 # Generate Xcode project via Tuist
 pushd "$PROJECT_ROOT" > /dev/null
-tuist generate --no-open
+mise exec -- tuist generate --no-open
 popd > /dev/null
 
 XCODEPROJ="$PROJECT_ROOT/OpenAttributeGraph.xcodeproj"
@@ -42,21 +45,21 @@ done
 echo "Building xcframework for $SCHEME (debug info: $DEBUG_INFO)"
 
 # Archive for each platform using the Tuist-generated xcodeproj
-xcodebuild archive \
+tuist_xcodebuild "$BUILD_DIR/Archives/$SCHEME-macOS.xcresult" archive \
     -project "$XCODEPROJ" \
     -scheme "$SCHEME" \
     -destination "generic/platform=macOS" \
     -archivePath "$BUILD_DIR/Archives/$SCHEME-macOS.xcarchive" \
     ENABLE_USER_SCRIPT_SANDBOXING=NO
 
-xcodebuild archive \
+tuist_xcodebuild "$BUILD_DIR/Archives/$SCHEME-iOS.xcresult" archive \
     -project "$XCODEPROJ" \
     -scheme "$SCHEME" \
     -destination "generic/platform=iOS" \
     -archivePath "$BUILD_DIR/Archives/$SCHEME-iOS.xcarchive" \
     ENABLE_USER_SCRIPT_SANDBOXING=NO
 
-xcodebuild archive \
+tuist_xcodebuild "$BUILD_DIR/Archives/$SCHEME-iOS-Simulator.xcresult" archive \
     -project "$XCODEPROJ" \
     -scheme "$SCHEME" \
     -destination "generic/platform=iOS Simulator" \

@@ -11,6 +11,7 @@ jobs:
     runs-on: macos-15
     permissions:
       contents: write
+      id-token: write
     env:
       GH_TOKEN: ${{ github.token }}
     steps:
@@ -22,6 +23,16 @@ jobs:
         uses: OpenSwiftUIProject/setup-xcode@v2
         with:
           xcode-version: "26.3"
+      - name: Set up mise
+        uses: jdx/mise-action@v2
+        with:
+          install: false
+          cache: false
+      - name: Set up Tuist cache
+        run: |
+          source Scripts/Tuist/common.sh
+          tuist_ci_setup
+        shell: bash
       - name: Build XCFramework
         run: ./Scripts/build_xcframework.sh
       - name: Compute Checksum

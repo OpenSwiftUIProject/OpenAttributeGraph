@@ -9,6 +9,9 @@ on:
 jobs:
   ios_test:
     name: Execute tests on iOS
+    permissions:
+      contents: read
+      id-token: write
     strategy:
       fail-fast: false
       matrix:
@@ -33,13 +36,26 @@ jobs:
         uses: OpenSwiftUIProject/setup-xcode@v2
         with:
           xcode-version: ${{ matrix.xcode-version }}
+      - name: Set up mise
+        uses: jdx/mise-action@v2
+        with:
+          install: false
+          cache: false
+      - name: Set up Tuist cache
+        run: |
+          source Scripts/Tuist/common.sh
+          tuist_ci_setup
+        shell: bash
       - name: Set up build environment
         run: Scripts/CI/darwin_setup_build.sh
         shell: bash
       - name: Build in debug mode on iOS
         run: |
+          source Scripts/Tuist/common.sh
           # Swift 6.2.4 crashes while indexing C++ interop test targets.
-          xcodebuild build \
+          tuist_xcodebuild \
+            "${RUNNER_TEMP:-/tmp}/openattributegraph-ios-build-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT:-0}.xcresult" \
+            build \
             -workspace .swiftpm/xcode/package.xcworkspace \
             -scheme OpenAttributeGraph-Package \
             -configuration Debug \
@@ -51,8 +67,11 @@ jobs:
             OTHER_SWIFT_FLAGS="-warnings-as-errors"
       - name: Build and run tests in debug mode with coverage on iOS Simulator
         run: |
+          source Scripts/Tuist/common.sh
           # Swift 6.2.4 crashes while indexing C++ interop test targets.
-          xcodebuild test \
+          tuist_xcodebuild \
+            "${RUNNER_TEMP:-/tmp}/openattributegraph-ios-test-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT:-0}.xcresult" \
+            test \
             -workspace .swiftpm/xcode/package.xcworkspace \
             -scheme OpenAttributeGraph-Package \
             -configuration Debug \

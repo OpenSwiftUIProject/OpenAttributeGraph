@@ -9,6 +9,9 @@ on:
 jobs:
   compatibility_tests_macos:
     name: Execute compatibility tests
+    permissions:
+      contents: read
+      id-token: write
     strategy:
       fail-fast: false
       matrix:
@@ -31,6 +34,16 @@ jobs:
         uses: OpenSwiftUIProject/setup-xcode@v2
         with:
           xcode-version: ${{ matrix.xcode-version }}
+      - name: Set up mise
+        uses: jdx/mise-action@v2
+        with:
+          install: false
+          cache: false
+      - name: Set up Tuist cache
+        run: |
+          source Scripts/Tuist/common.sh
+          tuist_ci_setup
+        shell: bash
       - name: Set up build environment
         run: Scripts/CI/darwin_setup_build.sh
         shell: bash
@@ -42,7 +55,10 @@ jobs:
             --build-path .build-compatibility-test-debug
       - name: Run tests against Apple's AttributeGraph on macOS via Xcode
         run: |
-          xcodebuild test \
+          source Scripts/Tuist/common.sh
+          tuist_xcodebuild \
+            "${RUNNER_TEMP:-/tmp}/openattributegraph-compatibility-macos-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT:-0}.xcresult" \
+            test \
             -workspace .swiftpm/xcode/package.xcworkspace \
             -scheme OpenAttributeGraph-Package \
             -sdk macosx \

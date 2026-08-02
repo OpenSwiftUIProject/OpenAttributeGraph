@@ -56,6 +56,9 @@ jobs:
 
   compute_ios_build:
     name: Build with Compute (binary) on iOS
+    permissions:
+      contents: read
+      id-token: write
     strategy:
       fail-fast: false
       matrix:
@@ -78,9 +81,22 @@ jobs:
         uses: OpenSwiftUIProject/setup-xcode@v2
         with:
           xcode-version: ${{ matrix.xcode-version }}
+      - name: Set up mise
+        uses: jdx/mise-action@v2
+        with:
+          install: false
+          cache: false
+      - name: Set up Tuist cache
+        run: |
+          source Scripts/Tuist/common.sh
+          tuist_ci_setup
+        shell: bash
       - name: Build in debug mode on iOS Simulator
         run: |
-          xcodebuild build \
+          source Scripts/Tuist/common.sh
+          tuist_xcodebuild \
+            "${RUNNER_TEMP:-/tmp}/openattributegraph-compute-ios-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT:-0}.xcresult" \
+            build \
             -workspace .swiftpm/xcode/package.xcworkspace \
             -scheme OpenAttributeGraph \
             -configuration Debug \

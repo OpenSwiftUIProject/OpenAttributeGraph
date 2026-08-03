@@ -22,7 +22,7 @@ Graphs automatically track dependencies as attributes access other attributes du
 
 ### Graph Management
 
-- ``Graph/typeIndex(ctx:body:valueType:flags:update:)``
+- ``Graph/typeIndex(ctx:body:makeAttributeType:)``
 - ``Subgraph/currentGraphContext``
 
 ### Update Coordination

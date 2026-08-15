@@ -12,8 +12,6 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        # Swift 6.2.4 crashes swift-frontend when compiling C++ interop tests on Linux.
-        # Keep this job on the current Swift 6.3 patch release.
         swift_version: ["6.3.3"]
     runs-on: ubuntu-22.04
     env:

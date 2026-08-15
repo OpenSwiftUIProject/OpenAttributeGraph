@@ -14,7 +14,9 @@ jobs:
       matrix:
         os: [macos-15]
         xcode-version: ["26.6"]
-    runs-on: ${{ matrix.os }}
+    runs-on:
+      - ${{ matrix.os }}
+      - xcode-26.6
     env:
       OPENATTRIBUTEGRAPH_WERROR: 1
       OPENATTRIBUTEGRAPH_OPENATTRIBUTESHIMS_OAG_USE_BINARY: 1

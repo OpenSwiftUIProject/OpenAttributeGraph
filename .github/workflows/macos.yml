@@ -14,7 +14,9 @@ jobs:
       matrix:
         os: [macos-15]
         xcode-version: ["26.6"]   # Swift 6.3.3
-    runs-on: ${{ matrix.os }}
+    runs-on:
+      - ${{ matrix.os }}
+      - xcode-26.6
     env:
       OPENATTRIBUTEGRAPH_WERROR: 1
       OPENATTRIBUTEGRAPH_USE_LOCAL_DEPS: 1

@@ -8,7 +8,9 @@ on:
 jobs:
   release:
     name: Build and Publish Release
-    runs-on: macos-15
+    runs-on:
+      - macos-15
+      - xcode-26.6
     permissions:
       contents: write
       id-token: write

@@ -6,7 +6,7 @@ filepath() {
 }
 
 REPO_ROOT="$(dirname $(dirname $(dirname $(filepath $0))))"
-DARWINPRIVATEFRAMEWORKS_FALLBACK_REVISION="b0c3d94ff6b7200754ad2adf948fd3c6ebaef956"
+DARWINPRIVATEFRAMEWORKS_FALLBACK_REVISION="b7e6ba165f3763dd477f55cc55b4a63f51385571"
 
 clone_checkout_ag() {
   cd $REPO_ROOT

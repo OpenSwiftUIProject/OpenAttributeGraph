@@ -7,7 +7,12 @@ let tuist = Tuist(
     ),
     project: .tuist(
         generationOptions: .options(
-            enableCaching: Environment.isCI
+            optionalAuthentication: true,
+            enableCaching: Environment.isCI,
+            manifestEnvironment: [
+                "OPENSWIFTUI_*",
+                "OPENATTRIBUTEGRAPH_*",
+            ]
         )
     )
 )

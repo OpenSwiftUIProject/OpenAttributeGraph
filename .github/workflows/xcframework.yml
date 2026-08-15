@@ -16,8 +16,10 @@ jobs:
       fail-fast: false
       matrix:
         os: [macos-15]
-        xcode-version: ["26.3"]   # Swift 6.2.4
-    runs-on: ${{ matrix.os }}
+        xcode-version: ["26.6"]   # Swift 6.3.3
+    runs-on:
+      - ${{ matrix.os }}
+      - xcode-26.6
     env:
       GH_TOKEN: ${{ github.token }}
     steps:

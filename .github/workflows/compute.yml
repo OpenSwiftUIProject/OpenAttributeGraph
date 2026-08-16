@@ -29,6 +29,54 @@ jobs:
       - name: Build in debug mode
         run: swift build -c debug -Xcc -Wno-elaborated-enum-base
 
+  compute_tuist_macos_build:
+    name: Build generated project with Compute (source) on macOS
+    permissions:
+      contents: read
+      id-token: write
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [macos-15]
+        xcode-version: ["26.6"]
+    runs-on:
+      - ${{ matrix.os }}
+      - xcode-26.6
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: true
+      - name: Setup Xcode
+        uses: OpenSwiftUIProject/setup-xcode@v2
+        with:
+          xcode-version: ${{ matrix.xcode-version }}
+      - name: Set up mise
+        uses: jdx/mise-action@v2
+        with:
+          install: false
+          cache: false
+      - name: Set up Tuist cache
+        run: |
+          source Scripts/Tuist/common.sh
+          tuist_ci_setup
+        shell: bash
+      - name: Generate workspace with Compute
+        run: Scripts/setup.sh --compute
+        shell: bash
+      - name: Build OpenAttributeGraphShims with Compute
+        run: |
+          source Scripts/Tuist/common.sh
+          tuist_xcodebuild \
+            "${RUNNER_TEMP:-/tmp}/openattributegraph-compute-tuist-macos-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT:-0}.xcresult" \
+            build \
+            -workspace OpenAttributeGraph.xcworkspace \
+            -scheme OpenAttributeGraphShims \
+            -configuration Debug \
+            -destination "platform=macOS" \
+            -derivedDataPath .build-tuist-compute \
+            CODE_SIGNING_ALLOWED=NO
+        shell: bash
+
   compute_macos_build:
     name: Build with Compute (binary) on macOS
     strategy:

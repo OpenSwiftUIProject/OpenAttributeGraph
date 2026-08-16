@@ -13,6 +13,7 @@ SUPPORTED_PLATFORMS = iphoneos iphonesimulator macosx xros xrsimulator
 ALLOW_TARGET_PLATFORM_SPECIALIZATION = YES
 TARGETED_DEVICE_FAMILY = 1,2,7
 SDKROOT = auto
+ONLY_ACTIVE_ARCH[config=Debug] = YES
 
 // MARK: - C/C++ Language
 

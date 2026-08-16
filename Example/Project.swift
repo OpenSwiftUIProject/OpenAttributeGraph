@@ -1,5 +1,10 @@
 import ProjectDescription
 
+let openAttributeGraphModuleSearchSettings: SettingsDictionary = [
+    "LD_RUNPATH_SEARCH_PATHS": "$(inherited) @loader_path",
+    "SWIFT_INCLUDE_PATHS": "$(inherited) $(SRCROOT)/../Sources/OpenAttributeGraphCxx/include",
+]
+
 let project = Project(
     name: "Example",
     targets: [
@@ -12,8 +17,9 @@ let project = Project(
             sources: ["Sources/**"],
             dependencies: [
                 .sdk(name: "c++", type: .library),
-                .external(name: "OpenAttributeGraph"),
-            ]
+                .project(target: "OpenAttributeGraph", path: ".."),
+            ],
+            settings: .settings(base: openAttributeGraphModuleSearchSettings)
         ),
     ]
 )

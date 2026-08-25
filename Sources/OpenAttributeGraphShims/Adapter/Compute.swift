@@ -9,7 +9,7 @@
 public typealias OAGAttributeInfo = IAGAttributeInfo
 public typealias OAGCachedValueOptions = CachedValueOptions
 public typealias OAGChangedValueFlags = IAGChangedValueFlags
-public typealias OAGInputOptions = IAGInputOptions
+public typealias OAGInputOptions = InputOptions
 public typealias OAGValue = IAGChangedValue
 public typealias OAGValueOptions = IAGValueOptions
 
@@ -24,6 +24,12 @@ extension Subgraph {
 }
 
 extension Graph {
+    public typealias TraceOptions = TraceFlags
+
+    public static func startTracing(_ graph: Graph?, options: TraceOptions) {
+        startTracing(graph, flags: options)
+    }
+
     public static func startProfiling() {
         startProfiling(nil)
     }

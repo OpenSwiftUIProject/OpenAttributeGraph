@@ -1,0 +1,24 @@
+{
+  "originHash" : "3c762a1a24bfe9f5d0f40278cc6dc96cbbd51682a23e3363aa79cc80716ec5d9",
+  "pins" : [
+    {
+      "identity" : "compute",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/OpenSwiftUIProject/Compute",
+      "state" : {
+        "revision" : "fcea97e940b65659e4ee8dd74fffacb332d1a103",
+        "version" : "0.5.2"
+      }
+    },
+    {
+      "identity" : "swift-numerics",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/apple/swift-numerics",
+      "state" : {
+        "revision" : "0c0290ff6b24942dadb83a929ffaaa1481df04a2",
+        "version" : "1.1.1"
+      }
+    }
+  ],
+  "version" : 3
+}

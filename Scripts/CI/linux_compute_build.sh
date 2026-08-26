@@ -10,4 +10,4 @@ cd $REPO_ROOT
 
 # Install Linux dependencies
 apt-get update
-apt-get install -y libssl-dev
+apt-get install -y libssl-dev uuid-dev

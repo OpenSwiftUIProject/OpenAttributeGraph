@@ -2,10 +2,11 @@ name: PR Triage
 
 on:
   pull_request:
-    types: [opened]
+    types: [opened, reopened, synchronize]
 
 permissions:
   contents: read
+  issues: write
   pull-requests: write
 
 jobs:

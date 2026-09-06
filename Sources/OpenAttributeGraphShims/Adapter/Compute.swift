@@ -51,6 +51,26 @@ extension Graph {
     }
 }
 
+#if !canImport(Darwin)
+extension Graph {
+    public func print(includeValues: Bool) {}
+
+    public func archiveJSON(name: String?) {}
+
+    public static func archiveJSON(name: UnsafePointer<CChar>?) {}
+
+    public func graphvizDescription(includeValues: Bool) -> String {
+        ""
+    }
+
+    public static func printStack(maxFrames: Int) {}
+
+    public static func stackDescription(maxFrames: Int) -> String {
+        ""
+    }
+}
+#endif
+
 extension _AttributeBody {
     public typealias Flags = _AttributeType.Flags
 }

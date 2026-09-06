@@ -38,7 +38,7 @@ public import OpenAttributeGraphCxx
 @propertyWrapper
 @dynamicMemberLookup
 public struct WeakAttribute<Value> {
-    var base: AnyWeakAttribute
+    public var base: AnyWeakAttribute
 
     public init(base: AnyWeakAttribute) {
         self.base = base

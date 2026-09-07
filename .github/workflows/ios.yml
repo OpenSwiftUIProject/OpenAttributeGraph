@@ -43,7 +43,7 @@ jobs:
         with:
           install: false
           cache: false
-      - name: Set up Tuist cache
+      - name: Set up Tuist
         run: |
           source Scripts/Tuist/common.sh
           tuist_ci_setup

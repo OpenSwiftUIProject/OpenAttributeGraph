@@ -18,7 +18,7 @@ OAG_EXTERN_C_BEGIN
 
 OAG_EXPORT
 OAG_REFINED_FOR_SWIFT
-OAGGraphRef OAGGraphContextGetGraph(OAGGraphContextRef context) OAG_SWIFT_NAME(getter:OAGGraphContextRef.graph(self:));
+OAGGraphRef OAGGraphContextGetGraph(void *context);
 
 OAG_EXTERN_C_END
 

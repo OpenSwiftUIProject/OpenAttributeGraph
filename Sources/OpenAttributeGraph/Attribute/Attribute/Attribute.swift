@@ -114,11 +114,12 @@ public struct Attribute<Value> {
         }
         let index = Graph.typeIndex(
             ctx: context,
-            body: Body.self,
-            valueType: Metadata(Value.self),
-            flags: flags,
-            update: update
-        )
+            body: Metadata(Body.self)
+        ) {
+            let pointer = UnsafeMutablePointer<_AttributeType>.allocate(capacity: 1)
+            // TODO
+            return UnsafePointer(pointer)
+        }
         identifier = OAGGraphCreateAttribute(index: index, body: body, value: value)
         #endif
     }

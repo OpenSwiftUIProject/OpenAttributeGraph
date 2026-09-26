@@ -632,7 +632,7 @@ public struct AnyAttribute: RawRepresentable, Hashable, CustomStringConvertible,
         Subgraph(base.subgraph)
     }
 
-    public var subgraph2: Subgraph? {
+    public var subgraphOrNil: Subgraph? {
         base == .nil ? nil : subgraph
     }
 

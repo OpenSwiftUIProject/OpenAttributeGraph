@@ -147,7 +147,7 @@ OAGSubgraphRef OAGGraphGetAttributeSubgraph(OAGAttribute attribute) OAG_SWIFT_NA
 
 OAG_EXPORT
 OAG_REFINED_FOR_SWIFT
-_Nullable OAGSubgraphRef OAGGraphGetAttributeSubgraph2(OAGAttribute attribute) OAG_SWIFT_NAME(getter:OAGAttribute.subgraph2(self:));
+_Nullable OAGSubgraphRef OAGGraphGetAttributeSubgraph2(OAGAttribute attribute) OAG_SWIFT_NAME(getter:OAGAttribute.subgraphOrNil(self:));
 
 OAG_EXPORT
 OAG_REFINED_FOR_SWIFT
@@ -172,4 +172,3 @@ OAG_IMPLICIT_BRIDGING_DISABLED
 OAG_ASSUME_NONNULL_END
 
 #endif /* OAGAttribute_h */
-

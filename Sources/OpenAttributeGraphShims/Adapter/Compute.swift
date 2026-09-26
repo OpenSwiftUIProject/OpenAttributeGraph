@@ -15,8 +15,6 @@ public typealias OAGValueOptions = IAGValueOptions
 
 extension AnyAttribute {
     public typealias Flags = Subgraph.Flags
-
-    public var subgraph2: Subgraph? { nil }
 }
 
 extension Subgraph {

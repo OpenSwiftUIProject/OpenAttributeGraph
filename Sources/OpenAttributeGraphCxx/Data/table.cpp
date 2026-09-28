@@ -145,7 +145,9 @@ ptr<page> table::alloc_page(zone *zone, uint32_t needed_size) OAG_NOEXCEPT {
             page_map_type free_pages_map = _page_maps[map_index].flip();
             while (free_pages_map.any()) {
 
-                int candidate_bit = std::countr_zero(static_cast<uint64_t>(free_pages_map.to_ullong()));
+                // The loop guarantees a nonzero map; the builtin works with
+                // libc++ versions that predate std::countr_zero.
+                int candidate_bit = __builtin_ctzll(free_pages_map.to_ullong());
 
                 // scan ahead to find enough consecutive free pages
                 bool found = false;

@@ -136,7 +136,10 @@ let isXcodeEnv = envStringValue("__CFBundleIdentifier", searchInDomain: false) =
 let development = envBoolValue("DEVELOPMENT", default: false)
 let warningsAsErrorsCondition = envBoolValue("WERROR", default: isXcodeEnv && development)
 
-let swiftCheckoutPath = "\(Context.packageDirectory)/Checkouts/swift"
+let swiftCheckoutPath = envStringValue(
+    "SWIFT_CHECKOUT_PATH",
+    default: "\(Context.packageDirectory)/Checkouts/swift"
+)
 let swiftCorelibsPath = envStringValue("LIB_SWIFT_PATH") ?? "\(Context.packageDirectory)/Sources/SwiftCorelibs/include"
 
 let releaseVersion = envIntValue("TARGET_RELEASE", default: 2024)
@@ -148,22 +151,24 @@ let useLocalDeps = envBoolValue("USE_LOCAL_DEPS")
 let danceUIGraphCondition = envBoolValue("OPENATTRIBUTESHIMS_DANCEUIGRAPH", default: false)
 let computeCondition = envBoolValue("OPENATTRIBUTESHIMS_COMPUTE", default: false)
 let attributeGraphCondition = envBoolValue("OPENATTRIBUTESHIMS_ATTRIBUTEGRAPH", default: false)
+// Cross-compiling for Darwin can use a Clang without Apple's typed-allocation flags.
+let typedMemoryOperations = envBoolValue("TYPED_MEMORY_OPERATIONS", default: true)
 
 // MARK: - Shared Settings
 
 var sharedCSettings: [CSetting] = [
     .define("NDEBUG", .when(configuration: .release)),
-    // Rewrite malloc() to malloc_type_malloc() for type-isolated allocation buckets (xzone malloc).
-    .unsafeFlags(["-ftyped-memory-operations"], .when(platforms: .darwinPlatforms)),
 ]
 
 var sharedCxxSettings: [CXXSetting] = [
     .define("NDEBUG", .when(configuration: .release)),
-    // Rewrite malloc() to malloc_type_malloc() for type-isolated allocation buckets (xzone malloc).
-    .unsafeFlags(["-ftyped-memory-operations"], .when(platforms: .darwinPlatforms)),
-    // Rewrite operator new/delete to typed variants (operator new(size_t, std::__type_descriptor_t)).
-    .unsafeFlags(["-ftyped-cxx-new-delete"], .when(platforms: .darwinPlatforms)),
 ]
+
+if typedMemoryOperations {
+    // Keep Apple's typed allocation behavior by default for native builds.
+    sharedCSettings.append(.unsafeFlags(["-ftyped-memory-operations"], .when(platforms: .darwinPlatforms)))
+    sharedCxxSettings.append(.unsafeFlags(["-ftyped-memory-operations", "-ftyped-cxx-new-delete"], .when(platforms: .darwinPlatforms)))
+}
 
 var sharedSwiftSettings: [SwiftSetting] = [
     .enableUpcomingFeature("InternalImportsByDefault"),

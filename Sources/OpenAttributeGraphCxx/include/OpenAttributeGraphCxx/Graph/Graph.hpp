@@ -64,6 +64,11 @@ public:
             _context = context;
         }
         
+        OAG_INLINE OAG_CONSTEXPR
+        OAGUniqueID get_id() OAG_NOEXCEPT {
+            return _id;
+        }
+        
         OAG_INLINE
         void set_invalidation_callback(ClosureFunction<void, OAGAttribute> invalidation_callback) OAG_NOEXCEPT {
             _invalidation_callback = invalidation_callback;
@@ -183,7 +188,7 @@ struct OAGGraphStorage {
 };
 
 struct OAGGraphContextStorage {
-    OAG::Graph::Context context;
+    OAG::Graph graph;
 };
 
 OAG_ASSUME_NONNULL_END

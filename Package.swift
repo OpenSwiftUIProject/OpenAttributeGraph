@@ -120,9 +120,11 @@ EnvManager.shared.register(domain: "OpenSwiftUI")
 
 // MARK: - Env and config
 
+let buildForWASIPlatform = envBoolValue("WASI", default: false)
+
 #if os(macOS)
-// NOTE: #if os(macOS) check is not accurate if we are cross compiling for Linux platform. So we add an env key to specify it.
-let buildForDarwinPlatform = envBoolValue("BUILD_FOR_DARWIN_PLATFORM", default: true)
+// NOTE: #if os(macOS) check is not accurate if we are cross compiling for Linux/WASI platform. So we add an env key to specify it.
+let buildForDarwinPlatform = envBoolValue("BUILD_FOR_DARWIN_PLATFORM", default: !buildForWASIPlatform)
 #else
 let buildForDarwinPlatform = envBoolValue("BUILD_FOR_DARWIN_PLATFORM")
 #endif
@@ -146,7 +148,7 @@ let compatibilityTestCondition = envBoolValue("COMPATIBILITY_TEST", default: fal
 
 let useLocalDeps = envBoolValue("USE_LOCAL_DEPS")
 let danceUIGraphCondition = envBoolValue("OPENATTRIBUTESHIMS_DANCEUIGRAPH", default: false)
-let computeCondition = envBoolValue("OPENATTRIBUTESHIMS_COMPUTE", default: false)
+let computeCondition = envBoolValue("OPENATTRIBUTESHIMS_COMPUTE", default: buildForWASIPlatform)
 let attributeGraphCondition = envBoolValue("OPENATTRIBUTESHIMS_ATTRIBUTEGRAPH", default: false)
 
 // MARK: - Shared Settings
@@ -445,7 +447,8 @@ if computeCondition {
     } else {
         let repo = envStringValue("OPENATTRIBUTESHIMS_COMPUTE_SOURCE_REPO", default: "OpenSwiftUIProject/Compute")
         let version = envStringValue("OPENATTRIBUTESHIMS_COMPUTE_SOURCE_VERSION", default: defaultVersion)
-        let branch = envStringValue("OPENATTRIBUTESHIMS_COMPUTE_SOURCE_BRANCH")
+        let defaultBranch: String? = buildForWASIPlatform ? envStringValue("WASI_DEPS_BRANCH", default: "wasi/dev") : nil
+        let branch = envStringValue("OPENATTRIBUTESHIMS_COMPUTE_SOURCE_BRANCH") ?? defaultBranch
         let computeRepo: Package.Dependency
         if useLocalDeps {
             computeRepo = Package.Dependency.package(path: "../Compute")
